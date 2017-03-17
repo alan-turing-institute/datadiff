@@ -1,0 +1,19 @@
+Package: datadiff
+Type: Package
+Title: Tools for comparing datasets
+Version: 0.1.0
+Authors@R: c(
+    person("Timothy", "Hobson", email = "thobson@turing.ac.uk", role = c("aut", "cre")),
+    person("James", "Geddes", email = "jgeddes@turing.ac.uk", role = c("ctb"))
+    )
+Maintainer: Timothy Hobson <thobson@turing.ac.uk>
+Description: Tools for comparing datasets.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests: testthat
+Imports:
+  purrr,
+  methods,
+  utils
+RoxygenNote: 6.0.1

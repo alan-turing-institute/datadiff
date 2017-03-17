@@ -1,0 +1,111 @@
+require(testthat)
+context("patch class")
+
+test_that("the patch constructor, is_patch, patch_type and patch_params methods work", {
+
+  ## Delete column patch.
+  params <- -2L
+  target <- patch(params)
+
+  expect_true(is(target, "patch"))
+  expect_true(is_patch(target))
+
+  expect_true(is(target, datadiff:::TYPE_DELETE))
+  expect_equal(patch_params(target), expected = params)
+
+  ## Permute patch.
+  params <- c(2L, 5L)
+  target <- patch(params)
+
+  expect_true(is(target, "patch"))
+  expect_true(is_patch(target))
+
+  expect_true(is(target, datadiff:::TYPE_PERMUTE))
+  expect_equal(patch_params(target), expected = params)
+})
+
+test_that("the is_compatible method works", {
+
+  ## Delete column patch.
+  params <- -2L
+  target <- patch(params)
+
+  df <- data.frame(col1 = 1:12, col2 = 12:1)
+  expect_true(is_compatible(target, df))
+
+  params <- -c(1L, 2L)
+  target <- patch(params)
+
+  df <- data.frame(col1 = 1:12, col2 = 12:1)
+  expect_true(is_compatible(target, df))
+
+  df <- data.frame(col1 = 1:12)
+  expect_false(is_compatible(target, df))
+
+  ## Permute patch.
+  params <- c(2L, 5L)
+  target <- patch(params)
+
+  df <- as.data.frame(matrix(1:20, nrow = 4, ncol = 5))
+  expect_true(is_compatible(target, df))
+
+  df <- as.data.frame(matrix(1:20, nrow = 5, ncol = 4))
+  expect_false(is_compatible(target, df))
+
+})
+
+test_that("patch function application works", {
+
+  ## Delete column patch.
+  df <- data.frame(col1 = 1:12, col2 = 12:1)
+
+  params <- -2L
+  target <- patch(params)
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_equal(ncol(result), expected = ncol(df) - 1)
+  expect_equal(result[[1]], df[[1]])
+
+  params <- -1L
+  target <- patch(params)
+
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_equal(ncol(result), expected = ncol(df) - 1)
+  expect_equal(result[[1]], df[[2]])
+
+  # Test the case where the result is empty.
+  params <- -c(1L, 2L)
+  target <- patch(params)
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_equal(ncol(result), expected = ncol(df) - 2)
+
+  # Apply to an incompatible data frame.
+  params <- -3L
+  target <- patch(params)
+  expect_error(target(df), regexp = "Incompatible")
+
+  ## Permute patch.
+  df <- as.data.frame(matrix(1:20, nrow = 4, ncol = 5))
+
+  params <- c(2L, 5L)
+  target <- patch(params)
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_equal(ncol(result), expected = ncol(df))
+  expect_equal(result[[1]], expected = df[[1]])
+  expect_equal(result[[2]], expected = df[[5]])
+  expect_equal(result[[3]], expected = df[[3]])
+  expect_equal(result[[4]], expected = df[[4]])
+  expect_equal(result[[5]], expected = df[[2]])
+
+  # Apply to an incompatible data frame.
+  df <- data.frame(col1 = 1:12, col2 = 12:1)
+  expect_error(target(df), regexp = "Incompatible")
+
+})
