@@ -1,5 +1,5 @@
 require(testthat)
-context("encode.patch methods")
+context("encode_patch methods")
 
 test_that("the encode_patch_params function works", {
 

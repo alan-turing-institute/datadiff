@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Implements the generic function \code{is_compatible} for a \code{patch} of
-#' type \code{encode.patch}. Returns \code{TRUE} if the given patch and data
+#' type \code{encode_patch}. Returns \code{TRUE} if the given patch and data
 #' frame are compatible, in the sense that the patch (function) may be applied
 #' to the data frame without generating an error.
 #'
@@ -43,7 +43,7 @@
 #' is_compatible(p, mtcars, strict = FALSE)
 #'
 #' @export
-is_compatible.encode.patch <- function(obj, df, strict = TRUE, ...) {
+is_compatible.encode_patch <- function(obj, df, strict = TRUE, ...) {
 
   params <- patch_params(obj)
   column_indices <- params[[datadiff:::COLUMNS]]
@@ -66,10 +66,10 @@ is_compatible.encode.patch <- function(obj, df, strict = TRUE, ...) {
 #'
 #' @description
 #' Implements the generic function \code{return_value} for a \code{patch} of
-#' type \code{encode.patch}. Returns the data frame resulting from the
+#' type \code{encode_patch}. Returns the data frame resulting from the
 #' application of the \code{patch} to the given data frame.
 #'
-#' In the case of an \emph{encode.patch} this is the given data frame after a
+#' In the case of an \emph{encode_patch} this is the given data frame after a
 #' re-encoding of the categorical data contained in those columns specified in
 #' the \code{params}, according to the specified encoding.
 #'
@@ -81,7 +81,7 @@ is_compatible.encode.patch <- function(obj, df, strict = TRUE, ...) {
 #' @param df
 #' A data frame.
 #' @param strict
-#' A logical flag explained in the \code{\link{is_compatible.encode.patch}}
+#' A logical flag explained in the \code{\link{is_compatible.encode_patch}}
 #' method. If \code{strict} is \code{FALSE} and \code{NA} value(s) are
 #' introduced as a consequence, then a warning is generated.
 #' @param convert_type
@@ -101,7 +101,7 @@ is_compatible.encode.patch <- function(obj, df, strict = TRUE, ...) {
 #' @seealso \code{\link{type.convert}}
 #' @import utils
 #' @export
-return_value.encode.patch <- function(obj, df, strict = TRUE,
+return_value.encode_patch <- function(obj, df, strict = TRUE,
                                       convert_type = TRUE, ...) {
 
   params <- patch_params(obj)
@@ -127,11 +127,11 @@ return_value.encode.patch <- function(obj, df, strict = TRUE,
   df
 }
 
-#' Construct parameters for the \code{encode.patch} type
+#' Construct parameters for the \code{encode_patch} type
 #'
 #' Converts a vector of integer column indices and an re-encoding of categorical
 #' data (in the form of a factor or a vector) into a \code{params} object
-#' suitable for constructing a patch of type \code{encode.patch}.
+#' suitable for constructing a patch of type \code{encode_patch}.
 #'
 #' @param column_indices
 #' An integer vector of column indices

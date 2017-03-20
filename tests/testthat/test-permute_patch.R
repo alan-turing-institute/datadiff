@@ -1,5 +1,5 @@
 require(testthat)
-context("permute.patch methods")
+context("permute_patch methods")
 
 test_that("the patch constructor and patch_type methods work", {
 

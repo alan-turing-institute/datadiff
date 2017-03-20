@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Implements the generic function \code{is_compatible} for a \code{patch} of
-#' type \code{permute.patch}. Returns \code{TRUE} if the given patch and data
+#' type \code{permute_patch}. Returns \code{TRUE} if the given patch and data
 #' frame are compatible, in the sense that the patch (function) may be applied
 #' to the data frame without generating an error.
 #'
@@ -25,7 +25,7 @@
 #' is_compatible(p, mtcars)
 #'
 #' @export
-is_compatible.permute.patch <- function(obj, df, ...) {
+is_compatible.permute_patch <- function(obj, df, ...) {
 
   # Check that the column indices are not out-of-bounds.
   max(patch_params(obj)) <= ncol(df)
@@ -35,10 +35,10 @@ is_compatible.permute.patch <- function(obj, df, ...) {
 #'
 #' @description
 #' Implements the generic function \code{return_value} for a \code{patch} of
-#' type \code{permute.patch}. Returns the data frame resulting from the
+#' type \code{permute_patch}. Returns the data frame resulting from the
 #' application of the \code{patch} to the given data frame.
 #'
-#' In the case of a \emph{permute.patch} this is the given data frame with its
+#' In the case of a \emph{permute_patch} this is the given data frame with its
 #' columns permuted according to the vector of indices specified in the patch
 #' \code{params} object, which is interpreted as a \link{cycle}.
 #'
@@ -60,6 +60,6 @@ is_compatible.permute.patch <- function(obj, df, ...) {
 #' colnames(return_value(p, mtcars))
 #'
 #' @export
-return_value.permute.patch <- function(obj, df, ...) {
+return_value.permute_patch <- function(obj, df, ...) {
   df[, cycle(seq.int(1:ncol(df)), cyc = patch_params(obj))]
 }

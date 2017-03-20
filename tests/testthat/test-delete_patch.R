@@ -1,5 +1,5 @@
 require(testthat)
-context("delete.patch methods")
+context("delete_patch methods")
 
 test_that("the patch constructor and patch_type methods work", {
 

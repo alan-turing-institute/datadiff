@@ -1,5 +1,5 @@
 require(testthat)
-context("scale.patch methods")
+context("scale_patch methods")
 
 test_that("the scale_patch_params function works", {
 

@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Implements the generic function \code{is_compatible} for a \code{patch} of
-#' type \code{scale.patch}. Returns \code{TRUE} if the given patch and data
+#' type \code{scale_patch}. Returns \code{TRUE} if the given patch and data
 #' frame are compatible, in the sense that the patch (function) may be applied
 #' to the data frame without generating an error.
 #'
@@ -32,7 +32,7 @@
 #'
 #' @import purrr
 #' @export
-is_compatible.scale.patch <- function(obj, df, ...) {
+is_compatible.scale_patch <- function(obj, df, ...) {
 
   params <- patch_params(obj)
   column_indices <- params[[datadiff:::COLUMNS]]
@@ -47,10 +47,10 @@ is_compatible.scale.patch <- function(obj, df, ...) {
 #'
 #' @description
 #' Implements the generic function \code{return_value} for a \code{patch} of
-#' type \code{scale.patch}. Returns the data frame resulting from the
+#' type \code{scale_patch}. Returns the data frame resulting from the
 #' application of the \code{patch} to the given data frame.
 #'
-#' In the case of a \emph{scale.patch} this is the given data frame after a
+#' In the case of a \emph{scale_patch} this is the given data frame after a
 #' rescaling of the numerical data contained in those columns specified in the
 #' \code{params}, by the specified scale factor.
 #'
@@ -71,7 +71,7 @@ is_compatible.scale.patch <- function(obj, df, ...) {
 #' @seealso \code{\link{type.convert}}
 #' @import utils
 #' @export
-return_value.scale.patch <- function(obj, df, ...) {
+return_value.scale_patch <- function(obj, df, ...) {
 
   params <- patch_params(obj)
   column_indices <- params[[datadiff:::COLUMNS]]
@@ -83,11 +83,11 @@ return_value.scale.patch <- function(obj, df, ...) {
   df
 }
 
-#' Construct parameters for the \code{scale.patch} type
+#' Construct parameters for the \code{scale_patch} type
 #'
 #' Converts a vector of integer column indices and a numerical scale factor
 #' into a \code{params} object suitable for constructing a patch of type
-#' \code{scale.patch}.
+#' \code{scale_patch}.
 #'
 #' @param column_indices
 #' An integer vector of column indices

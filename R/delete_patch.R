@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Implements the generic function \code{is_compatible} for a \code{patch} of
-#' type \code{delete.patch}. Returns \code{TRUE} if the given patch and data
+#' type \code{delete_patch}. Returns \code{TRUE} if the given patch and data
 #' frame are compatible, in the sense that the patch (function) may be applied
 #' to the data frame without generating an error.
 #'
@@ -25,7 +25,7 @@
 #' is_compatible(p, mtcars)
 #'
 #' @export
-is_compatible.delete.patch <- function(obj, df, ...) {
+is_compatible.delete_patch <- function(obj, df, ...) {
 
   # Check that the (negative) column indices are not out-of-bounds.
   max(abs(patch_params(obj))) <= ncol(df)
@@ -35,10 +35,10 @@ is_compatible.delete.patch <- function(obj, df, ...) {
 #'
 #' @description
 #' Implements the generic function \code{return_value} for a \code{patch} of
-#' type \code{delete.patch}. Returns the data frame resulting from the
+#' type \code{delete_patch}. Returns the data frame resulting from the
 #' application of the \code{patch} to the given data frame.
 #'
-#' In the case of a \emph{delete.patch} this is the given data frame minus
+#' In the case of a \emph{delete_patch} this is the given data frame minus
 #' those columns whose indices are specified in the patch \code{params} object.
 #'
 #' @param obj
@@ -55,6 +55,6 @@ is_compatible.delete.patch <- function(obj, df, ...) {
 #' colnames(return_value(p, mtcars))
 #'
 #' @export
-return_value.delete.patch <- function(obj, df, ...) {
+return_value.delete_patch <- function(obj, df, ...) {
   df[, patch_params(obj), drop = FALSE]
 }

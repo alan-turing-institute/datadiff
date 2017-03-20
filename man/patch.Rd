@@ -48,7 +48,7 @@ determined by the value(s) inside its \code{params} object according to the
 rule encoded in the (generic) function \code{return_value}.
 
 For example, if \code{params} is a non-empty vector of unique, negative
-integers then the corresponding patch type is \code{delete.patch},
+integers then the corresponding patch type is \code{delete_patch},
 representing a transformation which deletes one or more columns from a data
 frame. The (negative) integer values in the vector specify the indices of
 the columns to be deleted.
@@ -70,9 +70,9 @@ To add a new patch type:
  \code{return_value.<new_type_name>}, respectively. It is recommended that
  this is done in a file whose name matches the name of the type.
 
- Simple examples, for the \code{delete.patch} type, are
- \code{\link{is_compatible.delete.patch}} and
- \code{\link{return_value.delete.patch}}.
+ Simple examples, for the \code{delete_patch} type, are
+ \code{\link{is_compatible.delete_patch}} and
+ \code{\link{return_value.delete_patch}}.
 
  \item Construct a predicate to enable the new type to be inferred from the
  patch parameters object.

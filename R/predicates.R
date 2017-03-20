@@ -7,7 +7,7 @@
 #' taking a \code{params} object and returning \code{TRUE} if the form of that
 #' object matches that required to define a patch of the corresponding type.
 #'
-#' For instance, a patch of type \code{delete.patch} represents a transformation
+#' For instance, a patch of type \code{delete_patch} represents a transformation
 #' which deletes one or more columns from a data frame. The corresponding
 #' predicate tests whether the \code{params} object consists of a vector of
 #' unique negative integers, returning \code{TRUE} in that case and \code{FALSE}
@@ -18,21 +18,21 @@
 #' built-in patch type names and corresponding predicates. This includes the
 #' following patch types:
 #' \itemize{
-#'  \item TYPE: \code{delete.patch}
+#'  \item TYPE: \code{delete_patch}
 #'
 #'  ACTION: delete one or more columns from a data frame.
 #'
 #'  PREDICATE: \code{params} must be a non-empty vector of unique negative
 #'  integers.
 #'
-#'  \item TYPE: \code{permute.patch}
+#'  \item TYPE: \code{permute_patch}
 #'
 #'  ACTION: permute the columns of a data frame.
 #'
 #'  PREDICATE: \code{params} must be a vector of unique positive integers of
 #'  length two or more.
 #'
-#'  \item TYPE: \code{encode.patch}
+#'  \item TYPE: \code{encode_patch}
 #'
 #'  ACTION: re-encode categorical data in specified columns.
 #'
@@ -46,7 +46,7 @@
 #'   factor containing unique elements with unique names.
 #'   }
 #'
-#'  \item TYPE: \code{scale.patch}
+#'  \item TYPE: \code{scale_patch}
 #'
 #'  ACTION: rescale numerical data in specified columns.
 #'
@@ -64,10 +64,10 @@
 #' @seealso \code{\link{patch}}
 #' @name predicates
 NULL
-TYPE_DELETE <- "delete.patch" # Delete one or more columns.
-TYPE_PERMUTE <- "permute.patch" # Permute the columns.
-TYPE_ENCODE <- "encode.patch" # Re-encode categorical data.
-TYPE_SCALE <- "scale.patch" # Rescale numerical data.
+TYPE_DELETE <- "delete_patch" # Delete one or more columns.
+TYPE_PERMUTE <- "permute_patch" # Permute the columns.
+TYPE_ENCODE <- "encode_patch" # Re-encode categorical data.
+TYPE_SCALE <- "scale_patch" # Rescale numerical data.
 
 # Note that we intentionally do _not_ support column names (i.e. we only accept
 # column indices) as names can be easily converted to indices before calling
