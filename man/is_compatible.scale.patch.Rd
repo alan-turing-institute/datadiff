@@ -14,12 +14,18 @@
 \item{...}{Any additional arguments are ignored.}
 }
 \description{
-Implements the generic function \code{is_compatible} for a \code{patch} of type \code{scale.patch}. Returns \code{TRUE} if the given patch and data frame are compatible, in the sense that the patch (function) may be applied to the data frame without generating an error.
+Implements the generic function \code{is_compatible} for a \code{patch} of
+type \code{scale.patch}. Returns \code{TRUE} if the given patch and data
+frame are compatible, in the sense that the patch (function) may be applied
+to the data frame without generating an error.
 
 The \code{patch} is deemed compatible if both:
 \itemize{
- \item the maximum integer in the \code{datadiff:::COLUMNS} element of its \code{params} object does not exceed the number of columns in the data frame, and
- \item all of the columns in the data frame whose indices are specified in the \code{datadiff:::COLUMNS} element contain numerical data.
+ \item the maximum integer in the \code{datadiff:::COLUMNS} element of its
+ \code{params} object does not exceed the number of columns in the data
+ frame, and
+ \item all of the columns in the data frame whose indices are specified in
+ the \code{datadiff:::COLUMNS} element contain numerical data.
 }
 }
 \examples{

@@ -14,9 +14,14 @@
 \item{...}{Any additional arguments are ignored.}
 }
 \description{
-Implements the generic function \code{is_compatible} for a \code{patch} of type \code{delete.patch}. Returns \code{TRUE} if the given patch and data frame are compatible, in the sense that the patch (function) may be applied to the data frame without generating an error.
+Implements the generic function \code{is_compatible} for a \code{patch} of
+type \code{delete.patch}. Returns \code{TRUE} if the given patch and data
+frame are compatible, in the sense that the patch (function) may be applied
+to the data frame without generating an error.
 
-The patch is deemed compatible if the maximum integer (in absolute value) in its \code{params} object does not exceed the number of columns in the data frame.
+The patch is deemed compatible if the maximum integer (in absolute value) in
+its \code{params} object does not exceed the number of columns in the data
+frame.
 }
 \examples{
 ncol(mtcars)

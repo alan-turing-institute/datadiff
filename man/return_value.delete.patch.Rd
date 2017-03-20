@@ -14,9 +14,12 @@
 \item{...}{Any additional arguments are ignored.}
 }
 \description{
-Implements the generic function \code{return_value} for a \code{patch} of type \code{delete.patch}. Returns the data frame resulting from the application of the \code{patch} to the given data frame.
+Implements the generic function \code{return_value} for a \code{patch} of
+type \code{delete.patch}. Returns the data frame resulting from the
+application of the \code{patch} to the given data frame.
 
-In the case of a \emph{delete.patch} this is the given data frame minus those columns whose indices are specified in the patch \code{params} object.
+In the case of a \emph{delete.patch} this is the given data frame minus
+those columns whose indices are specified in the patch \code{params} object.
 }
 \examples{
 colnames(mtcars)

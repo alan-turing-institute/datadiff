@@ -17,9 +17,13 @@
 A patched data frame.
 }
 \description{
-Implements the generic function \code{return_value} for a \code{patch} of type \code{scale.patch}. Returns the data frame resulting from the application of the \code{patch} to the given data frame.
+Implements the generic function \code{return_value} for a \code{patch} of
+type \code{scale.patch}. Returns the data frame resulting from the
+application of the \code{patch} to the given data frame.
 
-In the case of a \emph{scale.patch} this is the given data frame after a rescaling of the numerical data contained in those columns specified in the \code{params}, by the specified scale factor.
+In the case of a \emph{scale.patch} this is the given data frame after a
+rescaling of the numerical data contained in those columns specified in the
+\code{params}, by the specified scale factor.
 }
 \examples{
 purrr::map_dbl(ToothGrowth[c(1, 3)], sum)

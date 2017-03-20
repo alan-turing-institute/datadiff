@@ -17,9 +17,13 @@
 A patched data frame.
 }
 \description{
-Implements the generic function \code{return_value} for a \code{patch} of type \code{permute.patch}. Returns the data frame resulting from the application of the \code{patch} to the given data frame.
+Implements the generic function \code{return_value} for a \code{patch} of
+type \code{permute.patch}. Returns the data frame resulting from the
+application of the \code{patch} to the given data frame.
 
-In the case of a \emph{permute.patch} this is the given data frame with its columns permuted according to the vector of indices specified in the patch \code{params} object, which is interpreted as a \link{cycle}.
+In the case of a \emph{permute.patch} this is the given data frame with its
+columns permuted according to the vector of indices specified in the patch
+\code{params} object, which is interpreted as a \link{cycle}.
 }
 \examples{
 colnames(mtcars)

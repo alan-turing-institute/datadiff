@@ -11,17 +11,28 @@
 
 \item{df}{A data frame.}
 
-\item{strict}{A logical flag used to specify whether the encoding in the patch \code{params} object must include all of the values in the relevant columns (\code{strict = TRUE}), or merely at least one of those values (\code{strict = FALSE}). The default value is \code{TRUE}}
+\item{strict}{A logical flag used to specify whether the encoding in the patch
+\code{params} object must include all of the values in the relevant columns
+(\code{strict = TRUE}), or merely at least one of those values
+(\code{strict = FALSE}). The default value is \code{TRUE}}
 
 \item{...}{Any additional arguments are ignored.}
 }
 \description{
-Implements the generic function \code{is_compatible} for a \code{patch} of type \code{encode.patch}. Returns \code{TRUE} if the given patch and data frame are compatible, in the sense that the patch (function) may be applied to the data frame without generating an error.
+Implements the generic function \code{is_compatible} for a \code{patch} of
+type \code{encode.patch}. Returns \code{TRUE} if the given patch and data
+frame are compatible, in the sense that the patch (function) may be applied
+to the data frame without generating an error.
 
 The \code{patch} is deemed compatible if both:
 \itemize{
- \item the maximum integer in the \code{datadiff:::COLUMNS} element of its \code{params} object does not exceed the number of columns in the data frame, and
- \item after coersion to type \code{character}, all of the values (or at least one of them, if \code{strict = FALSE}) in each of the relevant columns of the data frame are contained in the set of element names in the \code{datadiff:::ENCODING} element of the \code{params} object.
+ \item the maximum integer in the \code{datadiff:::COLUMNS} element of its
+ \code{params} object does not exceed the number of columns in the data
+ frame, and
+ \item after coersion to type \code{character}, all of the values (or at
+ least one of them, if \code{strict = FALSE}) in each of the relevant
+ columns of the data frame are contained in the set of element names in the
+ \code{datadiff:::ENCODING} element of the \code{params} object.
 }
 }
 \examples{

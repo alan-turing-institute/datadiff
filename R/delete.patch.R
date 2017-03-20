@@ -1,9 +1,14 @@
 #' Test for compatibility between a patch and a data frame.
 #'
 #' @description
-#' Implements the generic function \code{is_compatible} for a \code{patch} of type \code{delete.patch}. Returns \code{TRUE} if the given patch and data frame are compatible, in the sense that the patch (function) may be applied to the data frame without generating an error.
+#' Implements the generic function \code{is_compatible} for a \code{patch} of
+#' type \code{delete.patch}. Returns \code{TRUE} if the given patch and data
+#' frame are compatible, in the sense that the patch (function) may be applied
+#' to the data frame without generating an error.
 #'
-#' The patch is deemed compatible if the maximum integer (in absolute value) in its \code{params} object does not exceed the number of columns in the data frame.
+#' The patch is deemed compatible if the maximum integer (in absolute value) in
+#' its \code{params} object does not exceed the number of columns in the data
+#' frame.
 #'
 #' @param obj
 #' A \code{patch} object.
@@ -29,9 +34,12 @@ is_compatible.delete.patch <- function(obj, df, ...) {
 #' Generate the patch return value.
 #'
 #' @description
-#' Implements the generic function \code{return_value} for a \code{patch} of type \code{delete.patch}. Returns the data frame resulting from the application of the \code{patch} to the given data frame.
+#' Implements the generic function \code{return_value} for a \code{patch} of
+#' type \code{delete.patch}. Returns the data frame resulting from the
+#' application of the \code{patch} to the given data frame.
 #'
-#' In the case of a \emph{delete.patch} this is the given data frame minus those columns whose indices are specified in the patch \code{params} object.
+#' In the case of a \emph{delete.patch} this is the given data frame minus
+#' those columns whose indices are specified in the patch \code{params} object.
 #'
 #' @param obj
 #' A \code{patch} object.

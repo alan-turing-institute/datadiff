@@ -1,12 +1,18 @@
 #' Test for compatibility between patch and data frame.
 #'
 #' @description
-#' Implements the generic function \code{is_compatible} for a \code{patch} of type \code{scale.patch}. Returns \code{TRUE} if the given patch and data frame are compatible, in the sense that the patch (function) may be applied to the data frame without generating an error.
+#' Implements the generic function \code{is_compatible} for a \code{patch} of
+#' type \code{scale.patch}. Returns \code{TRUE} if the given patch and data
+#' frame are compatible, in the sense that the patch (function) may be applied
+#' to the data frame without generating an error.
 #'
 #' The \code{patch} is deemed compatible if both:
 #' \itemize{
-#'  \item the maximum integer in the \code{datadiff:::COLUMNS} element of its \code{params} object does not exceed the number of columns in the data frame, and
-#'  \item all of the columns in the data frame whose indices are specified in the \code{datadiff:::COLUMNS} element contain numerical data.
+#'  \item the maximum integer in the \code{datadiff:::COLUMNS} element of its
+#'  \code{params} object does not exceed the number of columns in the data
+#'  frame, and
+#'  \item all of the columns in the data frame whose indices are specified in
+#'  the \code{datadiff:::COLUMNS} element contain numerical data.
 #' }
 #'
 #' @param obj
@@ -40,9 +46,13 @@ is_compatible.scale.patch <- function(obj, df, ...) {
 #' Generate the patch return value.
 #'
 #' @description
-#' Implements the generic function \code{return_value} for a \code{patch} of type \code{scale.patch}. Returns the data frame resulting from the application of the \code{patch} to the given data frame.
+#' Implements the generic function \code{return_value} for a \code{patch} of
+#' type \code{scale.patch}. Returns the data frame resulting from the
+#' application of the \code{patch} to the given data frame.
 #'
-#' In the case of a \emph{scale.patch} this is the given data frame after a rescaling of the numerical data contained in those columns specified in the \code{params}, by the specified scale factor.
+#' In the case of a \emph{scale.patch} this is the given data frame after a
+#' rescaling of the numerical data contained in those columns specified in the
+#' \code{params}, by the specified scale factor.
 #'
 #' @param obj
 #' A \code{patch} object.
@@ -75,7 +85,9 @@ return_value.scale.patch <- function(obj, df, ...) {
 
 #' Construct parameters for the \code{scale.patch} type
 #'
-#' Converts a vector of integer column indices and a numerical scale factor into a \code{params} object suitable for constructing a patch of type \code{scale.patch}.
+#' Converts a vector of integer column indices and a numerical scale factor
+#' into a \code{params} object suitable for constructing a patch of type
+#' \code{scale.patch}.
 #'
 #' @param column_indices
 #' An integer vector of column indices
@@ -85,7 +97,8 @@ return_value.scale.patch <- function(obj, df, ...) {
 #' @seealso \code{\link{patch}}
 #'
 #' @export
-scale_patch_params <- function(column_indices = integer(), scale_factor = numeric()) {
+scale_patch_params <- function(column_indices = integer(),
+                               scale_factor = numeric()) {
 
     if (!datadiff:::PREDICATE_COLUMNS(column_indices))
     stop("Invalid column_indices.")

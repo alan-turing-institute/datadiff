@@ -9,10 +9,13 @@ encode_patch_params(column_indices = integer(), encode_factor = factor())
 \arguments{
 \item{column_indices}{An integer vector of column indices}
 
-\item{encode_factor}{A factor (or vector) with named elements specifying a re-encoding of categorical data.}
+\item{encode_factor}{A factor (or vector) with named elements specifying a re-encoding of
+categorical data.}
 }
 \description{
-Converts a vector of integer column indices and an re-encoding of categorical data (in the form of a factor or a vector) into a \code{params} object suitable for constructing a patch of type \code{encode.patch}.
+Converts a vector of integer column indices and an re-encoding of categorical
+data (in the form of a factor or a vector) into a \code{params} object
+suitable for constructing a patch of type \code{encode.patch}.
 }
 \seealso{
 \code{\link{patch}}

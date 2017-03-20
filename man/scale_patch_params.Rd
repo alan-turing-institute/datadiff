@@ -12,7 +12,9 @@ scale_patch_params(column_indices = integer(), scale_factor = numeric())
 \item{scale_factor}{A numerical scalar specifying a scale factor.}
 }
 \description{
-Converts a vector of integer column indices and a numerical scale factor into a \code{params} object suitable for constructing a patch of type \code{scale.patch}.
+Converts a vector of integer column indices and a numerical scale factor
+into a \code{params} object suitable for constructing a patch of type
+\code{scale.patch}.
 }
 \seealso{
 \code{\link{patch}}
