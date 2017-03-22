@@ -5,6 +5,7 @@ Version: 0.1.0
 Authors@R: c(
     person("Timothy", "Hobson", email = "thobson@turing.ac.uk", role = c("aut", "cre")),
     person("James", "Geddes", email = "jgeddes@turing.ac.uk", role = c("ctb"))
+    person("The Alan Turing Institute", role = "cph")
     )
 Maintainer: Timothy Hobson <thobson@turing.ac.uk>
 Description: Tools for comparing datasets.
@@ -14,6 +15,5 @@ LazyData: true
 Suggests: testthat
 Imports:
   purrr,
-  methods,
-  utils
+  methods
 RoxygenNote: 6.0.1

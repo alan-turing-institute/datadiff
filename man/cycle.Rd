@@ -12,8 +12,7 @@ cycle(v, cyc)
 \item{cyc}{A cycle.}
 }
 \value{
-The vector \code{v} with its elements permuted according to the cycle
-\code{cyc}.
+The vector \code{v} with its elements permuted according to the given cycle.
 }
 \description{
 Returns the vector \code{v} with its elements permuted according to the given

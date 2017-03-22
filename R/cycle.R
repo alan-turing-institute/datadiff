@@ -10,8 +10,7 @@
 #' @param cyc
 #' A cycle.
 #' @return
-#' The vector \code{v} with its elements permuted according to the cycle
-#' \code{cyc}.
+#' The vector \code{v} with its elements permuted according to the given cycle.
 #'
 #' @export
 #'
@@ -19,6 +18,8 @@
 #' cycle(1:5, cyc = c(1, 3, 4))
 #'
 cycle <- function(v, cyc) {
+
+  # TODO: test this carefully.
   temp <- v
   rot <- c(cyc[-1], cyc[1])
 
