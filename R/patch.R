@@ -24,7 +24,7 @@ is_patch <- function(obj) {
 #' @import purrr
 #' @export
 get_patch_params <- function(patch) {
-  stopifnot(is_patch(patch))
+  stopifnot(is_patch(patch) && is.function(patch))
   objs <- mget(names(environment(patch)), environment(patch))
   purrr::discard(objs, is_patch)
 }
@@ -44,7 +44,8 @@ get_patch_params <- function(patch) {
 #'
 #' @export
 apply_patch <- function(patch, df, ...) {
-  ret <- patch(df, ...)
+  stopifnot(is_patch(patch) && is.function(patch))
+  ret <- do.call(patch, args = list(df, ...))
   stopifnot(is.data.frame(ret))
   ret
 }

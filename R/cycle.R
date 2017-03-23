@@ -19,7 +19,6 @@
 #'
 cycle <- function(v, cyc) {
 
-  # TODO: test this carefully.
   temp <- v
   rot <- c(cyc[-1], cyc[1])
 
