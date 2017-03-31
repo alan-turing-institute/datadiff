@@ -1,4 +1,4 @@
-#' \code{patch_cycle} S3 class constructor.
+#' \code{patch_cycle} S3 class constructor
 #'
 #' @description
 #' S3 class \code{patch_cycle} which extends the \code{patch} and
@@ -42,9 +42,9 @@ patch_cycle <- function(cols) {
 
     # Transform the data frame according to the parameters.
     if (is.character(cols))
-      cols <- purrr::map_int(cols, function(x) { which(names(df) == x)})
+      cols <- purrr::map_int(cols, function(x) { which(names(df) == x) })
 
-    ret <- df[, cycle(seq.int(1:ncol(df)), cyc = cols)]
+    ret <- df[cycle(seq.int(1:ncol(df)), cyc = cols)]
     stopifnot(is.data.frame(ret))
 
     ret

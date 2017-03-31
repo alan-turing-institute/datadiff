@@ -2,7 +2,7 @@
 % Please edit documentation in R/patch_encode.R
 \name{patch_encode}
 \alias{patch_encode}
-\title{\code{patch_encode} S3 class constructor.}
+\title{\code{patch_encode} S3 class constructor}
 \usage{
 patch_encode(cols, encoding, one_to_one = TRUE)
 }

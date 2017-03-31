@@ -2,7 +2,7 @@
 % Please edit documentation in R/diffness.R
 \name{diffness.factor}
 \alias{diffness.factor}
-\title{Compute the mismatch between two vectors of unordered categorical data.}
+\title{Compute the mismatch between two vectors of unordered categorical data}
 \usage{
 \method{diffness}{factor}(x, y, diff = tv, ...)
 }
@@ -15,5 +15,5 @@ unordered categorical data.}
 \item{...}{Additional arguments are ignored.}
 }
 \description{
-Compute the mismatch between two vectors of unordered categorical data.
+Compute the mismatch between two vectors of unordered categorical data
 }

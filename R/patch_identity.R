@@ -1,4 +1,4 @@
-#' \code{patch_identity} S3 class constructor.
+#' \code{patch_identity} S3 class constructor
 #'
 #' @description
 #' S3 class \code{patch_cycle} which extends the \code{patch} and

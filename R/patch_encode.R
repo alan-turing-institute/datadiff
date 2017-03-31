@@ -1,4 +1,4 @@
-#' \code{patch_encode} S3 class constructor.
+#' \code{patch_encode} S3 class constructor
 #'
 #' @description
 #' S3 class \code{patch_encode} which extends the \code{patch} and
@@ -54,7 +54,7 @@ patch_encode <- function(cols, encoding, one_to_one = TRUE) {
     stopifnot(is_compatible_columns(cols, df))
 
     # Identify any relevant factor columns.
-    is_fac <- map_lgl(df[, cols], is.factor)
+    is_fac <- map_lgl(df[cols], is.factor)
 
     # Get all codes (note that union discards any duplicated values).
     codes <- purrr::discard(union(unlist(df[cols][!is_fac]),
@@ -65,8 +65,8 @@ patch_encode <- function(cols, encoding, one_to_one = TRUE) {
                  paste(setdiff(codes, names(encoding)), collapse = ", ")))
 
     # Transform the data frame according to the parameters.
-    df[, cols] <- purrr::map(cols, .f = function(i) {
-      encoding[as.character(df[, i])]
+    df[cols] <- purrr::map(cols, .f = function(i) {
+      encoding[as.character(df[[i]])]
     })
 
     # Preserve any factors.

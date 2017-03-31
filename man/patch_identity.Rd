@@ -2,7 +2,7 @@
 % Please edit documentation in R/patch_identity.R
 \name{patch_identity}
 \alias{patch_identity}
-\title{\code{patch_identity} S3 class constructor.}
+\title{\code{patch_identity} S3 class constructor}
 \usage{
 patch_identity()
 }

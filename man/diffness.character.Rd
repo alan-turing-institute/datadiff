@@ -2,7 +2,7 @@
 % Please edit documentation in R/diffness.R
 \name{diffness.character}
 \alias{diffness.character}
-\title{Compute the mismatch between two character vectors.}
+\title{Compute the mismatch between two character vectors}
 \usage{
 \method{diffness}{character}(x, y, diff = tv, ...)
 }

@@ -28,7 +28,7 @@ diffness <- function(x, y, ...) UseMethod("diffness")
 diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 
   stopifnot(is.data.frame(y))
-  stopifnot(length(x) > 0 && length(y) > 1)
+  stopifnot(length(x) > 0 && length(y) > 0)
 
   if (length(x) != length(y)) {
     stopifnot(is.numeric(col_diff) && length(col_diff) == 1)
@@ -84,7 +84,7 @@ diffness.integer <- function(x, y, diff = ks, ...) {
   diffness(as.ordered(x), as.ordered(y), diff = diff)
 }
 
-#' Compute the mismatch between two vectors of ordered categorical data.
+#' Compute the mismatch between two vectors of ordered categorical data
 #'
 #' @param x,y
 #' A pair of ordered factors.
@@ -107,8 +107,8 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
   # (and ks will give an error in that case).
   diff(x, y)
 }
-
-#' Compute the mismatch between two vectors of unordered categorical data.
+0
+#' Compute the mismatch between two vectors of unordered categorical data
 #'
 #' @param x,y
 #' A pair of unordered factors.
@@ -127,7 +127,7 @@ diffness.factor <- function(x, y, diff = tv, ...) {
   diff(x, y)
 }
 
-#' Compute the mismatch between two character vectors.
+#' Compute the mismatch between two character vectors
 #'
 #' Character vectors are treated as unordered categorical data.
 #'
@@ -148,7 +148,7 @@ diffness.character <- function(x, y, diff = tv, ...) {
   diffness(as.factor(x), as.factor(y), diff = diff)
 }
 
-#' Compute the mismatch between two logical vectors.
+#' Compute the mismatch between two logical vectors
 #'
 #' Logical vectors are treated as unordered categorical data.
 #'

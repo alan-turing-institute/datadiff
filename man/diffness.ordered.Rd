@@ -2,7 +2,7 @@
 % Please edit documentation in R/diffness.R
 \name{diffness.ordered}
 \alias{diffness.ordered}
-\title{Compute the mismatch between two vectors of ordered categorical data.}
+\title{Compute the mismatch between two vectors of ordered categorical data}
 \usage{
 \method{diffness}{ordered}(x, y, diff = ks, ...)
 }
@@ -15,5 +15,5 @@ categorical data.}
 \item{...}{Additional arguments are ignored.}
 }
 \description{
-Compute the mismatch between two vectors of ordered categorical data.
+Compute the mismatch between two vectors of ordered categorical data
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/diffness.R
 \name{diffness.logical}
 \alias{diffness.logical}
-\title{Compute the mismatch between two logical vectors.}
+\title{Compute the mismatch between two logical vectors}
 \usage{
 \method{diffness}{logical}(x, y, diff = tv, ...)
 }

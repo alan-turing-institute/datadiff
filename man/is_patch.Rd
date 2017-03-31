@@ -2,7 +2,7 @@
 % Please edit documentation in R/patch.R
 \name{is_patch}
 \alias{is_patch}
-\title{Test for a patch object.}
+\title{Test for a patch object}
 \usage{
 is_patch(obj)
 }

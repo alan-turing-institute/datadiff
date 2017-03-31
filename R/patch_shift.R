@@ -1,16 +1,16 @@
-#' \code{patch_scale} S3 class constructor
+#' \code{patch_shift} S3 class constructor.
 #'
 #' @description
-#' S3 class \code{patch_scale} which extends the \code{patch} and
+#' S3 class \code{patch_shift} which extends the \code{patch} and
 #' \code{function} classes to represent a transformation of a tabular dataset
-#' by rescaling numerical data in one or more columns.
+#' by shifting (adding a constant) numerical data in one or more columns.
 #'
 #' @param cols
 #' A vector of column identifiers.
-#' @param scale_factor
+#' @param shift
 #' A numeric scalar.
 #'
-#' @return A \code{patch_scale} object.
+#' @return A \code{patch_shift} object.
 #'
 #' @export
 #'
@@ -18,7 +18,7 @@
 #'
 #' @examples
 #' purrr::map_dbl(mtcars, mean)
-#' p <- patch_scale(c(1L, 3L), 2)
+#' p <- patch_shift(c(1L, 3L), 2)
 #'
 #' # The following are equivalent:
 #' purrr::map_dbl(apply_patch(p, mtcars), mean)
@@ -26,14 +26,14 @@
 #'
 #' # Attempting to apply a patch to an incompatible data frame throws an error.
 #' \dontrun{
-#' p <- patch_scale(c(1L, 22L), 2)
+#' p <- patch_shift(c(1L, 22L), 2)
 #' p(mtcars)
 #' }
-patch_scale <- function(cols, scale_factor) {
+patch_shift <- function(cols, shift) {
 
   # Check the given parameters are appropriate for the delete patch type.
   stopifnot(is_valid_columns(cols))
-  stopifnot(length(scale_factor) == 1 && is.numeric(scale_factor))
+  stopifnot(length(shift) == 1 && is.numeric(shift))
 
   # Construct the patch object as a closure.
   obj <- function(df) {
@@ -43,10 +43,10 @@ patch_scale <- function(cols, scale_factor) {
     stopifnot(all(purrr::map_lgl(df[cols], is.numeric)))
 
     # Transform the data frame according to the parameters.
-    df[cols] <- scale_factor * df[cols]
+    df[cols] <- shift + df[cols]
     df
   }
 
-  class(obj) <- c("patch_scale", "patch", "function")
+  class(obj) <- c("patch_shift", "patch", "function")
   obj
 }

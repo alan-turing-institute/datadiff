@@ -167,6 +167,7 @@ test_that("the diffness function works", {
 
   # Test with data frames having different numbers of columns.
   expect_identical(diffness(x, y[1:3]), diffness(x[1:3], y[1:3]) + 2)
+  expect_identical(diffness(x, y[1:4], col_diff = Inf), Inf)
 
   ## Test with mixtures of vectors and data frames.
   v <- rnorm(100)

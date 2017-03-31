@@ -2,7 +2,7 @@
 % Please edit documentation in R/patch_cycle.R
 \name{patch_cycle}
 \alias{patch_cycle}
-\title{\code{patch_cycle} S3 class constructor.}
+\title{\code{patch_cycle} S3 class constructor}
 \usage{
 patch_cycle(cols)
 }

@@ -1,4 +1,4 @@
-#' Test for a patch object.
+#' Test for a patch object
 #'
 #' Returns \code{TRUE} if the \code{obj} argument is a \code{patch} object.
 #'

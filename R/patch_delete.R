@@ -44,7 +44,7 @@ patch_delete <- function(cols) {
       i <- -cols
     else
       i <- setdiff(names(df), cols)
-    ret <- df[, i, drop = FALSE]
+    ret <- df[i]
 
     stopifnot(is.data.frame(ret))
     ret
