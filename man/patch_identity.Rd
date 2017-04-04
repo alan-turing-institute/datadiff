@@ -10,8 +10,9 @@ patch_identity()
 A \code{patch_identity} object.
 }
 \description{
-S3 class \code{patch_cycle} which extends the \code{patch} and
-\code{function} classes to represent the identity transformation of a tabular dataset
+S3 class \code{patch_identity} which extends the \code{patch} and
+\code{function} classes to represent the identity transformation of a
+tabular dataset.
 }
 \examples{
 id_p <- patch_identity()

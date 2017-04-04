@@ -15,5 +15,6 @@ data.}
 \item{...}{Additional arguments are ignored.}
 }
 \description{
-Integer vectors are treated as ordered categorical data.
+Integer vectors are treated as ordered categorical data, so the mismatch
+between an integer vector and a non-integer numeric vector is always 1.
 }

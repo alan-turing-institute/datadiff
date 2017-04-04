@@ -10,8 +10,9 @@ get_patch_params(patch)
 \item{patch}{A \code{patch} object.}
 }
 \value{
-An object containing the parameters associated with the given
-\code{patch}
+A list containing the parameters associated with the given
+\code{patch}. If \code{patch} is a composition of patches then a list of
+lists is returned.
 }
 \description{
 Returns the \code{patch} parameters object.

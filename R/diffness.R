@@ -65,7 +65,8 @@ diffness.double <- function(x, y, diff = ks, ...) {
 
 #' Compute the mismatch between two integer vectors
 #'
-#' Integer vectors are treated as ordered categorical data.
+#' Integer vectors are treated as ordered categorical data, so the mismatch
+#' between an integer vector and a non-integer numeric vector is always 1.
 #'
 #' @param x,y
 #' A pair of vectors of type \code{integer}.
@@ -81,7 +82,15 @@ diffness.integer <- function(x, y, diff = ks, ...) {
 
   if (!is.integer(y))
     return(1.0)
-  diffness(as.ordered(x), as.ordered(y), diff = diff)
+
+  # IMP TODO NEXT: what happens if diff is set to another function? (e.g. tv)
+
+  # Note that two equivalent implementations are possible:
+  # 1. call diff directly (i.e. treat integers as numeric).
+  # 2. call diffness(as.ordered(x), as.ordered(y), diff = diff), thereby
+  # explicitly treating integers as ordered categorical data.
+  # Since the results are identical we take the simplest route.
+  diff(x, y)
 }
 
 #' Compute the mismatch between two vectors of ordered categorical data

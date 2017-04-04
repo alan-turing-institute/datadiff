@@ -130,6 +130,19 @@ test_that("the ks function works", {
 
   expect_error(ks(f1, f2), "levels must determine an ordering")
 
+  # Check that integer data may be treated as ordered categorical data or
+  # numerical data, with equal results.
+  u <- rep(1:10, 10)[sample.int(100, 100)]
+  x <- rep(seq(1, 9, by = 2), 20)[sample.int(100, 100)]
+  y <- rep(1:5, 20)[sample.int(100, 100)]
+
+  expect_identical(ks(factor(x, ordered = TRUE), factor(u, ordered = TRUE)),
+                   ks(x, u))
+  expect_identical(ks(factor(y, ordered = TRUE), factor(u, ordered = TRUE)),
+                   ks(y, u))
+  expect_identical(ks(factor(x, ordered = TRUE), factor(y, ordered = TRUE)),
+                   ks(x, y))
+
   # Test with ordered factors whose orders don't overlap sufficiently
   # (hence don't determine an ordering).
   f1 <- factor(x, ordered = TRUE)
