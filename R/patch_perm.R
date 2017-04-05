@@ -37,7 +37,7 @@ patch_perm <- function(perm) {
     stopifnot(is_compatible_columns(perm, df))
 
     # Transform the data frame according to the parameters.
-    ret <- df[perm, ]
+    ret <- df[ , perm]
     stopifnot(is.data.frame(ret))
 
     ret
