@@ -96,6 +96,12 @@ test_that("patch function application works", {
   expect_identical(result[1:2], df)
 
   # Apply to an incompatible data frame.
+  df <- data.frame(col1 = 1:10, col2 = 11:20)
+  data <- data.frame("x" = rep(NA, 10), "y" = 10:1)
+
+  target <- patch_insert(1L, data = data[1:9, ])
+  expect_error(target(df), regexp = "nrow")
+
   target <- patch_insert("c", data = data)
   expect_error(target(df), regexp = "is_compatible_columns.*not TRUE")
 })
