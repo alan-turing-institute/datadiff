@@ -4,10 +4,15 @@
 \alias{is_patch}
 \title{Test for a patch object}
 \usage{
-is_patch(obj)
+is_patch(obj, allow_composed = TRUE)
 }
 \arguments{
 \item{obj}{Any object.}
+
+\item{allow_composed}{A logicial flag. If \code{TRUE} (the default) then compositions of patches
+constructed using the \code{purrr::compose} function are considered to be
+patches. Otherwise, only elementary patch objects are considered to be
+patches.}
 }
 \description{
 Returns \code{TRUE} if the \code{obj} argument is a \code{patch} object.

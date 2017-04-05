@@ -1,7 +1,7 @@
 require(testthat)
 context("patch_delete")
 
-test_that("the patch_delete constructor and get_patch_params function work", {
+test_that("the patch_delete constructor and get_patch_params functions work", {
 
   ## Delete columns by index.
   target <- patch_delete(c(2L, 5L))

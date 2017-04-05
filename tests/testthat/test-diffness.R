@@ -3,7 +3,6 @@ context("diffness function")
 
 test_that("the diffness function works", {
 
-  # TODO. Test with all data types _including_ mixed types.
   set.seed(22)
 
   ## Test with categorical vectors.

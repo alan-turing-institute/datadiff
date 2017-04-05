@@ -15,6 +15,7 @@ LazyData: true
 Suggests: testthat
 Imports:
   purrr,
+  stringr,
   methods,
   stats
 RoxygenNote: 6.0.1
