@@ -15,6 +15,11 @@ data.}
 \item{...}{Additional arguments are ignored.}
 }
 \description{
-Integer vectors are treated as ordered categorical data, so the mismatch
-between an integer vector and a non-integer numeric vector is always 1.
+By default, integer vectors are treated as ordered categorical data. To
+ignore ordering, set the \code{diff} argument to \code{tv} (total variation
+distance).
+}
+\details{
+The mismatch between an integer vector and a non-integer numeric vector is
+always 1.
 }
