@@ -16,6 +16,9 @@
 #' A logical flag. If \code{TRUE} (the default) the median absolute deviation is
 #' used as a robust measure of statistical dispersion. Otherwise the standard
 #' deviation is used.
+#' @param shift_first
+#' A logical flag which determines the order of composition of the shift and
+#' scale patches in the return value. Defaults to \code{TRUE}.
 #' @param ...
 #' Additional arguments passed to the .
 #'
@@ -25,16 +28,41 @@
 #'
 #' @import purrr
 #' @export
-gen_patch_affine <- function(df, cols, y, robust = TRUE, ...) {
+gen_patch_affine <- function(df1, col1, df2, col2 = col1, robust = TRUE,
+                             shift_first = TRUE, ...) {
 
-  stopifnot(is_valid_columns(cols) && length(cols) == 1)
+  p_scale <- gen_patch_scale(df1, col1 = col1, df2 = df2, col2 = col2,
+                             robust = robust, ...)
+  scale_factor <- get_patch_params(p_scale)[["scale_factor"]]
 
-  p2 <- gen_patch_scale(df, cols = cols, y = y, robust = robust, ...)
-
-  # Take into account the scale factor when determining the shift so the sample
+  # Take into account the scale factor when determining the shift, so the sample
   # statistics for the transformed and target data match.
-  scale_factor <- get_patch_params(p2)[["scale_factor"]]
-  p1 <- gen_patch_shift(df, cols = cols, y = y/scale_factor)
+  if (shift_first)
+    p <- patch_scale(col2, scale_factor = 1/scale_factor)
+  else
+    p <- patch_shift(col2, shift = (1 - scale_factor) * mean(df1[[col1]], ...))
 
-  purrr::compose(p2, p1)
+  # old:
+  # p <- function(v) {
+  #   if (shift_first)
+  #     return(patch_scale(col2, scale_factor = 1/scale_factor))
+  #   patch_shift(col2, shift = (1 - scale_factor) * mean(df1[[col1]], ...))
+  # }
+
+  p_shift <- gen_patch_shift(df1, col1 = col1, df2 = p(df2), col2 = col2, ...)
+  ifelse(shift_first,
+         yes = purrr::compose(p_scale, p_shift),
+         no = purrr::compose(p_shift, p_scale))
+
+  # # old:
+  # f <- function(v) {
+  #   if (shift_first)
+  #     return(v/scale_factor)
+  #   v + (1 - scale_factor) * mean(df[[cols]])
+  # }
+  #
+  # p_shift <- gen_patch_shift(df, cols = cols, y = f(y))
+  # ifelse(shift_first,
+  #        yes = purrr::compose(p_scale, p_shift),
+  #        no = purrr::compose(p_shift, p_scale))
 }

@@ -4,15 +4,19 @@
 \alias{gen_patch_shift}
 \title{Generate a shift patch}
 \usage{
-gen_patch_shift(df, cols, y)
+gen_patch_shift(df1, col1, df2, col2 = col1, ...)
 }
 \arguments{
-\item{df}{A data frame. The column specified in the \code{cols} argument must contain a
-vector of type \code{double} with at least one non-missing value.}
+\item{df1}{A data frame. The column specified in the \code{col1} argument must contain
+a vector of type \code{double} with at least one non-missing value.}
 
-\item{cols}{A column identifier (integer or string column name) with length 1.}
+\item{col1}{A column identifier (integer or string column name) with length 1.}
 
-\item{y}{A 'target' vector of type \code{double} with least one non-missing value.}
+\item{df2}{A data frame. The column specified in the \code{col2} argument must contain
+a vector of type \code{double} with at least one non-missing value.}
+
+\item{col2}{A column identifier (integer or string column name) with length 1. By default
+this takes the value of \code{col1}.}
 
 \item{...}{Additional arguments passed to the \code{mean} function.}
 }
@@ -21,8 +25,8 @@ A \code{patch_shift} object.
 }
 \description{
 Generates a \code{patch_shift} object whose 'shift' parameter has been
-selected with the aim of minimising the mismatch between the vector \code{y}
-and the patch applied to the given data frame.
+selected with the aim of minimising the mismatch between the specified
+columns after application of the patch to \code{df1}.
 }
 \seealso{
 \code{\link{gen_patch_affine}}

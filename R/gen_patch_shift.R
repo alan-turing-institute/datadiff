@@ -1,16 +1,20 @@
 #' Generate a shift patch
 #'
 #' Generates a \code{patch_shift} object whose 'shift' parameter has been
-#' selected with the aim of minimising the mismatch between the vector \code{y}
-#' and the patch applied to the given data frame.
+#' selected with the aim of minimising the mismatch between the specified
+#' columns after application of the patch to \code{df1}.
 #'
-#' @param df
-#' A data frame. The column specified in the \code{cols} argument must contain a
-#' vector of type \code{double} with at least one non-missing value.
-#' @param cols
+#' @param df1
+#' A data frame. The column specified in the \code{col1} argument must contain
+#' a vector of type \code{double} with at least one non-missing value.
+#' @param col1
 #' A column identifier (integer or string column name) with length 1.
-#' @param y
-#' A 'target' vector of type \code{double} with least one non-missing value.
+#' @param df2
+#' A data frame. The column specified in the \code{col2} argument must contain
+#' a vector of type \code{double} with at least one non-missing value.
+#' @param col2
+#' A column identifier (integer or string column name) with length 1. By default
+#' this takes the value of \code{col1}.
 #' @param ...
 #' Additional arguments passed to the \code{mean} function.
 #'
@@ -20,13 +24,16 @@
 #'
 #' @import stats
 #' @export
-gen_patch_shift <- function(df, cols, y) {
+gen_patch_shift <- function(df1, col1, df2, col2 = col1, ...) {
 
-  stopifnot(is_valid_columns(cols) && length(cols) == 1)
+  stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
+  stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
 
-  x <- df[[cols]]
+  x <- df1[[col1]]
+  y <- df2[[col2]]
+
   stopifnot(is.double(x) && is.double(y))
   stopifnot(sum(!is.na(x)) != 0 && sum(!is.na(y)) != 0)
 
-  patch_shift(cols, shift = mean(y) - mean(x))
+  patch_shift(col1, shift = mean(y, ...) - mean(x, ...))
 }
