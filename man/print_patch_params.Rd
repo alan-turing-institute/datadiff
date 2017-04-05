@@ -9,12 +9,14 @@ print_patch_params(patch, digits = 3)
 \arguments{
 \item{patch}{A \code{patch} object.}
 
-\item{digits}{Integer indicating the number of decimal places to be used when printing
+\item{digits}{Integer specifying the number of decimal places to be used when printing
 parameters of type \code{double}. Defaults to 3.}
 }
 \value{
-A character string describing the parameters associated with the given
-\code{patch}.
+A character string describing the parameters associated with the
+given \code{patch}. If \code{patch} is a composition, the return value is a
+vector with one element for each elementary patch obtained by calling
+\code{\link{decompose_patch}} on the \code{patch}.
 }
 \description{
 Print the parameters associated with a patch object.

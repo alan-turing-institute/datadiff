@@ -61,3 +61,25 @@ test_that("the get_patch_params function works", {
   expect_true(is.list(result[[2]]))
   expect_identical(result[[2]], expected = list("cols"=1L, "scale_factor"=2))
 })
+
+test_that("the decompose_patch function works", {
+
+  p1 <- patch_shift(1L, shift = 1)
+  p2 <- patch_scale(1L, scale_factor = 2)
+
+  expect_equal(decompose_patch(p1), p1)
+  expect_equal(decompose_patch(p2), p2)
+
+  p <- purrr::compose(p2, p1)
+
+  result <- decompose_patch(p)
+  expect_equal(result, list(p1, p2))
+
+  # Test the tree recursion.
+  result <- decompose_patch(purrr::compose(p1, p))
+  expect_equal(result, list(p1, p2, p1))
+
+  result <- decompose_patch(purrr::compose(p, p1))
+  expect_equal(result, list(p1, p1, p2))
+
+})

@@ -8,7 +8,7 @@ test_that("the gen_patch_scale function works", {
   df1 <- data.frame(x = rnorm(500, sd = 2))
   df2 <- data.frame(x = rnorm(1000, sd = 10))
 
-  result <- gen_patch_scale(df1, col1 = 1L, df2)
+  result <- gen_patch_scale(df1, col1 = 1L, df2 = df2)
 
   expect_true(is_patch(result))
   expect_identical(patch_type(result), expected = "scale")

@@ -13,6 +13,9 @@ decompose_patch(patch)
 A list of elementary \code{patch} objects.
 }
 \description{
-Returns the elementary \code{patch} objects in a list in the order in which
-they are applied in the composition.
+Patches may be composed using the \code{\link{compose}} function and the
+result is a composite patch object. Given such an object, this function
+returns its constituent elementary \code{patch} objects in a list in the
+order in which they are applied in the composition. Compositions of
+compositions are handled via tree recursion.
 }

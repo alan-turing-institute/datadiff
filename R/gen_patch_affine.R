@@ -5,13 +5,17 @@
 #' factor' parameters hav been selected with the aim of minimising the mismatch
 #' between the vector \code{y} and the patch applied to the given data frame.
 #'
-#' @param df
-#' A data frame. The column specified in the \code{cols} argument must contain a
-#' vector of type \code{double} with at least two non-missing values.
-#' @param cols
+#' @param df1
+#' A data frame. The column specified in the \code{col1} argument must contain
+#' a vector of type \code{double} with at least two non-missing values.
+#' @param col1
 #' A column identifier (integer or string column name) with length 1.
-#' @param y
-#' A 'target' vector of type \code{double} with least two non-missing values.
+#' @param df2
+#' A data frame. The column specified in the \code{col2} argument must contain
+#' a vector of type \code{double} with at least one two-missing values.
+#' @param col2
+#' A column identifier (integer or string column name) with length 1. By default
+#' this takes the value of \code{col1}.
 #' @param robust
 #' A logical flag. If \code{TRUE} (the default) the median absolute deviation is
 #' used as a robust measure of statistical dispersion. Otherwise the standard
@@ -20,7 +24,9 @@
 #' A logical flag which determines the order of composition of the shift and
 #' scale patches in the return value. Defaults to \code{TRUE}.
 #' @param ...
-#' Additional arguments passed to the .
+#' Additional arguments passed to the functions \code{\link{mean}} and either
+#' \code{\link{mad}}, if \code{robust} is \code{TRUE}, or \code{\link{sd}}
+#' otherwise.
 #'
 #' @return A composite \code{patch} object.
 #'
@@ -42,27 +48,8 @@ gen_patch_affine <- function(df1, col1, df2, col2 = col1, robust = TRUE,
   else
     p <- patch_shift(col2, shift = (1 - scale_factor) * mean(df1[[col1]], ...))
 
-  # old:
-  # p <- function(v) {
-  #   if (shift_first)
-  #     return(patch_scale(col2, scale_factor = 1/scale_factor))
-  #   patch_shift(col2, shift = (1 - scale_factor) * mean(df1[[col1]], ...))
-  # }
-
   p_shift <- gen_patch_shift(df1, col1 = col1, df2 = p(df2), col2 = col2, ...)
   ifelse(shift_first,
          yes = purrr::compose(p_scale, p_shift),
          no = purrr::compose(p_shift, p_scale))
-
-  # # old:
-  # f <- function(v) {
-  #   if (shift_first)
-  #     return(v/scale_factor)
-  #   v + (1 - scale_factor) * mean(df[[cols]])
-  # }
-  #
-  # p_shift <- gen_patch_shift(df, cols = cols, y = f(y))
-  # ifelse(shift_first,
-  #        yes = purrr::compose(p_scale, p_shift),
-  #        no = purrr::compose(p_shift, p_scale))
 }

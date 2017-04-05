@@ -25,8 +25,11 @@ is_patch <- function(obj, allow_composed = TRUE) {
 
 #' Decompose a composition of patches
 #'
-#' Returns the elementary \code{patch} objects in a list in the order in which
-#' they are applied in the composition.
+#' Patches may be composed using the \code{\link{compose}} function and the
+#' result is a composite patch object. Given such an object, this function
+#' returns its constituent elementary \code{patch} objects in a list in the
+#' order in which they are applied in the composition. Compositions of
+#' compositions are handled via tree recursion.
 #'
 #' @param patch
 #' A composition of \code{patch} objects.
@@ -39,7 +42,7 @@ decompose_patch <- function(patch) {
   stopifnot(is_patch(patch))
   if (is_patch(patch, allow_composed = FALSE))
     return(patch)
-  rev(get("fs", envir = environment(patch)))
+  unlist(purrr::map(rev(get("fs", envir = environment(patch))), decompose_patch))
 }
 
 #' Get the parameters associated with a patch object.
@@ -69,19 +72,24 @@ get_patch_params <- function(patch) {
 #' @param patch
 #' A \code{patch} object.
 #' @param digits
-#' Integer indicating the number of decimal places to be used when printing
+#' Integer specifying the number of decimal places to be used when printing
 #' parameters of type \code{double}. Defaults to 3.
 #'
-#' @return A character string describing the parameters associated with the given
-#' \code{patch}.
+#' @return A character string describing the parameters associated with the
+#' given \code{patch}. If \code{patch} is a composition, the return value is a
+#' vector with one element for each elementary patch obtained by calling
+#' \code{\link{decompose_patch}} on the \code{patch}.
 #'
 #' @import purrr
 #' @export
 print_patch_params <- function(patch, digits=3) {
-  # TODO: update print_patch_params to handle compositions (will return a
-  # character vector).
-  params <- get_patch_params(patch)
 
+  # Handle compositions (will return a character vector).
+  if (is_patch(patch, allow_composed = TRUE) &&
+      !is_patch(patch, allow_composed = FALSE))
+    return(purrr::map_chr(decompose_patch(patch), print_patch_params, digits))
+
+  params <- get_patch_params(patch)
   param_string <- function(x) {
     if (is.character(x) && length(x) == 1)
       return(x)

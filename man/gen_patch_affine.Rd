@@ -8,6 +8,17 @@ gen_patch_affine(df1, col1, df2, col2 = col1, robust = TRUE,
   shift_first = TRUE, ...)
 }
 \arguments{
+\item{df1}{A data frame. The column specified in the \code{col1} argument must contain
+a vector of type \code{double} with at least two non-missing values.}
+
+\item{col1}{A column identifier (integer or string column name) with length 1.}
+
+\item{df2}{A data frame. The column specified in the \code{col2} argument must contain
+a vector of type \code{double} with at least one two-missing values.}
+
+\item{col2}{A column identifier (integer or string column name) with length 1. By default
+this takes the value of \code{col1}.}
+
 \item{robust}{A logical flag. If \code{TRUE} (the default) the median absolute deviation is
 used as a robust measure of statistical dispersion. Otherwise the standard
 deviation is used.}
@@ -15,14 +26,9 @@ deviation is used.}
 \item{shift_first}{A logical flag which determines the order of composition of the shift and
 scale patches in the return value. Defaults to \code{TRUE}.}
 
-\item{...}{Additional arguments passed to the .}
-
-\item{df}{A data frame. The column specified in the \code{cols} argument must contain a
-vector of type \code{double} with at least two non-missing values.}
-
-\item{cols}{A column identifier (integer or string column name) with length 1.}
-
-\item{y}{A 'target' vector of type \code{double} with least two non-missing values.}
+\item{...}{Additional arguments passed to the functions \code{\link{mean}} and either
+\code{\link{mad}}, if \code{robust} is \code{TRUE}, or \code{\link{sd}}
+otherwise.}
 }
 \value{
 A composite \code{patch} object.
