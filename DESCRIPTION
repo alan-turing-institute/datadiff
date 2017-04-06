@@ -18,7 +18,7 @@ Imports:
   stringr,
   methods,
   purrr,
-  clue
+  clue,
   stats,
   lpSolve
 RoxygenNote: 6.0.1
