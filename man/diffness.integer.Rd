@@ -21,5 +21,5 @@ distance).
 }
 \details{
 The mismatch between an integer vector and a non-integer numeric vector is
-always 1.
+always +Inf.
 }

@@ -58,9 +58,9 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 diffness.double <- function(x, y, diff = ks, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.double(y))
-    return(1.0)
-  diff(x, y)
+  if (!is.double(y)) return(+Inf)
+
+  diff(x, y) * diffness_scale(length(x), length(y))
 }
 
 #' Compute the mismatch between two integer vectors
@@ -70,7 +70,7 @@ diffness.double <- function(x, y, diff = ks, ...) {
 #' distance).
 #'
 #' The mismatch between an integer vector and a non-integer numeric vector is
-#' always 1.
+#' always +Inf.
 #'
 #' @param x,y
 #' A pair of vectors of type \code{integer}.
@@ -84,14 +84,13 @@ diffness.double <- function(x, y, diff = ks, ...) {
 diffness.integer <- function(x, y, diff = ks, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.integer(y))
-    return(1.0)
+  if (!is.integer(y)) return(+Inf)
 
   # Note that, when diff = ks (the default), the following call to diff(x, y)
   # produces the same result as if we were to explicitly treat integers as
   # ordered categorical data by calling:
   # diffness(as.ordered(x), as.ordered(y), diff = ks).
-  diff(x, y)
+  diff(x, y) * diffness_scale(length(x), length(y))
 }
 
 #' Compute the mismatch between two vectors of ordered categorical data
@@ -115,7 +114,7 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
   # Note: in contrast to other diffness methods, we do not test that y is
   # ordered (and return 1.0 if not) as this might give unexpected results
   # (and ks will give an error in that case).
-  diff(x, y)
+  diff(x, y) * diffness_scale(length(x), length(y))
 }
 0
 #' Compute the mismatch between two vectors of unordered categorical data
@@ -132,9 +131,9 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
 diffness.factor <- function(x, y, diff = tv, ...) {
   stopifnot(is.factor(y))
 
-  if (!is.factor(y))
-    return(1.0)
-  diff(x, y)
+  if (!is.factor(y)) return(+Inf)
+  
+  diff(x, y) * diffness_scale(length(x), length(y))
 }
 
 #' Compute the mismatch between two character vectors
@@ -153,8 +152,8 @@ diffness.factor <- function(x, y, diff = tv, ...) {
 diffness.character <- function(x, y, diff = tv, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.character(y))
-    return(1.0)
+  if (!is.character(y)) return(+Inf)
+
   diffness(as.factor(x), as.factor(y), diff = diff)
 }
 
@@ -174,9 +173,23 @@ diffness.character <- function(x, y, diff = tv, ...) {
 diffness.logical <- function(x, y, diff = tv, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.logical(y))
-    return(1.0)
+  if (!is.logical(y)) return(+Inf)
+  
   diffness(as.factor(x), as.factor(y), diff = diff)
+}
+
+
+#' Compute "mismatch scale factor"
+#'
+#' The scale factor increases the diffness in proportion to the square root of
+#' the number of rows. This means that, when comparing against a "patch cost",
+#' small diffnesses count more the more data points there are.
+#' 
+#' @param nx,ny The lengths of the vectors
+#' @return A number
+#' 
+diffness_scale <- function(nx, ny) {
+    sqrt(nx * ny / (nx + ny))
 }
 
 
