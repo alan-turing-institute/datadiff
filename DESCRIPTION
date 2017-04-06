@@ -17,5 +17,6 @@ Imports:
   purrr,
   stringr,
   methods,
-  stats
+  stats,
+  lpSolve
 RoxygenNote: 6.0.1
