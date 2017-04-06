@@ -8,12 +8,12 @@
 #' A data frame. The column specified in the \code{col1} argument must contain
 #' a vector of type \code{double} with at least two non-missing values.
 #' @param col1
-#' A column identifier (integer or string column name) with length 1.
+#' A column identifier (integer or string column name) of length 1.
 #' @param df2
 #' A data frame. The column specified in the \code{col2} argument must contain
 #' a vector of type \code{double} with at least two non-missing values.
 #' @param col2
-#' A column identifier (integer or string column name) with length 1. By default
+#' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
 #' @param robust
 #' A logical flag. If \code{TRUE} (the default) the median absolute deviation is

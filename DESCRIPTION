@@ -14,8 +14,9 @@ Encoding: UTF-8
 LazyData: true
 Suggests: testthat
 Imports:
-  purrr,
+  stats,
   stringr,
   methods,
-  stats
+  purrr,
+  clue
 RoxygenNote: 6.0.1

@@ -20,7 +20,7 @@ is_patch <- function(obj, allow_composed = TRUE) {
   env <- environment(obj)
   if (!("fs" %in% names(env)))
     return(FALSE)
-  all(map_lgl(get("fs", envir = env), .f = is_patch, allow_composed = TRUE))
+  all(purrr::map_lgl(get("fs", envir=env), .f=is_patch, allow_composed=TRUE))
 }
 
 #' Decompose a composition of patches

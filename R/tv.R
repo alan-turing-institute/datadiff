@@ -39,7 +39,7 @@ tv <- function(f1, f2) {
 
 
 # OLD:
-# NOTE: The following is risky since factors with disjoint (but equal number of)
+# NOTE: Factors with disjoint (but equal number of)
 # levels are not distinguished. Also, integer vector arguments are not handled
 # correctly (always returns 0 since in that case levels() returns NULL)
 #

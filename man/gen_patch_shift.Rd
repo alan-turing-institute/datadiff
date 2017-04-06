@@ -10,12 +10,12 @@ gen_patch_shift(df1, col1, df2, col2 = col1, ...)
 \item{df1}{A data frame. The column specified in the \code{col1} argument must contain
 a vector of type \code{double} with at least one non-missing value.}
 
-\item{col1}{A column identifier (integer or string column name) with length 1.}
+\item{col1}{A column identifier (integer or string column name) of length 1.}
 
 \item{df2}{A data frame. The column specified in the \code{col2} argument must contain
 a vector of type \code{double} with at least one non-missing value.}
 
-\item{col2}{A column identifier (integer or string column name) with length 1. By default
+\item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
 
 \item{...}{Additional arguments passed to the \code{mean} function.}

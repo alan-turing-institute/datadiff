@@ -11,12 +11,12 @@ gen_patch_affine(df1, col1, df2, col2 = col1, robust = TRUE,
 \item{df1}{A data frame. The column specified in the \code{col1} argument must contain
 a vector of type \code{double} with at least two non-missing values.}
 
-\item{col1}{A column identifier (integer or string column name) with length 1.}
+\item{col1}{A column identifier (integer or string column name) of length 1.}
 
 \item{df2}{A data frame. The column specified in the \code{col2} argument must contain
 a vector of type \code{double} with at least one two-missing values.}
 
-\item{col2}{A column identifier (integer or string column name) with length 1. By default
+\item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
 
 \item{robust}{A logical flag. If \code{TRUE} (the default) the median absolute deviation is
