@@ -16,7 +16,7 @@ test_that("the diffness function works", {
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
@@ -24,7 +24,7 @@ test_that("the diffness function works", {
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
@@ -32,7 +32,7 @@ test_that("the diffness function works", {
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
@@ -49,7 +49,7 @@ test_that("the diffness function works", {
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
@@ -59,7 +59,7 @@ test_that("the diffness function works", {
   expect_true(is.numeric(result) && length(result) == 1)
   # NOTE: if x and y were to, by chance, have equal proportions of Ts and Fs
   # then we would have diffness(x, y) = 0.
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
@@ -73,7 +73,7 @@ test_that("the diffness function works", {
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
@@ -81,7 +81,7 @@ test_that("the diffness function works", {
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
@@ -90,12 +90,12 @@ test_that("the diffness function works", {
   y <- sample(letters[1:5], size = 100, replace = TRUE)
   z <- rnorm(100)
 
-  expect_identical(diffness(x, y), 1.0)
-  expect_identical(diffness(x, z), 1.0)
-  expect_identical(diffness(y, x), 1.0)
-  expect_identical(diffness(y, z), 1.0)
-  expect_identical(diffness(z, x), 1.0)
-  expect_identical(diffness(z, y), 1.0)
+  expect_identical(diffness(x, y), Inf)
+  expect_identical(diffness(x, z), Inf)
+  expect_identical(diffness(y, x), Inf)
+  expect_identical(diffness(y, z), Inf)
+  expect_identical(diffness(z, x), Inf)
+  expect_identical(diffness(z, y), Inf)
 
   ## Test with integer vectors.
   ## By default, integer vectors are treated as ordered categorical data.
@@ -110,21 +110,21 @@ test_that("the diffness function works", {
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y), diffness(y, x))
 
   y <- sample(1:5, size = 100, replace = TRUE)
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y), diffness(y, x))
 
   y <- sample(1:10, size = 200, replace = TRUE)
 
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_true(result > 0 && result < 1)
+  expect_true(result > 0)
   expect_identical(diffness(x, y), diffness(y, x))
 
   ## Test the difference between ordered and un-ordered categories.
@@ -161,8 +161,7 @@ test_that("the diffness function works", {
   expect_true(is.numeric(result) && length(result) == 1)
   expect_true(result > 0)
   expect_identical(diffness(x, y), diffness(y, x))
-
-  expect_identical(diffness(x, y), diffness(x[1:4], y[1:4]) + 1)
+  expect_identical(diffness(x, y), Inf)
 
   # Test with data frames having different numbers of columns.
   expect_identical(diffness(x, y[1:3]), diffness(x[1:3], y[1:3]) + 2)
