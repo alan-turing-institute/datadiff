@@ -15,25 +15,41 @@
 #' @param col2
 #' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
-#' @param ...
-#' Additional arguments passed to the \code{mean} function.
+#' @param diff
+#' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).
 #'
 #' @return A \code{patch_shift} object.
 #'
 #' @seealso \code{\link{gen_patch_affine}}
 #'
-#' @import stats
 #' @export
-gen_patch_shift <- function(df1, col1, df2, col2 = col1, ...) {
+gen_patch_shift <- function(df1, col1, df2, col2 = col1, diff = ks) {
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
 
-  x <- df1[[col1]]
-  y <- df2[[col2]]
+  x1 <- df1[[col1]]
+  x2 <- df2[[col2]]
 
-  stopifnot(is.double(x) && is.double(y))
-  stopifnot(sum(!is.na(x)) != 0 && sum(!is.na(y)) != 0)
+  stopifnot(is.double(x1) && is.double(x2))
+  stopifnot(sum(!is.na(x1)) != 0 && sum(!is.na(x2)) != 0)
 
-  patch_shift(col1, shift = mean(y, ...) - mean(x, ...))
+  # OLD: patch_shift(col1, shift = mean(y, ...) - mean(x, ...))
+
+  # Naive numerical optimisation:
+  f <- function(mu) { diff(mu + x1, x2) }
+
+  qlow <- min(quantile(x1, probs = 0.25, na.rm = TRUE),
+              quantile(x2, probs = 0.25, na.rm = TRUE))
+  qhigh <- max(quantile(x1, probs = 0.75, na.rm = TRUE),
+               quantile(x2, probs = 0.75, na.rm = TRUE))
+  par <- mean(x2, na.rm = TRUE) - mean(x1, na.rm = TRUE)
+
+  optim_par <- optim(par, fn = f, method = "Brent", lower = qlow, upper = qhigh)
+
+  if (optim_par$convergence != 0)
+    stop(paste("Optimisation failed with error code", optim_par$convergence))
+
+  shift <- optim_par$par
+  patch_shift(col1, shift)
 }

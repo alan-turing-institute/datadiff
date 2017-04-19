@@ -90,12 +90,16 @@ print_patch_params <- function(patch, digits=3) {
     return(purrr::map_chr(decompose_patch(patch), print_patch_params, digits))
 
   params <- get_patch_params(patch)
+  if (length(params) == 0)
+    return(character(1))
   param_string <- function(x) {
     if (is.character(x) && length(x) == 1)
       return(x)
-    if (is.numeric(x) && length(x) == 1)
+    if (is.integer(x) && length(x) <= 10) # TODO.
+      return(paste(x, collapse = " "))
+    if (is.double(x) && length(x) == 1)
       return(round(x, digits))
-    paste0("<", class(x)[1], ">")
+    paste0("<", paste(class(x), collapse = "|"), ">")
   }
   paste(map_chr(1:length(params), .f = function(i) {
     paste(names(params)[i], param_string(params[[i]]), sep = ": ")
@@ -166,8 +170,13 @@ patch_type <- function(patch, short=TRUE) {
 #' @export
 print.patch <- function(x, ...) {
   type <- paste(setdiff(class(x), c("patch", "function")), sep = ",")
-  cat(type, "with parameters:\n")
-  print(get_patch_params(x))
+  printed_params <- print_patch_params(x)
+  if (length(printed_params) == 1 && nchar(printed_params) == 0)
+    cat(type)
+  else {
+    cat(type, "with parameters:\n")
+    cat(paste(print_patch_params(x), collapse = "\n"))
+  }
   invisible(x)
 }
 

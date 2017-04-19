@@ -4,7 +4,7 @@
 \alias{gen_patch_scale}
 \title{Generate a scale patch}
 \usage{
-gen_patch_scale(df1, col1, df2, col2 = col1, robust = TRUE, ...)
+gen_patch_scale(df1, col1, df2, col2 = col1, diff = ks)
 }
 \arguments{
 \item{df1}{A data frame. The column specified in the \code{col1} argument must contain
@@ -18,13 +18,7 @@ a vector of type \code{double} with at least two non-missing values.}
 \item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
 
-\item{robust}{A logical flag. If \code{TRUE} (the default) the median absolute deviation is
-used as a robust measure of statistical dispersion. Otherwise the standard
-deviation is used.}
-
-\item{...}{Additional arguments passed to the function used to calculate the statistical
-dispersion (i.e. \code{\link{mad}} if \code{robust} is \code{TRUE}, otherwise
-\code{\link{sd}}).}
+\item{diff}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
 }
 \value{
 A \code{patch_scale} object.

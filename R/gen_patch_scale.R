@@ -15,14 +15,8 @@
 #' @param col2
 #' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
-#' @param robust
-#' A logical flag. If \code{TRUE} (the default) the median absolute deviation is
-#' used as a robust measure of statistical dispersion. Otherwise the standard
-#' deviation is used.
-#' @param ...
-#' Additional arguments passed to the function used to calculate the statistical
-#' dispersion (i.e. \code{\link{mad}} if \code{robust} is \code{TRUE}, otherwise
-#' \code{\link{sd}}).
+#' @param diff
+#' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).
 #'
 #' @return A \code{patch_scale} object.
 #'
@@ -31,23 +25,37 @@
 #' @import stats
 #' @export
 gen_patch_scale <- function(df1, col1, df2, col2 = col1,
-                            robust = TRUE, ...) {
+                            diff = ks) {
+
+  # Note that the optimal scale factor is never unique, and uniqueness may be
+  # lost in multiple ways:
+  # - along the 'best step' of the ecdf
+  # - in the case of multi-modal data there may be multiple 'best steps'. This
+  #   may be problematic for numerical optimisation (due to local minima).
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
 
-  x <- df1[[col1]]
-  y <- df2[[col2]]
+  x1 <- df1[[col1]]
+  x2 <- df2[[col2]]
 
-  stopifnot(is.double(x) && is.double(y))
-  stopifnot(sum(!is.na(x)) != 0 && sum(!is.na(y)) != 0)
+  stopifnot(is.double(x1) && is.double(x2))
+  stopifnot(sum(!is.na(x1)) != 0 && sum(!is.na(x2)) != 0)
 
-  f <- ifelse(robust, yes = stats::mad, no = stats::sd)
+  # Naive numerical optimisation:
+  f <- function(lambda) { diff(lambda * x1, x2) }
 
-  fx <- f(x, ...)
-  fy <- f(y, ...)
-  if (identical(fx, 0) || identical(fy, 0))
-     stop("Zero dispersion.")
+  qlow <- quantile(x2, probs = 0.25, na.rm = TRUE) /
+    abs(quantile(x1, probs = 0.75, na.rm = TRUE))
+  qhigh <- quantile(x2, probs = 0.75, na.rm = TRUE) /
+    abs(quantile(x1, probs = 0.25, na.rm = TRUE))
+  par <- stats::mad(x2, na.rm = TRUE)/stats::mad(x1, na.rm = TRUE)
 
-  patch_scale(col1, scale_factor = fy/fx)
+  optim_par <- optim(par, fn = f, method = "Brent", lower = qlow, upper = qhigh)
+
+  if (optim_par$convergence != 0)
+    stop(paste("Optimisation failed with error code", optim_par$convergence))
+
+  scale_factor <- optim_par$par
+  patch_scale(col1, scale_factor)
 }
