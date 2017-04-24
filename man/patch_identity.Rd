@@ -15,6 +15,6 @@ S3 class \code{patch_identity} which extends the \code{patch} and
 tabular dataset.
 }
 \examples{
-id_p <- patch_identity()
+p <- patch_identity()
 
 }

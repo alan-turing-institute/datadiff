@@ -7,11 +7,10 @@
 #'
 #' @return A \code{patch_identity} object.
 #'
-#' @import purrr
 #' @export
 #'
 #' @examples
-#' id_p <- patch_identity()
+#' p <- patch_identity()
 #'
 patch_identity <- function() {
 

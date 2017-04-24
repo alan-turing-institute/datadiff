@@ -9,7 +9,7 @@ print_patch_params(patch, digits = 3)
 \arguments{
 \item{patch}{A \code{patch} object.}
 
-\item{digits}{Integer specifying the number of decimal places to be used when printing
+\item{digits}{The number of decimal places to be used when printing
 parameters of type \code{double}. Defaults to 3.}
 }
 \value{

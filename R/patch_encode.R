@@ -16,7 +16,6 @@
 #'
 #' @return A \code{patch_encode} object.
 #'
-#' @import purrr
 #' @export
 #'
 #' @seealso \code{\link{is_valid_columns}} \code{\link{is_compatible_columns}}
@@ -54,7 +53,7 @@ patch_encode <- function(cols, encoding, one_to_one = TRUE) {
     stopifnot(is_compatible_columns(cols, df))
 
     # Identify any relevant factor columns.
-    is_fac <- map_lgl(df[cols], is.factor)
+    is_fac <- purrr::map_lgl(df[cols], is.factor)
 
     # Get all codes (note that union discards any duplicated values).
     codes <- purrr::discard(union(unlist(df[cols][!is_fac]),

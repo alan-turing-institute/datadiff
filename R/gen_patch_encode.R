@@ -20,9 +20,6 @@
 #'
 #' @seealso \code{\link{patch_encode}}
 #'
-#' @import purrr
-#' @importFrom methods is
-#' @importFrom clue solve_LSAP
 #' @export
 gen_patch_encode <- function(df1, col1, df2, col2 = col1, ...) {
 

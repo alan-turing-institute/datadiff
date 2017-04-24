@@ -10,7 +10,6 @@
 #' patches. Otherwise, only elementary patch objects are considered to be
 #' patches.
 #'
-#' @importFrom methods is
 #' @export
 is_patch <- function(obj, allow_composed = TRUE) {
   if (methods::is(obj, "patch"))
@@ -36,7 +35,6 @@ is_patch <- function(obj, allow_composed = TRUE) {
 #'
 #' @return A list of elementary \code{patch} objects.
 #'
-#' @import purrr
 #' @export
 decompose_patch <- function(patch) {
   stopifnot(is_patch(patch))
@@ -56,7 +54,6 @@ decompose_patch <- function(patch) {
 #' \code{patch}. If \code{patch} is a composition of patches then a list of
 #' lists is returned.
 #'
-#' @import purrr
 #' @export
 get_patch_params <- function(patch) {
   stopifnot(is_patch(patch, allow_composed = TRUE) && is.function(patch))
@@ -72,7 +69,7 @@ get_patch_params <- function(patch) {
 #' @param patch
 #' A \code{patch} object.
 #' @param digits
-#' Integer specifying the number of decimal places to be used when printing
+#' The number of decimal places to be used when printing
 #' parameters of type \code{double}. Defaults to 3.
 #'
 #' @return A character string describing the parameters associated with the
@@ -80,7 +77,6 @@ get_patch_params <- function(patch) {
 #' vector with one element for each elementary patch obtained by calling
 #' \code{\link{decompose_patch}} on the \code{patch}.
 #'
-#' @import purrr
 #' @export
 print_patch_params <- function(patch, digits=3) {
 
@@ -101,7 +97,7 @@ print_patch_params <- function(patch, digits=3) {
       return(round(x, digits))
     paste0("<", paste(class(x), collapse = "|"), ">")
   }
-  paste(map_chr(1:length(params), .f = function(i) {
+  paste(purrr::map_chr(1:length(params), .f = function(i) {
     paste(names(params)[i], param_string(params[[i]]), sep = ": ")
   }), collapse = "; ")
 }
@@ -139,7 +135,6 @@ apply_patch <- function(patch, df, ...) {
 #' @return A character string, or a vector if \code{patch} is a composition of
 #' patches.
 #'
-#' @import stringr
 #' @export
 patch_type <- function(patch, short=TRUE) {
   stopifnot(is_patch(patch, allow_composed = TRUE))
@@ -162,11 +157,15 @@ patch_type <- function(patch, short=TRUE) {
 #' \code{print} prints its argument and returns it invisibly (via
 #' \code{invisible(x)}).
 #'
+#' To print a composition of patches constructed using the \code{\link{compose}}
+#' use \code{\link{decompose_patch}}.
+#'
 #' @param x
 #' A patch object
 #' @param ...
 #' Any additional arguments are ignored.
 #'
+#' @seealso \code{\link{decompose_patch}}
 #' @export
 print.patch <- function(x, ...) {
   type <- paste(setdiff(class(x), c("patch", "function")), sep = ",")
@@ -179,4 +178,3 @@ print.patch <- function(x, ...) {
   }
   invisible(x)
 }
-

@@ -10,7 +10,6 @@
 #'
 #' @return A \code{patch_cycle} object.
 #'
-#' @import purrr
 #' @export
 #'
 #' @seealso \code{\link{is_valid_columns}} \code{\link{is_compatible_columns}}

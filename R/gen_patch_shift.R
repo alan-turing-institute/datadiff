@@ -34,18 +34,16 @@ gen_patch_shift <- function(df1, col1, df2, col2 = col1, diff = ks) {
   stopifnot(is.double(x1) && is.double(x2))
   stopifnot(sum(!is.na(x1)) != 0 && sum(!is.na(x2)) != 0)
 
-  # OLD: patch_shift(col1, shift = mean(y, ...) - mean(x, ...))
-
   # Naive numerical optimisation:
   f <- function(mu) { diff(mu + x1, x2) }
 
-  qlow <- min(quantile(x1, probs = 0.25, na.rm = TRUE),
-              quantile(x2, probs = 0.25, na.rm = TRUE))
-  qhigh <- max(quantile(x1, probs = 0.75, na.rm = TRUE),
-               quantile(x2, probs = 0.75, na.rm = TRUE))
+  qlow <- min(stats::quantile(x1, probs = 0.25, na.rm = TRUE),
+              stats::quantile(x2, probs = 0.25, na.rm = TRUE))
+  qhigh <- max(stats::quantile(x1, probs = 0.75, na.rm = TRUE),
+               stats::quantile(x2, probs = 0.75, na.rm = TRUE))
   par <- mean(x2, na.rm = TRUE) - mean(x1, na.rm = TRUE)
 
-  optim_par <- optim(par, fn = f, method = "Brent", lower = qlow, upper = qhigh)
+  optim_par <- stats::optim(par, fn = f, method = "Brent", lower = qlow, upper = qhigh)
 
   if (optim_par$convergence != 0)
     stop(paste("Optimisation failed with error code", optim_par$convergence))

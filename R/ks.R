@@ -14,7 +14,6 @@
 #'
 #' @seealso \code{\link{ecdf}}
 #'
-#' @importFrom stats ecdf
 #' @export
 ks <- function(v1, v2) {
 
@@ -25,7 +24,7 @@ ks <- function(v1, v2) {
   }
 
   if (is.numeric(v1) && is.numeric(v2))
-    return(ks_ecdf(ecdf(v1), ecdf(v2)))
+    return(ks_ecdf(stats::ecdf(v1), stats::ecdf(v2)))
 
   if (!is.ordered(v1) || !is.ordered(v1))
     stop("Arguments must be numeric vectors or ordered factors.")
@@ -38,7 +37,7 @@ ks <- function(v1, v2) {
   unique_ordering <- function(x, y) {
 
   # Recursive sub-procedure considers only the first elements, which must either
-  # be equal or unique (i.e. not found in the other vector).
+  # be equal or unique (i.e. found in one but not both vectors).
     rec_ordering <- function(v, w) {
       if (length(v) == 0 && length(w) == 0)
         return(v)
@@ -76,5 +75,5 @@ ks <- function(v1, v2) {
   v1 <- factor(v1, levels = lev)
   v2 <- factor(v2, levels = lev)
 
-  ks_ecdf(ecdf(v1), ecdf(v2))
+  ks_ecdf(stats::ecdf(v1), stats::ecdf(v2))
 }

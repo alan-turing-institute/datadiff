@@ -15,3 +15,10 @@
 \code{print} prints its argument and returns it invisibly (via
 \code{invisible(x)}).
 }
+\details{
+To print a composition of patches constructed using the \code{\link{compose}}
+use \code{\link{decompose_patch}}.
+}
+\seealso{
+\code{\link{decompose_patch}}
+}

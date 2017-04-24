@@ -37,7 +37,7 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
     return(diffness(x[1:n], y[1:n]) + col_diff * (m - n))
   }
 
-  sum(map2_dbl(x, y, diffness))
+  sum(purrr::map2_dbl(x, y, diffness))
 }
 
 # NOTE: numeric is equivalent to (double OR integer). Since we want to exclude
@@ -132,7 +132,7 @@ diffness.factor <- function(x, y, diff = tv, ...) {
   stopifnot(is.factor(y))
 
   if (!is.factor(y)) return(+Inf)
-  
+
   diff(x, y) * diffness_scale(length(x), length(y))
 }
 
@@ -174,7 +174,7 @@ diffness.logical <- function(x, y, diff = tv, ...) {
   stopifnot(is.vector(y))
 
   if (!is.logical(y)) return(+Inf)
-  
+
   diffness(as.factor(x), as.factor(y), diff = diff)
 }
 
@@ -184,10 +184,10 @@ diffness.logical <- function(x, y, diff = tv, ...) {
 #' The scale factor increases the diffness in proportion to the square root of
 #' the number of rows. This means that, when comparing against a "patch cost",
 #' small diffnesses count more the more data points there are.
-#' 
+#'
 #' @param nx,ny The lengths of the vectors
 #' @return A number
-#' 
+#'
 diffness_scale <- function(nx, ny) {
     sqrt(nx * ny / (nx + ny))
 }
