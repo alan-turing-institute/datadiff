@@ -1,7 +1,7 @@
-#' \code{patch_encode} S3 class constructor
+#' \code{patch_recode} S3 class constructor
 #'
 #' @description
-#' S3 class \code{patch_encode} which extends the \code{patch} and
+#' S3 class \code{patch_recode} which extends the \code{patch} and
 #' \code{function} classes to represent a transformation of a tabular dataset
 #' by re-encoding categorical data in one or more columns.
 #'
@@ -14,7 +14,7 @@
 #' A logical flag specifying whether the \code{encoding} must be one-to-one.
 #' Defaults to \code{TRUE}.
 #'
-#' @return A \code{patch_encode} object.
+#' @return A \code{patch_recode} object.
 #'
 #' @export
 #'
@@ -24,7 +24,7 @@
 #' head(mtcars)
 #'
 #' # Columns 8 and 9 of mtcars contain binary data.
-#' p <- patch_encode(c(8L, 9L), encoding = c("0" = FALSE, "1" = TRUE))
+#' p <- patch_recode(c(8L, 9L), encoding = c("0" = FALSE, "1" = TRUE))
 #'
 #' # The following are equivalent:
 #' head(apply_patch(p, mtcars))
@@ -33,11 +33,11 @@
 #' # Attempting to apply a patch to an incompatible data frame throws an error.
 #' \dontrun{
 #' # Column 1 does not contain binary data.
-#' p <- patch_encode(1L, c("0" = FALSE, "1" = TRUE))
+#' p <- patch_recode(1L, c("0" = FALSE, "1" = TRUE))
 #' p(mtcars)
 #' }
 #'
-patch_encode <- function(cols, encoding, one_to_one = TRUE) {
+patch_recode <- function(cols, encoding, one_to_one = TRUE) {
 
   # Check the given parameters are appropriate for the delete patch type.
   stopifnot(is_valid_columns(cols))
@@ -74,6 +74,6 @@ patch_encode <- function(cols, encoding, one_to_one = TRUE) {
     df
   }
 
-  class(obj) <- c("patch_encode", "patch", "function")
+  class(obj) <- c("patch_recode", "patch", "function")
   obj
 }

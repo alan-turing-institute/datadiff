@@ -1,6 +1,6 @@
-#' Generate an encode patch
+#' Generate a recode patch
 #'
-#' Generates a \code{patch_encode} object whose 'encoding' parameter has been
+#' Generates a \code{patch_recode} object whose 'encoding' parameter has been
 #' selected with the aim of minimising the mismatch between the specified
 #' columns after application of the patch to \code{df1}.
 #'
@@ -14,14 +14,14 @@
 #' A column identifier (integer or string column name) with length 1. By default
 #' this takes the value of \code{col1}.
 #' @param ...
-#' Additional arguments passed to the \code{patch_encode} function.
+#' Additional arguments passed to the \code{patch_recode} function.
 #'
-#' @return A \code{patch_encode} object.
+#' @return A \code{patch_recode} object.
 #'
-#' @seealso \code{\link{patch_encode}}
+#' @seealso \code{\link{patch_recode}}
 #'
 #' @export
-gen_patch_encode <- function(df1, col1, df2, col2 = col1, ...) {
+gen_patch_recode <- function(df1, col1, df2, col2 = col1, ...) {
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
@@ -49,11 +49,11 @@ gen_patch_encode <- function(df1, col1, df2, col2 = col1, ...) {
   x <- outer(t1, t2, FUN = purrr::compose(abs, `-`))
   solved <- clue::solve_LSAP(x, maximum = FALSE)
 
-  # Convert the solution into an encode patch.
+  # Convert the solution into a recode patch.
   encoding <- lev2[solved]
   if (!is.factor(v2))
     encoding <- methods::as(encoding, class(v2))
   names(encoding) <- lev1
 
-  patch_encode(col1, encoding = encoding, one_to_one = TRUE)
+  patch_recode(col1, encoding = encoding, one_to_one = TRUE)
 }

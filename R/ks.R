@@ -1,33 +1,70 @@
-#' K-S statistic for two numeric vectors or ordered factors.
+#' K-S statistic
+#'
+#' Computes the two-sample Kolmogorov-Smirnov statistic.
+#'
+#' @param v1,v2
+#' A pair of numeric vectors or ordered factors.
+#'
+#' @return A number between 0 and 1 inclusive.
+#'
+#' @export
+ks <- function(v1, v2) UseMethod("ks")
+
+#' K-S statistic for two ecdf's
+#'
+#' Internal function to calculate the K-S statistic for two empirical
+#' cumulative distribution functions.
+#'
+#' @param e1,e2
+#' A pair of ecdf objects.
+#'
+#' @return A number between 0 and 1 inclusive.
+ks_ecdf <- function(e1, e2) {
+  knots <- union(knots(e1), knots(e2))
+  max(abs(c(e1(knots) - e2(knots))))
+}
+
+#' K-S statistic for two numeric vectors
 #'
 #' Computes the Kolmogorov-Smirnov statistic for two numeric vectors by
 #' comparing their empirical cumulative distribution functions obtained from
-#' the \code{\link{ecdf}} function in the \code{stats} package.
+#' the \code{\link{ecdf}} function.
 #'
 #' @param v1,v2
-#' A pair of numeric vectors or ordered factors. Both arguments must have at
-#' least one non-missing value. In the case of ordered factors the orderings
-#' must not conflict and must together determine a unique ordering on the union
-#' of the levels.
+#' A pair of numeric vectors. Both arguments must have at
+#' least one non-missing value.
 #'
 #' @return A number between 0 and 1 inclusive.
 #'
 #' @seealso \code{\link{ecdf}}
 #'
 #' @export
-ks <- function(v1, v2) {
+ks.numeric <- function(v1, v2) {
 
-  # K-S statistic for two ecdf's
-  ks_ecdf <- function(e1, e2) {
-    knots <- union(knots(e1), knots(e2))
-    max(abs(c(e1(knots) - e2(knots))))
-  }
+  stopifnot(is.numeric(v2))
+  ks_ecdf(stats::ecdf(v1), stats::ecdf(v2))
+}
 
-  if (is.numeric(v1) && is.numeric(v2))
-    return(ks_ecdf(stats::ecdf(v1), stats::ecdf(v2)))
+#' K-S statistic for two ordered factors.
+#'
+#' Computes the Kolmogorov-Smirnov statistic for two ordered factors by
+#' first determining a unique ordering on the union of the factor levels, if
+#' one exists, and then comparing the empirical cumulative distribution
+#' functions obtained from the \code{\link{ecdf}} function.
+#'
+#' @param v1,v2
+#' A pair of ordered factors. Both arguments must have at least one non-missing
+#' value. The orderings must not conflict and must together determine a unique
+#' ordering on the union of the levels.
+#'
+#' @return A number between 0 and 1 inclusive.
+#'
+#' @seealso \code{\link{ecdf}}
+#'
+#' @export
+ks.ordered <- function(v1, v2) {
 
-  if (!is.ordered(v1) || !is.ordered(v1))
-    stop("Arguments must be numeric vectors or ordered factors.")
+  stopifnot(is.ordered(v2))
 
   lev1 <- levels(v1)
   lev2 <- levels(v2)

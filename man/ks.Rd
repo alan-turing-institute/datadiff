@@ -2,24 +2,16 @@
 % Please edit documentation in R/ks.R
 \name{ks}
 \alias{ks}
-\title{K-S statistic for two numeric vectors or ordered factors.}
+\title{K-S statistic}
 \usage{
 ks(v1, v2)
 }
 \arguments{
-\item{v1, v2}{A pair of numeric vectors or ordered factors. Both arguments must have at
-least one non-missing value. In the case of ordered factors the orderings
-must not conflict and must together determine a unique ordering on the union
-of the levels.}
+\item{v1, v2}{A pair of numeric vectors or ordered factors.}
 }
 \value{
 A number between 0 and 1 inclusive.
 }
 \description{
-Computes the Kolmogorov-Smirnov statistic for two numeric vectors by
-comparing their empirical cumulative distribution functions obtained from
-the \code{\link{ecdf}} function in the \code{stats} package.
-}
-\seealso{
-\code{\link{ecdf}}
+Computes the two-sample Kolmogorov-Smirnov statistic.
 }

@@ -67,10 +67,8 @@ test_that("the ks function works", {
   x <- sample(1:10, size = 100, replace = TRUE)
   y <- sample(1:10, size = 100, replace = TRUE)
 
-  expect_error(ks(letters[x], letters[y]),
-               regexp = "must be numeric vectors or ordered factors")
-  expect_error(ks(factor(x), factor(y)),
-               regexp = "must be numeric vectors or ordered factors")
+  expect_error(ks(letters[x], letters[y]), regexp = "no applicable method")
+  expect_error(ks(factor(x), factor(y)), regexp = "no applicable method")
 
   ## Test in the presence of NA values.
   x <- rnorm(100)
@@ -110,10 +108,8 @@ test_that("the ks function works", {
   x <- letters[rep(seq(1, 9, by = 2), 20)[sample.int(100, 100)]]
   y <- letters[rep(1:5, 20)[sample.int(100, 100)]]
 
-  expect_error(ks(x, u),
-               regexp = "Arguments must be numeric vectors or ordered factors")
-  expect_error(ks(factor(x), factor(u)),
-               regexp = "Arguments must be numeric vectors or ordered factors")
+  expect_error(ks(x, u), regexp = "no applicable method")
+  expect_error(ks(factor(x), factor(u)), regexp = "no applicable method")
   result <- ks(factor(x, ordered = TRUE), factor(u, ordered = TRUE))
 
   # The K-S "distance" between u & x is less than that between u & y, since x
