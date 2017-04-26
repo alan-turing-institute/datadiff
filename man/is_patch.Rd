@@ -10,7 +10,8 @@ is_patch(obj, allow_composed = TRUE)
 \item{obj}{Any object.}
 
 \item{allow_composed}{A logicial flag. If \code{TRUE} (the default) then compositions of patches
-constructed using the \code{purrr::compose} function are considered to be
+(constructed using either the \code{compose_patch} function or the
+\code{compose} function from the \code{purrr} package) are considered to be
 patches. Otherwise, only elementary patch objects are considered to be
 patches.}
 }

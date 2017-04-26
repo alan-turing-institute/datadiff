@@ -4,10 +4,13 @@
 \alias{diffness}
 \title{Compute the mismatch between two datasets}
 \usage{
-diffness(x, y, ...)
+diffness(x, y, scale, ...)
 }
 \arguments{
 \item{x, y}{A pair of datasets}
+
+\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
+size of the data.}
 
 \item{...}{Additional arguments passed to methods.}
 }

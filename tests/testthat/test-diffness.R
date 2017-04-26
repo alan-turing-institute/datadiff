@@ -5,6 +5,8 @@ test_that("the diffness function works", {
 
   set.seed(22)
 
+  ## IMP TODO: test the scale argument.
+
   ## Test with categorical vectors.
   x <- sample(letters[1:5], size = 100, replace = TRUE)
 
@@ -85,6 +87,16 @@ test_that("the diffness function works", {
   expect_identical(diffness(x, y[sample.int(length(y))]), diffness(x, y))
   expect_identical(diffness(x, y), diffness(y, x))
 
+  # Test with all NA values.
+  y <- rep(NA, 100)
+  result <- diffness(x, y)
+  expect_true(is.numeric(result) && length(result) == 1)
+  expect_identical(result, Inf)
+
+  result <- diffness(x, y, scale = FALSE)
+  expect_true(is.numeric(result) && length(result) == 1)
+  expect_identical(result, 1)
+
   # Test with mixtures of categorical and continuous vectors.
   x <- sample(1:10, size = 100, replace = TRUE)
   y <- sample(letters[1:5], size = 100, replace = TRUE)
@@ -164,7 +176,8 @@ test_that("the diffness function works", {
   expect_identical(diffness(x, y), Inf)
 
   # Test with data frames having different numbers of columns.
-  expect_identical(diffness(x, y[1:3]), diffness(x[1:3], y[1:3]) + 2)
+  expect_identical(diffness(x, y[1:3], scale = FALSE),
+                   diffness(x[1:3], y[1:3], scale = FALSE) + 2)
   expect_identical(diffness(x, y[1:4], col_diff = Inf), Inf)
 
   ## Test with mixtures of vectors and data frames.
@@ -188,5 +201,6 @@ test_that("the diffness function works", {
   expect_error(diffness(x, y), regexp = "length")
   expect_error(diffness(y, x), regexp = "length")
   expect_error(diffness(y, y), regexp = "length")
+
 })
 

@@ -6,21 +6,59 @@
 #' Any object.
 #' @param allow_composed
 #' A logicial flag. If \code{TRUE} (the default) then compositions of patches
-#' constructed using the \code{purrr::compose} function are considered to be
+#' (constructed using either the \code{compose_patch} function or the
+#' \code{compose} function from the \code{purrr} package) are considered to be
 #' patches. Otherwise, only elementary patch objects are considered to be
 #' patches.
 #'
 #' @export
 is_patch <- function(obj, allow_composed = TRUE) {
-  if (methods::is(obj, "patch"))
-    return(TRUE)
-  if (!allow_composed || !is.function(obj))
+
+  if (!methods::is(obj, "patch") && !allow_composed)
+    return(FALSE)
+  if (!is.function(obj))
     return(FALSE)
   env <- environment(obj)
+
+  # If the obj environment does not contain an object named "fs" then the obj is
+  # deemed to be an elementary patch.
   if (!("fs" %in% names(env)))
+    return(TRUE)
+  if (!allow_composed)
     return(FALSE)
+
+  # If the obj environment contains a list named "fs", all elements of which
+  # are themselves (possibly composed) patches, then the obj is deemed to be a
+  # composed patch.
   all(purrr::map_lgl(get("fs", envir=env), .f=is_patch, allow_composed=TRUE))
 }
+
+#' Compose patches
+#'
+#' Construct a composite patch object. The advantage of using this function,
+#' rather than calling \code{purrr::compose} directly, is that the class of the
+#' return value is \code{patch}, which helps when printing. However both methods
+#' will produce objects for which \code{is_patch} returns \code{TRUE}.
+#'
+#' @param ...
+#' n patches (possibly themselves composed) to apply in order from right to left.
+#'
+#' @return A composite patch object.
+#'
+#' @seealso \code{\link{compose}}
+#'
+#' @export
+compose_patch <- function(...) {
+
+  ret <- purrr::compose(...)
+  # Note: ret is _not_ a patch (yet).
+  stopifnot(all(purrr::map_lgl(decompose_patch(ret), is_patch)))
+  class(ret) <- c("patch", "function")
+  ret
+}
+
+### TODO NEXT: DECIDE HOW TO IDENTIFY ELEMENTARY PATCHES IN is_patch.
+
 
 #' Decompose a composition of patches
 #'
@@ -89,12 +127,12 @@ print_patch_params <- function(patch, digits=3) {
   if (length(params) == 0)
     return(character(1))
   param_string <- function(x) {
-    if (is.character(x) && length(x) == 1)
-      return(x)
     if (is.integer(x) && length(x) <= 10) # TODO.
       return(paste(x, collapse = " "))
     if (is.double(x) && length(x) == 1)
       return(round(x, digits))
+    if (length(x) == 1)
+      return(as.character(x))
     paste0("<", paste(class(x), collapse = "|"), ">")
   }
   paste(purrr::map_chr(1:length(params), .f = function(i) {
@@ -168,6 +206,13 @@ patch_type <- function(patch, short=TRUE) {
 #' @seealso \code{\link{decompose_patch}}
 #' @export
 print.patch <- function(x, ...) {
+  if (!is_patch(x, allow_composed = FALSE)) {
+    cat("Composed patch with elementary constituents:\n")
+    return(invisible(purrr::map(decompose_patch(x), .f = function(p) {
+      print(p)
+      cat("\n")
+    })))
+  }
   type <- paste(setdiff(class(x), c("patch", "function")), sep = ",")
   printed_params <- print_patch_params(x)
   if (length(printed_params) == 1 && nchar(printed_params) == 0)

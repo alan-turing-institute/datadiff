@@ -4,10 +4,13 @@
 \alias{diffness.data.frame}
 \title{Compute the mismatch between two data frames}
 \usage{
-\method{diffness}{data.frame}(x, y, col_diff = 1, ...)
+\method{diffness}{data.frame}(x, y, scale = TRUE, col_diff = 1, ...)
 }
 \arguments{
 \item{x, y}{A pair of datasets}
+
+\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
+number of rows in the data.}
 
 \item{col_diff}{A numeric scalar specifying the additional mismatch per column when \code{x}
 and \code{y} have different numbers of columns. Defaults to 1.}

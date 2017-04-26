@@ -47,10 +47,10 @@ gen_patch_recode <- function(df1, col1, df2, col2 = col1, ...) {
 
   # Apply the Hungarian algorithm to solve the assignment problem.
   x <- outer(t1, t2, FUN = purrr::compose(abs, `-`))
-  solved <- clue::solve_LSAP(x, maximum = FALSE)
+  soln <- clue::solve_LSAP(x, maximum = FALSE)
 
   # Convert the solution into a recode patch.
-  encoding <- lev2[solved]
+  encoding <- lev2[soln]
   if (!is.factor(v2))
     encoding <- methods::as(encoding, class(v2))
   names(encoding) <- lev1

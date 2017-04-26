@@ -4,10 +4,13 @@
 \alias{diffness.factor}
 \title{Compute the mismatch between two vectors of unordered categorical data}
 \usage{
-\method{diffness}{factor}(x, y, diff = tv, ...)
+\method{diffness}{factor}(x, y, scale = TRUE, diff = tv, ...)
 }
 \arguments{
 \item{x, y}{A pair of unordered factors.}
+
+\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
+length of the data.}
 
 \item{diff}{Mismatch method. The default is \code{tv} (total variation distance) for
 unordered categorical data.}

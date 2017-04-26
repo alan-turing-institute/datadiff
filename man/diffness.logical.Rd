@@ -4,10 +4,13 @@
 \alias{diffness.logical}
 \title{Compute the mismatch between two logical vectors}
 \usage{
-\method{diffness}{logical}(x, y, diff = tv, ...)
+\method{diffness}{logical}(x, y, scale = TRUE, diff = tv, ...)
 }
 \arguments{
 \item{x, y}{A pair of vectors of type \code{logical}.}
+
+\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
+length of the data.}
 
 \item{diff}{Mismatch method. The default is \code{tv} (total variation distance) for
 unordered categorical data.}

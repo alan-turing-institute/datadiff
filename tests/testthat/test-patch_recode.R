@@ -97,6 +97,36 @@ test_that("patch function application works", {
   expect_equal(result[[2]], expected = toupper(letters[1:4]))
   expect_equal(result[[5]], expected = toupper(letters[4:1]))
 
+  ## Test recoding from type character to type numeric.
+  expect_true(is.character(df[[2]]))
+  expect_true(is.character(df[[5]]))
+
+  encoding <- c("a"=1, "b"=2, "c"=3, "d"=4)
+  target <- patch_recode(c(2L, 5L), encoding)
+
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_true(is.numeric(result[[2]]))
+  expect_true(is.numeric(result[[5]]))
+  expect_equal(result[[2]], expected = 1:4)
+  expect_equal(result[[5]], expected = 4:1)
+
+  ## Test recoding from type character to type integer
+  expect_true(is.character(df[[2]]))
+  expect_true(is.character(df[[5]]))
+
+  encoding <- c("a"=1L, "b"=2L, "c"=3L, "d"=4L)
+  target <- patch_recode(c(2L, 5L), encoding)
+
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_true(is.integer(result[[2]]))
+  expect_true(is.integer(result[[5]]))
+  expect_equal(result[[2]], expected = 1:4)
+  expect_equal(result[[5]], expected = 4:1)
+
   ## Test when a relevant column in the original data frame is a factor.
   df[[2]] <- as.factor(letters[1:4])
   df[[5]] <- letters[4:1]
@@ -104,6 +134,7 @@ test_that("patch function application works", {
   expect_true(is.factor(df[[2]]))
   expect_false(is.factor(df[[5]]))
 
+  encoding <- c("a"="A", "b"="B", "c"="C", "d"="D")
   target <- patch_recode(c(2L, 5L), encoding)
 
   result <- target(df)

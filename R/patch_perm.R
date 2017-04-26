@@ -8,7 +8,7 @@
 #' @param perm A vector of integers, being a permutation of 1..n, where n is the
 #'     number of columns in the dataset
 #' @return A \code{patch_perm} object. When applied to a data set with columns
-#'     a_1, a_2, ..., an, the result is a dataset with columns a_perm[1],
+#'     a_1, a_2, ..., a_n, the result is a dataset with columns a_perm[1],
 #'     a_perm[2], ...
 #'
 #' @export
@@ -23,7 +23,7 @@
 ##'
 #' # Attempting to apply a patch to an incompatible data frame throws an error.
 #' \dontrun{
-#' p <- patch_cycle(c(1L, 3L, 22L))
+#' p <- patch_perm(c(1L, 3L, 22L))
 #' p(mtcars)
 #' }
 patch_perm <- function(perm) {
@@ -37,7 +37,7 @@ patch_perm <- function(perm) {
     stopifnot(is_compatible_columns(perm, df))
 
     # Transform the data frame according to the parameters.
-    ret <- df[ , perm]
+    ret <- df[, perm]
     stopifnot(is.data.frame(ret))
 
     ret

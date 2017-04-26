@@ -5,6 +5,9 @@
 #'
 #' @param x,y
 #' A pair of datasets
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' size of the data.
 #' @param ...
 #' Additional arguments passed to methods.
 #'
@@ -12,12 +15,15 @@
 #' datasets.
 #'
 #' @export
-diffness <- function(x, y, ...) UseMethod("diffness")
+diffness <- function(x, y, scale, ...) UseMethod("diffness")
 
 #' Compute the mismatch between two data frames
 #'
 #' @param x,y
 #' A pair of datasets
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' number of rows in the data.
 #' @param col_diff
 #' A numeric scalar specifying the additional mismatch per column when \code{x}
 #' and \code{y} have different numbers of columns. Defaults to 1.
@@ -25,7 +31,7 @@ diffness <- function(x, y, ...) UseMethod("diffness")
 #' Additional arguments passed to methods.
 #'
 #' @export
-diffness.data.frame <- function(x, y, col_diff = 1, ...) {
+diffness.data.frame <- function(x, y, scale = TRUE, col_diff = 1, ...) {
 
   stopifnot(is.data.frame(y))
   stopifnot(length(x) > 0 && length(y) > 0)
@@ -34,10 +40,15 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
     stopifnot(is.numeric(col_diff) && length(col_diff) == 1)
     n <- min(length(x), length(y))
     m <- max(length(x), length(y))
-    return(diffness(x[1:n], y[1:n]) + col_diff * (m - n))
+
+    col_diff_add <- col_diff * (m - n)
+    if (scale)
+      col_diff_add <- col_diff_add * diffness_scale(nrow(x), nrow(y))
+
+    return(diffness(x[1:n], y[1:n], scale = scale, ...) + col_diff_add)
   }
 
-  sum(purrr::map2_dbl(x, y, diffness))
+  sum(purrr::map2_dbl(x, y, .f = diffness, scale = scale, ...))
 }
 
 # NOTE: numeric is equivalent to (double OR integer). Since we want to exclude
@@ -48,6 +59,9 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 #'
 #' @param x,y
 #' A pair of vectors of type \code{double}.
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' length of the data.
 #' @param diff
 #' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov) for continuous
 #' numeric data.
@@ -55,12 +69,16 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 #' Additional arguments are ignored.
 #'
 #' @export
-diffness.double <- function(x, y, diff = ks, ...) {
+diffness.double <- function(x, y, scale = TRUE, diff = ks, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.double(y)) return(+Inf)
+  if (!is.double(y))
+    return(ifelse(scale, yes = +Inf, no = 1))
 
-  diff(x, y) * diffness_scale(length(x), length(y))
+  ret <- diff(x, y)
+  if (!scale)
+    return(ret)
+  ret * diffness_scale(length(x), length(y))
 }
 
 #' Compute the mismatch between two integer vectors
@@ -74,6 +92,9 @@ diffness.double <- function(x, y, diff = ks, ...) {
 #'
 #' @param x,y
 #' A pair of vectors of type \code{integer}.
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' length of the data.
 #' @param diff
 #' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov) for integer
 #' data.
@@ -81,7 +102,7 @@ diffness.double <- function(x, y, diff = ks, ...) {
 #' Additional arguments are ignored.
 #'
 #' @export
-diffness.integer <- function(x, y, diff = ks, ...) {
+diffness.integer <- function(x, y, scale = TRUE, diff = ks, ...) {
   stopifnot(is.vector(y))
 
   if (!is.integer(y)) return(+Inf)
@@ -90,13 +111,19 @@ diffness.integer <- function(x, y, diff = ks, ...) {
   # produces the same result as if we were to explicitly treat integers as
   # ordered categorical data by calling:
   # diffness(as.ordered(x), as.ordered(y), diff = ks).
-  diff(x, y) * diffness_scale(length(x), length(y))
+  ret <- diff(x, y)
+  if (!scale)
+    return(ret)
+  ret * diffness_scale(length(x), length(y))
 }
 
 #' Compute the mismatch between two vectors of ordered categorical data
 #'
 #' @param x,y
 #' A pair of ordered factors.
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' length of the data.
 #' @param diff
 #' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov) for ordered
 #' categorical data.
@@ -104,7 +131,7 @@ diffness.integer <- function(x, y, diff = ks, ...) {
 #' Additional arguments are ignored.
 #'
 #' @export
-diffness.ordered <- function(x, y, diff = ks, ...) {
+diffness.ordered <- function(x, y, scale = TRUE, diff = ks, ...) {
   stopifnot(is.factor(y))
 
   # Ordered discrete data are, by default, compared using ks, rather
@@ -114,13 +141,19 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
   # Note: in contrast to other diffness methods, we do not test that y is
   # ordered (and return 1.0 if not) as this might give unexpected results
   # (and ks will give an error in that case).
-  diff(x, y) * diffness_scale(length(x), length(y))
+  ret <- diff(x, y)
+  if (!scale)
+    return(ret)
+  ret * diffness_scale(length(x), length(y))
 }
-0
+
 #' Compute the mismatch between two vectors of unordered categorical data
 #'
 #' @param x,y
 #' A pair of unordered factors.
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' length of the data.
 #' @param diff
 #' Mismatch method. The default is \code{tv} (total variation distance) for
 #' unordered categorical data.
@@ -128,12 +161,15 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
 #' Additional arguments are ignored.
 #'
 #' @export
-diffness.factor <- function(x, y, diff = tv, ...) {
+diffness.factor <- function(x, y, scale = TRUE, diff = tv, ...) {
   stopifnot(is.factor(y))
 
   if (!is.factor(y)) return(+Inf)
 
-  diff(x, y) * diffness_scale(length(x), length(y))
+  ret <- diff(x, y)
+  if (!scale)
+    return(ret)
+  ret * diffness_scale(length(x), length(y))
 }
 
 #' Compute the mismatch between two character vectors
@@ -142,6 +178,9 @@ diffness.factor <- function(x, y, diff = tv, ...) {
 #'
 #' @param x,y
 #' A pair of vectors of type \code{character}.
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' length of the data.
 #' @param diff
 #' Mismatch method. The default is \code{tv} (total variation distance) for
 #' unordered categorical data.
@@ -149,12 +188,12 @@ diffness.factor <- function(x, y, diff = tv, ...) {
 #' Additional arguments are ignored.
 #'
 #' @export
-diffness.character <- function(x, y, diff = tv, ...) {
+diffness.character <- function(x, y, scale = TRUE, diff = tv, ...) {
   stopifnot(is.vector(y))
 
   if (!is.character(y)) return(+Inf)
 
-  diffness(as.factor(x), as.factor(y), diff = diff)
+  diffness(as.factor(x), as.factor(y), diff = diff, scale = scale)
 }
 
 #' Compute the mismatch between two logical vectors
@@ -163,6 +202,9 @@ diffness.character <- function(x, y, diff = tv, ...) {
 #'
 #' @param x,y
 #' A pair of vectors of type \code{logical}.
+#' @param scale
+#' A logical flag. If \code{TRUE} (the default) the result is scaled by the
+#' length of the data.
 #' @param diff
 #' Mismatch method. The default is \code{tv} (total variation distance) for
 #' unordered categorical data.
@@ -170,12 +212,12 @@ diffness.character <- function(x, y, diff = tv, ...) {
 #' Additional arguments are ignored.
 #'
 #' @export
-diffness.logical <- function(x, y, diff = tv, ...) {
+diffness.logical <- function(x, y, scale = TRUE, diff = tv, ...) {
   stopifnot(is.vector(y))
 
   if (!is.logical(y)) return(+Inf)
 
-  diffness(as.factor(x), as.factor(y), diff = diff)
+  diffness(as.factor(x), as.factor(y), diff = diff, scale = scale)
 }
 
 
