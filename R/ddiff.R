@@ -17,6 +17,8 @@
 #' @param as.list
 #' A logical flag. If \code{TRUE} the return value is a list of patches.
 #' Otherwise a composite patch object is returned.
+#' @param verbose
+#' A logical flag.
 #'
 #' @return A list of patch objects, or their composition if \code{composed} is
 #' \code{TRUE}.
@@ -78,6 +80,9 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
       # If no transformation is possible, return a break patch.
       if (inherits(tx_patch, "error")) {
         # TODO: consider making this the diffness plus cost_break for consistency.
+        if (verbose)
+          warning(paste0("gen_patch_tx at [", i, ", ", j, "] returned error:\n",
+                         conditionMessage(tx_patch)))
         m_costs[i, j] <<- cost_break
         m_diffs[i, j] <<- 0
         return(gen_patch_break(df1 = df1, col1 = i, df2 = df2, col2 = j))

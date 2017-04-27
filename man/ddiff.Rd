@@ -5,7 +5,7 @@
 \title{Diff two data frames}
 \usage{
 ddiff(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
-  as.list = FALSE)
+  as.list = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
@@ -21,6 +21,8 @@ operation.}
 
 \item{as.list}{A logical flag. If \code{TRUE} the return value is a list of patches.
 Otherwise a composite patch object is returned.}
+
+\item{verbose}{A logical flag.}
 }
 \value{
 A list of patch objects, or their composition if \code{composed} is
