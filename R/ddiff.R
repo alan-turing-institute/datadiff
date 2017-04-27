@@ -118,6 +118,7 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
     print(m_diffs)
   }
 
+
   # Sove the assignment problem by applying the Hungarian algorithm to the costs
   # matrix, then convert the solution into a permutation patch.
   soln <- clue::solve_LSAP(m_diffs + m_costs, maximum = FALSE)
