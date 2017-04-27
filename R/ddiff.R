@@ -126,6 +126,11 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
   perm <- order(as.integer(soln))
   p_perm <- patch_perm(perm)
 
+  if (verbose) {
+    cat("candidate permutation:\n")
+    print(p_perm)
+  }
+
   # TODO: remove any superfluous identity patches in the selected_tx list.
   # Identify the corresponding transformation patches and compose them, together
   # with the permutation patch, to construct the overall candidate patch.
