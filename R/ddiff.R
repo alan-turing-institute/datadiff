@@ -6,12 +6,14 @@
 #' @param df1,df2
 #' A pair of data frames.
 #' @param cost_permute
-#' The cost of a permute patch operation.
+#' A number in the unit interval representing the cost of a permute patch
+#' operation.
 #' @param cost_transform
-#' The cost of a transformation patch (i.e. affine for continuous data, recode for
-#' categorical) operation.
+#' A number in the unit interval representing the cost of a transformation patch
+#' (i.e. affine for continuous data, recode for categorical) operation.
 #' @param cost_break
-#' The cost of a break patch operation.
+#' A number in the unit interval representing the cost of a break patch
+#' operation.
 #' @param as.list
 #' A logical flag. If \code{TRUE} the return value is a list of patches.
 #' Otherwise a composite patch object is returned.
@@ -42,6 +44,12 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
 
   if (length(df1) != length(df2))
     stop("Not yet implemented")
+
+  # Scale the costs.
+  cost_scale_factor <- cost_scale(nrow(df1), nrow(df2))
+  cost_permute <- cost_permute * cost_scale_factor
+  cost_transform <- cost_transform * cost_scale_factor
+  cost_break <- cost_break * cost_scale_factor
 
   # Construct matrices to hold the pairwise costs and the diffs.
   m_costs <- matrix(NA, nrow = ncol(df1), ncol = ncol(df2))

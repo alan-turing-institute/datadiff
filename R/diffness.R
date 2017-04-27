@@ -231,7 +231,10 @@ diffness.logical <- function(x, y, scale = TRUE, diff = tv, ...) {
 #' @return A number
 #'
 diffness_scale <- function(nx, ny) {
-    sqrt(nx * ny / (nx + ny))
+
+  # TODO: replace this with 1/costs_scale(nx, ny).
+
+  sqrt(nx * ny / (nx + ny))
 }
 
 
