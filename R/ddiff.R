@@ -24,6 +24,10 @@
 ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
                   as.list = FALSE) {
 
+  ### BUGFIX: either scale diffness, or the cost, but not both.
+  # Implement the ks-test with the contant being the cost parameter and
+  # include the scale factor. (Or do something equivalent to this.)
+
   stopifnot(is.data.frame(df1) && is.data.frame(df2))
 
   # Note that the case length(df1) < length(df2) can be handled by
@@ -39,8 +43,9 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
   if (length(df1) != length(df2))
     stop("Not yet implemented")
 
-  # Construct an empty matrix to hold the costs.
+  # Construct matrices to hold the pairwise costs and the diffs.
   m_costs <- matrix(NA, nrow = ncol(df1), ncol = ncol(df2))
+  m_diffs <- m_costs
 
   # Construct a nested list of candidate transformation (or break) patches and
   # simultaneously fill the costs matrix. This is necessary since the costs
@@ -50,7 +55,8 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
     purrr::map(1:ncol(df2), .f = function(j) {
 
       # Calculate the column cost of doing nothing as the (unscaled) diffness.
-      cc_id <- diffness(df1[[i]], df2[[j]], scale = FALSE)
+      cd_id <- diffness(df1[[i]], df2[[j]], scale = FALSE)
+      cc_id <- cd_id + 0 # column cost of doing nothing is zero.
 
       # Identify the best transformation patch, if any exists.
       if (is.double(df1[[i]]))
@@ -65,37 +71,41 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
       if (inherits(tx_patch, "error")) {
         # TODO: consider making this the diffness plus cost_break for consistency.
         m_costs[i, j] <<- cost_break
+        m_diffs[i, j] <<- 0
         return(gen_patch_break(df1 = df1, col1 = i, df2 = df2, col2 = j))
       }
 
       # Calculate the column cost of transforming the data as the (unscaled)
       # diffness after transformation, plus the fixed cost of a transformation.
-      cc_tx <- diffness(tx_patch(df1)[[i]], df2[[j]], scale = FALSE) +
-        cost_transform
+      cd_tx <- diffness(tx_patch(df1)[[i]], df2[[j]], scale = FALSE)
+      cc_tx <- cd_tx + cost_transform
 
       # If the minimum column cost is the break cost, return a break patch.
       if (cost_break < min(cc_id, cc_tx)) {
         m_costs[i, j] <<- cost_break
+        m_diffs[i, j] <<- 0
         return(gen_patch_break(df1 = df1, col1 = i, df2 = df2, col2 = j))
       }
 
       # If the minimum column cost is the transformed diffness plus transform cost,
       # return the transformation patch.
       if (cc_tx < cc_id) {
-        m_costs[i, j] <<- cc_tx
+        m_costs[i, j] <<- cost_transform
+        m_diffs[i, j] <<- cd_tx
         return(tx_patch)
       }
 
       # Otherwise (i.e. if the minimum column cost is to do nothing) return the
       # identity patch.
-      m_costs[i, j] <<- cc_id
+      m_costs[i, j] <<- 0
+      m_diffs[i, j] <<- cd_id
       patch_identity()
     })
   })
 
   # Sove the assignment problem by applying the Hungarian algorithm to the costs
   # matrix, then convert the solution into a permutation patch.
-  soln <- clue::solve_LSAP(m_costs, maximum = FALSE)
+  soln <- clue::solve_LSAP(m_diffs + m_costs, maximum = FALSE)
   # Use order to convert from col indices to perm.
   perm <- order(as.integer(soln))
   p_perm <- patch_perm(perm)
@@ -104,7 +114,7 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
   # Identify the corresponding transformation patches and compose them, together
   # with the permutation patch, to construct the overall candidate patch.
   patch_list <- c(purrr::map(1:ncol(df1), .f = function(i) {
-    candidate_tx[[i]][[as.integer(soln)[i]]]
+    candidate_tx[[i]][[soln[i]]]
   }), p_perm)
 
   # TODO: move this to a compose_patch function (which does the rev).
@@ -115,12 +125,18 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
   tc_id <- diffness(df1, df2, scale = FALSE)
 
   # Calculate the total cost of the candidate patch. Here cost_permute is scaled
-  # by the number of columns moved by the permutation.
+  # by the number of columns _moved_ by the permutation. Therefore the identity
+  # permutation has no cost.
   # Note that some scaling by the number of columns in df1 is essential (if we
   # want cost_permute to have the same 'scale' as the other cost parameters, i.e.
   # in the range [0,1]) since the (unscaled) diffness between two data frames is
   # a number in the interval [0, max(ncol(df1), ncol(df2))].
-  tc_p <- diffness(p(df1), df2, scale = FALSE) +
+
+  # Include the costs associated with the transformations in the candidate.
+  candidate_costs <- purrr::map_dbl(1:ncol(df1), .f = function(i) {
+    m_costs[i, soln[i]]
+  })
+  tc_p <- diffness(p(df1), df2, scale = FALSE) + sum(candidate_costs)
     cost_permute * sum(perm != 1:ncol(df1))
 
   # If the overall reduction in the mismatch does not exceed cost_permute,
