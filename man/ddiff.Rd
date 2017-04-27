@@ -10,12 +10,14 @@ ddiff(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
 \arguments{
 \item{df1, df2}{A pair of data frames.}
 
-\item{cost_permute}{The cost of a permute patch operation.}
+\item{cost_permute}{A number in the unit interval representing the cost of a permute patch
+operation.}
 
-\item{cost_transform}{The cost of a transformation patch (i.e. affine for continuous data, recode for
-categorical) operation.}
+\item{cost_transform}{A number in the unit interval representing the cost of a transformation patch
+(i.e. affine for continuous data, recode for categorical) operation.}
 
-\item{cost_break}{The cost of a break patch operation.}
+\item{cost_break}{A number in the unit interval representing the cost of a break patch
+operation.}
 
 \item{as.list}{A logical flag. If \code{TRUE} the return value is a list of patches.
 Otherwise a composite patch object is returned.}

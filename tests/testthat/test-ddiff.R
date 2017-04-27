@@ -17,7 +17,7 @@ test_that("the ddiff function works", {
   df1 <- generate_test_df(50)
   df2 <- generate_test_df(50)
 
-  cost_transform <- 0.2
+  cost_transform <- 0.1
   cost_permute <- 0.1
 
   result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
@@ -37,7 +37,7 @@ test_that("the ddiff function works", {
   # Test for the expected result.
 
   # Now test with a lower cost for a tranformation patch.
-  cost_transform <- 0.1
+  cost_transform <- 0.01
   result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
                   cost_transform = cost_transform)
 
