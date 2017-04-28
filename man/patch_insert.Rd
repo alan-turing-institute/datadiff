@@ -10,8 +10,7 @@ patch_insert(insertion_point, data)
 \item{insertion_point}{A scalar column identifier. The new columns will be inserted immediately
 after this column.}
 
-\item{data}{A data frame, containing the new column data, whose length (i.e. number of
-columns) must equal that of \code{cols}.}
+\item{data}{A data frame containing the new column data.}
 }
 \value{
 A \code{patch_insert} object.

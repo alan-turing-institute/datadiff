@@ -9,8 +9,7 @@
 #' A scalar column identifier. The new columns will be inserted immediately
 #' after this column.
 #' @param data
-#' A data frame, containing the new column data, whose length (i.e. number of
-#' columns) must equal that of \code{cols}.
+#' A data frame containing the new column data.
 #'
 #' @return A \code{patch_insert} object.
 #'
