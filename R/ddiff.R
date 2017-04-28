@@ -125,6 +125,9 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
   patch_list <- c(purrr::map(1:ncol(df1), .f = function(i) {
     candidate_tx[[i]][[soln[i]]]
   }), patch_perm(perm))
+  patch_list <- purrr::discard(patch_list, .p = function(p) {
+    identical(patch_type(p, short = TRUE), "identity")
+  })
   candidate <- Reduce(compose_patch, rev(patch_list))
 
   if (verbose) {
