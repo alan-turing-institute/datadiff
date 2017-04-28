@@ -20,3 +20,7 @@ unordered categorical data.}
 \description{
 Logical vectors are treated as unordered categorical data.
 }
+\details{
+The mismatch between vectors of different types is always +Inf, if
+\code{scale} is \code{TRUE}, and 1 otherwise.
+}

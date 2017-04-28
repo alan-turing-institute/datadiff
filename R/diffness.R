@@ -57,6 +57,9 @@ diffness.data.frame <- function(x, y, scale = TRUE, col_diff = 1, ...) {
 
 #' Compute the mismatch between two continuous numeric vectors
 #'
+#' The mismatch between vectors of different types is always +Inf, if
+#' \code{scale} is \code{TRUE}, and 1 otherwise.
+#'
 #' @param x,y
 #' A pair of vectors of type \code{double}.
 #' @param scale
@@ -87,8 +90,9 @@ diffness.double <- function(x, y, scale = TRUE, diff = ks, ...) {
 #' ignore ordering, set the \code{diff} argument to \code{tv} (total variation
 #' distance).
 #'
-#' The mismatch between an integer vector and a non-integer numeric vector is
-#' always +Inf.
+#' The mismatch between vectors of different types is always +Inf, if
+#' \code{scale} is \code{TRUE}, and 1 otherwise. This includes the case of
+#' an integer vector and a non-integer numeric vector.
 #'
 #' @param x,y
 #' A pair of vectors of type \code{integer}.
@@ -105,7 +109,8 @@ diffness.double <- function(x, y, scale = TRUE, diff = ks, ...) {
 diffness.integer <- function(x, y, scale = TRUE, diff = ks, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.integer(y)) return(+Inf)
+  if (!is.integer(y))
+    return(ifelse(scale, yes = +Inf, no = 1))
 
   # Note that, when diff = ks (the default), the following call to diff(x, y)
   # produces the same result as if we were to explicitly treat integers as
@@ -164,8 +169,6 @@ diffness.ordered <- function(x, y, scale = TRUE, diff = ks, ...) {
 diffness.factor <- function(x, y, scale = TRUE, diff = tv, ...) {
   stopifnot(is.factor(y))
 
-  if (!is.factor(y)) return(+Inf)
-
   ret <- diff(x, y)
   if (!scale)
     return(ret)
@@ -175,6 +178,9 @@ diffness.factor <- function(x, y, scale = TRUE, diff = tv, ...) {
 #' Compute the mismatch between two character vectors
 #'
 #' Character vectors are treated as unordered categorical data.
+#'
+#' The mismatch between vectors of different types is always +Inf, if
+#' \code{scale} is \code{TRUE}, and 1 otherwise.
 #'
 #' @param x,y
 #' A pair of vectors of type \code{character}.
@@ -191,7 +197,8 @@ diffness.factor <- function(x, y, scale = TRUE, diff = tv, ...) {
 diffness.character <- function(x, y, scale = TRUE, diff = tv, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.character(y)) return(+Inf)
+  if (!is.character(y))
+    return(ifelse(scale, yes = +Inf, no = 1))
 
   diffness(as.factor(x), as.factor(y), diff = diff, scale = scale)
 }
@@ -199,6 +206,9 @@ diffness.character <- function(x, y, scale = TRUE, diff = tv, ...) {
 #' Compute the mismatch between two logical vectors
 #'
 #' Logical vectors are treated as unordered categorical data.
+#'
+#' The mismatch between vectors of different types is always +Inf, if
+#' \code{scale} is \code{TRUE}, and 1 otherwise.
 #'
 #' @param x,y
 #' A pair of vectors of type \code{logical}.
@@ -215,7 +225,8 @@ diffness.character <- function(x, y, scale = TRUE, diff = tv, ...) {
 diffness.logical <- function(x, y, scale = TRUE, diff = tv, ...) {
   stopifnot(is.vector(y))
 
-  if (!is.logical(y)) return(+Inf)
+  if (!is.logical(y))
+    return(ifelse(scale, yes = +Inf, no = 1))
 
   diffness(as.factor(x), as.factor(y), diff = diff, scale = scale)
 }
@@ -234,7 +245,7 @@ diffness_scale <- function(nx, ny) {
 
   # TODO: replace this with 1/costs_scale(nx, ny).
 
-  sqrt(nx * ny / (nx + ny))
+  sqrt((nx * ny) / (nx + ny))
 }
 
 

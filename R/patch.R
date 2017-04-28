@@ -210,7 +210,6 @@ print.patch <- function(x, ...) {
     cat("Composed patch with elementary constituents:\n")
     return(invisible(purrr::map(decompose_patch(x), .f = function(p) {
       print(p)
-      cat("\n")
     })))
   }
   type <- paste(setdiff(class(x), c("patch", "function")), sep = ",")
@@ -221,5 +220,6 @@ print.patch <- function(x, ...) {
     cat(type, "with parameters:\n")
     cat(paste(print_patch_params(x), collapse = "\n"))
   }
+  cat("\n")
   invisible(x)
 }

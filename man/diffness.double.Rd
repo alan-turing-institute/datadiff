@@ -18,5 +18,6 @@ numeric data.}
 \item{...}{Additional arguments are ignored.}
 }
 \description{
-Compute the mismatch between two continuous numeric vectors
+The mismatch between vectors of different types is always +Inf, if
+\code{scale} is \code{TRUE}, and 1 otherwise.
 }

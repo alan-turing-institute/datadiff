@@ -23,6 +23,7 @@ ignore ordering, set the \code{diff} argument to \code{tv} (total variation
 distance).
 }
 \details{
-The mismatch between an integer vector and a non-integer numeric vector is
-always +Inf.
+The mismatch between vectors of different types is always +Inf, if
+\code{scale} is \code{TRUE}, and 1 otherwise. This includes the case of
+an integer vector and a non-integer numeric vector.
 }

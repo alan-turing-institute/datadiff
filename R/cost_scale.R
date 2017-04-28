@@ -11,5 +11,5 @@
 #'
 #' @export
 cost_scale <- function(nx, ny) {
-  sqrt(nx + ny / (nx * ny))
+  sqrt((nx + ny) / (nx * ny))
 }

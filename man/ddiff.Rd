@@ -4,7 +4,7 @@
 \alias{ddiff}
 \title{Diff two data frames}
 \usage{
-ddiff(df1, df2, cost_permute, cost_transform, cost_break = 0.99,
+ddiff(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
   as.list = FALSE, verbose = FALSE)
 }
 \arguments{

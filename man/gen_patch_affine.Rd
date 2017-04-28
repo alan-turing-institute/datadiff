@@ -4,7 +4,7 @@
 \alias{gen_patch_affine}
 \title{Generate an affine patch}
 \usage{
-gen_patch_affine(df1, col1, df2, col2 = col1, diff = ks)
+gen_patch_affine(df1, col1, df2, col2 = col1, diff = ks, verbose = FALSE)
 }
 \arguments{
 \item{df1}{A data frame. The column specified in the \code{col1} argument must contain
@@ -19,6 +19,9 @@ a vector of type \code{double} with at least one two-missing values.}
 this takes the value of \code{col1}.}
 
 \item{diff}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
+
+\item{verbose}{A logical flag to turn on/off warnings associated with failed optimisation
+attempts.}
 }
 \value{
 A composite \code{patch} object.
@@ -29,6 +32,14 @@ of a \code{patch_shift} and a \code{patch_scale}, whose 'shift' and 'scale
 factor' parameters hav been selected with the aim of minimising the mismatch
 between the vector \code{y} and the patch applied to the given data frame.
 }
+\details{
+Uses the \code{\link{optim}} function to optimise the affine transformation
+parameters for the given mismatch (or 'diff') method, which defaults to
+\code{\link{ks}}. The numerical methods available to \code{optim} are tried,
+in the order in which they apper in that function's default \code{method}
+argument, until convergence is achieved. If none of the methods succeeds an
+error is thrown.
+}
 \seealso{
-\code{\link{gen_patch_shift}} \code{\link{gen_patch_scale}}
+\code{\link{optim}}
 }

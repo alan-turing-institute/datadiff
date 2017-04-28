@@ -3,7 +3,7 @@ context("ddiff")
 
 test_that("the ddiff function works", {
 
-  generate_test_df <- function(n = 50) {
+  generate_test_df <- function(n = 100) {
     v1 <- rnorm(n)
     v2 <- rnorm(n, sd = 4, mean = 1)
     v3 <- rexp(n)
@@ -14,22 +14,32 @@ test_that("the ddiff function works", {
   }
 
   set.seed(22)
-  df1 <- generate_test_df(50)
-  df2 <- generate_test_df(50)
+  df1 <- generate_test_df(1000)
+  df2 <- generate_test_df(1000)
 
-  cost_transform <- 0.1
-  cost_permute <- 0.1
+  cost_transform <- 0.7
+  cost_permute <- 0.4
 
   result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
                   cost_transform = cost_transform)
 
+  expect_true(is_patch(result, allow_composed = FALSE))
+  expect_equal(patch_type(result), "identity")
+
+  # Reducing the transformation patch cost changes the result.
+  cost_transform <- 0.6
+  result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
+                  cost_transform = cost_transform)
+
   expect_true(is_patch(result, allow_composed = TRUE))
+  expect_false(is_patch(result, allow_composed = FALSE))
+
 
   # TODO: unfinished - include some tests!
 
   # Test with the numeric columns permuted in df1 and a shift.
-  df1[[1]] <- 4 + df1[[1]]
-  df1 <- df1[c(2, 3, 1, 4, 5)]
+  df2[[1]] <- 4 + df2[[1]]
+  df2 <- df2[c(2, 3, 1, 4, 5)]
 
   result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
                   cost_transform = cost_transform)
