@@ -4,20 +4,13 @@
 \alias{ddiff}
 \title{Diff two data frames}
 \usage{
-ddiff(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
-  as.list = FALSE, verbose = FALSE)
+ddiff(df1, df2, mismatch = purrr::partial(diffness, scale = FALSE),
+  patch_generators = list(gen_patch_transform), patch_penalties = 0.2,
+  break_penalty = 0.95, scale_penalty = scale_penalty, as.list = FALSE,
+  verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
-
-\item{cost_permute}{A number in the unit interval representing the cost of a permute patch
-operation.}
-
-\item{cost_transform}{A number in the unit interval representing the cost of a transformation patch
-(i.e. affine for continuous data, recode for categorical) operation.}
-
-\item{cost_break}{A number in the unit interval representing the cost of a break patch
-operation.}
 
 \item{as.list}{A logical flag. If \code{TRUE} the return value is a list of patches.
 Otherwise a composite patch object is returned.}

@@ -4,25 +4,33 @@
 \alias{gen_patch_break}
 \title{Generate a break patch}
 \usage{
-gen_patch_break(df1, col1, df2, col2 = col1)
+gen_patch_break(df1, df2, col1, col2 = col1, ...)
 }
 \arguments{
 \item{df1}{A data frame. The column specified in the \code{col1} argument must contain
 a vector of type \code{double} with at least one non-missing value.}
 
-\item{col1}{A column identifier (integer or string column name) of length 1.}
-
 \item{df2}{A data frame. The column specified in the \code{col2} argument must contain
 a vector of type \code{double} with at least one non-missing value.}
 
+\item{col1}{A column identifier (integer or string column name) of length 1.}
+
 \item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
+
+\item{...}{Additional arguments are ignored.}
 }
 \value{
-A \code{patch_break} object.
+A \code{patch_break} object with an attribute containing the
+\code{mismatch} measure which, uniquely in the case of break patches, is always
+identically equal to zero.
 }
 \description{
 Generates a \code{patch_break} object.
+}
+\details{
+Break patches are unique in that the mismatch between a broken column and
+any other column is always taken to be zero.
 }
 \seealso{
 \code{\link{patch_break}}

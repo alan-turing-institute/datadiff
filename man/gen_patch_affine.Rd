@@ -4,27 +4,32 @@
 \alias{gen_patch_affine}
 \title{Generate an affine patch}
 \usage{
-gen_patch_affine(df1, col1, df2, col2 = col1, diff = ks, verbose = FALSE)
+gen_patch_affine(df1, df2, mismatch = ks, col1, col2 = col1,
+  verbose = FALSE, ...)
 }
 \arguments{
 \item{df1}{A data frame. The column specified in the \code{col1} argument must contain
 a vector of type \code{double} with at least two non-missing values.}
 
-\item{col1}{A column identifier (integer or string column name) of length 1.}
-
 \item{df2}{A data frame. The column specified in the \code{col2} argument must contain
 a vector of type \code{double} with at least one two-missing values.}
+
+\item{mismatch}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
+
+\item{col1}{A column identifier (integer or string column name) of length 1.}
 
 \item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
 
-\item{diff}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
-
 \item{verbose}{A logical flag to turn on/off warnings associated with failed optimisation
 attempts.}
+
+\item{...}{Additional arguments are ignored.}
 }
 \value{
-A composite \code{patch} object.
+An 'affine' \code{patch} object (consisting of the composition of a
+shift and scale patch) with an attribute containing the \code{mismatch} measure
+used to generate it.
 }
 \description{
 Generates a composite 'affine' \code{patch} object, formed as the composition
@@ -34,11 +39,11 @@ between the vector \code{y} and the patch applied to the given data frame.
 }
 \details{
 Uses the \code{\link{optim}} function to optimise the affine transformation
-parameters for the given mismatch (or 'diff') method, which defaults to
-\code{\link{ks}}. The numerical methods available to \code{optim} are tried,
-in the order in which they apper in that function's default \code{method}
-argument, until convergence is achieved. If none of the methods succeeds an
-error is thrown.
+parameters for the given mismatch (or 'mismatch') method, which defaults to
+\code{\link{ks}} (Kolmogorov-Smirnov). The numerical methods available to
+\code{optim} are tried, in the order in which they apper in that function's
+default \code{method} argument, until convergence is achieved. If none of the
+methods succeeds an error is thrown.
 }
 \seealso{
 \code{\link{optim}}

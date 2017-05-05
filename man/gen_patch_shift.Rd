@@ -4,21 +4,23 @@
 \alias{gen_patch_shift}
 \title{Generate a shift patch}
 \usage{
-gen_patch_shift(df1, col1, df2, col2 = col1, diff = ks)
+gen_patch_shift(df1, df2, mismatch = ks, col1, col2 = col1)
 }
 \arguments{
 \item{df1}{A data frame. The column specified in the \code{col1} argument must contain
 a vector of type \code{double} with at least one non-missing value.}
 
-\item{col1}{A column identifier (integer or string column name) of length 1.}
-
 \item{df2}{A data frame. The column specified in the \code{col2} argument must contain
 a vector of type \code{double} with at least one non-missing value.}
+
+\item{mismatch}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
+
+\item{col1}{A column identifier (integer or string column name) of length 1.}
 
 \item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
 
-\item{diff}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
+\item{mismatch}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
 }
 \value{
 A \code{patch_shift} object.

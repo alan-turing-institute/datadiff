@@ -4,10 +4,10 @@
 \alias{tv}
 \title{Total variation distance for two discrete variables (as factors)}
 \usage{
-tv(f1, f2)
+tv(v1, v2)
 }
 \arguments{
-\item{f1, f2}{A pair of factors. Both must have at least one non-missing value.}
+\item{v1, f2}{A pair of factors. Both must have at least one non-missing value.}
 }
 \value{
 A number between 0 and 1 inclusive.

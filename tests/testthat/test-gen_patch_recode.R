@@ -14,6 +14,9 @@ test_that("the gen_patch_recode function works", {
   expect_true(is_patch(result))
   expect_identical(patch_type(result), expected = "recode")
 
+  # TODO: add diff argument to gen_patch_recode.
+  expect_identical(attr(result, "diff"), expected = tv)
+
   expected <- c("1" = 3, "2" = 5, "3" = 1, "4" = 4, "5" = 2)
   expect_equal(get_patch_params(result)[["encoding"]], expected)
 
@@ -98,7 +101,7 @@ test_that("the gen_patch_recode function works", {
   df2 <- data.frame("v2" = rnorm(1000))
 
   expect_error(gen_patch_recode(df1, col1 = 1L, df2 = df2),
-               regexp = "Encodings require discrete data")
+               regexp = "Encodings require categorical data")
 
   # Test in the presence of NA values.
   df1 <- data.frame("v1" = sample.int(5, size=1000, replace=TRUE, prob=prob1))

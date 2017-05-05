@@ -4,10 +4,13 @@
 \alias{patch_break}
 \title{\code{patch_break} S3 class constructor}
 \usage{
-patch_break(cols)
+patch_break(cols, data)
 }
 \arguments{
 \item{cols}{A vector of column identifiers.}
+
+\item{data}{A data frame containing the new column data. The number of columns in
+\code{data} must be equal to the length of \code{cols}.}
 }
 \value{
 A \code{patch_break} object.

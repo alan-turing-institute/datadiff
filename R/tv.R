@@ -4,35 +4,35 @@
 #' distributions, coded as unordered factors. The result is a number in the
 #' (closed) unit interval.
 #'
-#' @param f1,f2
+#' @param v1,f2
 #' A pair of factors. Both must have at least one non-missing value.
 #'
 #' @return A number between 0 and 1 inclusive.
 #'
 #' @export
-tv <- function(f1, f2) {
+tv <- function(v1, v2) {
 
-  stopifnot(is.factor(f1) && is.factor(f2))
+  stopifnot(is.factor(v1) && is.factor(v2))
 
-  if (sum(!is.na(f1)) == 0 || sum(!is.na(f2)) == 0)
+  if (sum(!is.na(v1)) == 0 || sum(!is.na(v2)) == 0)
     stop("Both arguments must have one or more non-missing values.")
 
-  lev1 <- levels(f1)
-  lev2 <- levels(f2)
+  lev1 <- levels(v1)
+  lev2 <- levels(v2)
 
   # if (length(intersect(lev1, lev2)) == 0)
   #   return(1.0)
 
-  # Align levels of f1 and f2, if necessary.
+  # Align levels of v1 and v2, if necessary.
   if (!identical(lev1, lev2)) {
     lev <- union(lev1, lev2)
-    f1 <- factor(f1, levels = lev)
-    f2 <- factor(f2, levels = lev)
+    v1 <- factor(v1, levels = lev)
+    v2 <- factor(v2, levels = lev)
   }
 
-  nbins <- length(levels(f1))
-  t1 <- tabulate(f1, nbins = nbins)
-  t2 <- tabulate(f2, nbins = nbins)
+  nbins <- length(levels(v1))
+  t1 <- tabulate(v1, nbins = nbins)
+  t2 <- tabulate(v2, nbins = nbins)
 
   sum(abs(t1/sum(t1) - t2/sum(t2)))/2
 }

@@ -7,6 +7,9 @@
 #'
 #' @param cols
 #' A vector of column identifiers.
+#' @param data
+#' A data frame containing the new column data. The number of columns in
+#' \code{data} must be equal to the length of \code{cols}.
 #'
 #' @return A \code{patch_break} object.
 #'
@@ -14,27 +17,21 @@
 #'
 #' @seealso \code{\link{is_valid_columns}} \code{\link{is_compatible_columns}}
 #'
-patch_break <- function(cols) {
+patch_break <- function(cols, data) {
 
-  # TODO: the current implementation, which is temporary and intended only for
-  # testing, replaces all values in the specified columns with NAs.
+  stopifnot(ncol(data) == length(cols))
 
-  # Check the given parameters are appropriate for the delete patch type.
-  stopifnot(is_valid_columns(cols))
+  # Define a list of break patches (one for each column) each of which is an
+  # insert-then-delete composition. Note that delete-then-insert would be
+  # problematic in the case of character column identifiers when the first
+  # column is being broken (as we would have to insert at the zero'th position).
+  patch_list <- purrr::map(1:length(cols), .f = function(i) {
 
-  # Construct the patch object as a closure.
-  obj <- function(df) {
+    p_insert <- patch_insert(insertion_point = cols[i],
+                             data = data[, i, drop = FALSE])
+    p_delete <- patch_delete(cols = cols[i])
 
-    # Check for compatability between the data frame and the parameters.
-    stopifnot(is_compatible_columns(cols, df))
-
-    # Transform the data frame.
-    df[cols] <- NA
-
-    stopifnot(is.data.frame(df))
-    df
-  }
-
-  class(obj) <- c("patch_break", "patch", "function")
-  obj
+    compose_patch(p_delete, p_insert)
+  })
+  Reduce(compose_patch, rev(patch_list))
 }

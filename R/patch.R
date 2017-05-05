@@ -102,6 +102,10 @@ get_patch_params <- function(patch) {
   purrr::discard(objs, is_patch)
 }
 
+#### TODO: BUGFIX REQD: test print_patch_params with single column data frame
+#parameter
+
+
 #' Print the parameters associated with a patch object.
 #'
 #' @param patch
@@ -131,7 +135,7 @@ print_patch_params <- function(patch, digits=3) {
       return(paste(x, collapse = " "))
     if (is.double(x) && length(x) == 1)
       return(round(x, digits))
-    if (length(x) == 1)
+    if (!is.list(x) && length(x) == 1)
       return(as.character(x))
     paste0("<", paste(class(x), collapse = "|"), ">")
   }

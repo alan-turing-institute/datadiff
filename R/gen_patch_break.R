@@ -2,30 +2,48 @@
 #'
 #' Generates a \code{patch_break} object.
 #'
+#' Break patches are unique in that the mismatch between a broken column and
+#' any other column is always taken to be zero.
+#'
 #' @param df1
 #' A data frame. The column specified in the \code{col1} argument must contain
 #' a vector of type \code{double} with at least one non-missing value.
-#' @param col1
-#' A column identifier (integer or string column name) of length 1.
 #' @param df2
 #' A data frame. The column specified in the \code{col2} argument must contain
 #' a vector of type \code{double} with at least one non-missing value.
+#' @param col1
+#' A column identifier (integer or string column name) of length 1.
 #' @param col2
 #' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
+#' @param ...
+#' Additional arguments are ignored.
 #'
-#' @return A \code{patch_break} object.
+#' @return A \code{patch_break} object with an attribute containing the
+#' \code{mismatch} measure which, uniquely in the case of break patches, is always
+#' identically equal to zero.
 #'
 #' @seealso \code{\link{patch_break}}
 #'
 #' @export
-gen_patch_break <- function(df1, col1, df2, col2 = col1) {
+gen_patch_break <- function(df1, df2, col1,
+                            col2 = col1, ...) {
 
-  # TODO: the current implementation is temporary and intended only for
-  # testing.
+  stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
+  stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
 
-  stopifnot(is_compatible_columns(col1, df1))
-  stopifnot(is_compatible_columns(col2, df2))
+  v1 <- df1[[col1]]
+  v2 <- df2[[col2]]
 
-  patch_break(col1)
+  stopifnot(sum(!is.na(v1)) != 0 && sum(!is.na(v2)) != 0)
+
+  # The new column consists entirely of NAs.
+  data <- data.frame(rep(NA, times = nrow(df2)))
+  names(data) <- ifelse(is.character(col2), yes = col2, no = colnames(df2)[col2])
+
+  ret <- patch_break(col1, data = data)
+
+  # Break patch is unique: the associated mismatch function is identically zero.
+  attr(ret, which = "mismatch") <- function(v1, v2) { 0 }
+  ret
 }

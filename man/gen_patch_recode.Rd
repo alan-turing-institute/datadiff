@@ -4,19 +4,21 @@
 \alias{gen_patch_recode}
 \title{Generate a recode patch}
 \usage{
-gen_patch_recode(df1, col1, df2, col2 = col1, ...)
+gen_patch_recode(df1, df2, mismatch = tv, col1, col2 = col1, ...)
 }
 \arguments{
 \item{df1}{A data frame.}
 
-\item{col1}{A column identifier (integer or string column name) with length 1.}
-
 \item{df2}{A data frame.}
+
+\item{mismatch}{Mismatch method. The default is \code{tv} (Total variation distance).}
+
+\item{col1}{A column identifier (integer or string column name) with length 1.}
 
 \item{col2}{A column identifier (integer or string column name) with length 1. By default
 this takes the value of \code{col1}.}
 
-\item{...}{Additional arguments passed to the \code{patch_recode} function.}
+\item{...}{Additional arguments are ignored.}
 }
 \value{
 A \code{patch_recode} object.

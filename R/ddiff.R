@@ -5,15 +5,6 @@
 #'
 #' @param df1,df2
 #' A pair of data frames.
-#' @param cost_permute
-#' A number in the unit interval representing the cost of a permute patch
-#' operation.
-#' @param cost_transform
-#' A number in the unit interval representing the cost of a transformation patch
-#' (i.e. affine for continuous data, recode for categorical) operation.
-#' @param cost_break
-#' A number in the unit interval representing the cost of a break patch
-#' operation.
 #' @param as.list
 #' A logical flag. If \code{TRUE} the return value is a list of patches.
 #' Otherwise a composite patch object is returned.
@@ -25,7 +16,12 @@
 #'
 #' @export
 #'
-ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
+ddiff <- function(df1, df2,
+                  mismatch = purrr::partial(diffness, scale = FALSE),
+                  patch_generators = list(gen_patch_transform),
+                  patch_penalties = 0.2,
+                  break_penalty = 0.95,
+                  scale_penalty = scale_penalty,
                   as.list = FALSE, verbose = FALSE) {
 
 
@@ -33,8 +29,7 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
 
   stopifnot(cost_permute >= 0 && cost_permute <= 1)
   stopifnot(cost_transform >= 0 && cost_transform <= 1)
-  ## TEMP! temporary negative cost_break for testing.
-  #stopifnot(cost_break >= 0 && cost_break <= 1)
+  stopifnot(cost_break >= 0 && cost_break <= 1)
 
   cost_scale_factor <- cost_scale(nrow(df1), nrow(df2))
 
@@ -51,66 +46,80 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
   if (length(df1) != length(df2))
     stop("Not yet implemented")
 
-  # Construct matrices to hold the pairwise costs and the diffs.
-  m_costs <- matrix(NA, nrow = ncol(df1), ncol = ncol(df2))
-  m_diffs <- m_costs
+  # old:
+  # # Construct matrices to hold the pairwise costs and the diffs.
+  # m_costs <- matrix(NA, nrow = ncol(df1), ncol = ncol(df2))
+  # m_diffs <- m_costs
 
-  # Construct a nested list of candidate transformation (or break) patches and
-  # simultaneously fill the costs & diffs matrices. Note that the costs + diffs
-  # matrix cannot be processed until all elements have been calculated, after
-  # which we must be able to recover the patches involved in those calculations.
-  candidate_tx <- purrr::map(1:ncol(df1), .f = function(i) {
-    purrr::map(1:ncol(df2), .f = function(j) {
+  pw_candidates <- pairwise_candidates(df1, df2 = df2,
+                                       mismatch = mismatch,
+                                       patch_generators = patch_generators,
+                                       patch_penalties = patch_penalties,
+                                       break_penalty = break_penalty,
+                                       scale_penalty = scale_penalty,
+                                       verbose = verbose)
 
-      # Determine the appropriate type of transformation patch.
-      if (is.double(df1[[i]]))
-        gen_patch_tx <- gen_patch_affine
-      else
-        gen_patch_tx <- gen_patch_recode
+  # OLD:
+  # # Construct a nested list of candidate transformation (or break) patches and
+  # # simultaneously fill the costs & diffs matrices. Note that the costs + diffs
+  # # matrix cannot be processed until all elements have been calculated, after
+  # # which we must be able to recover the patches involved in those calculations.
+  # candidate_tx <- purrr::map(1:ncol(df1), .f = function(i) {
+  #   purrr::map(1:ncol(df2), .f = function(j) {
+  #
+  #     # Determine the appropriate type of transformation patch.
+  #     if (is.double(df1[[i]]))
+  #       gen_patch_tx <- gen_patch_affine
+  #     else
+  #       gen_patch_tx <- gen_patch_recode
+  #
+  #     # Construct a list of all candidate transformation patches for this column
+  #     # pair, and corresponding costs, in order of preference (in case of a tie).
+  #     tx_list <- list(
+  #       list(patch_identity(), 0),
+  #       list(tryCatch(
+  #         gen_patch_tx(df1 = df1, col1 = i, df2 = df2, col2 = j),
+  #         error = function(e) {
+  #           if (verbose)
+  #             warning(paste0("Patch generator at [", i, ", ", j,
+  #                            "] returned error:\n", conditionMessage(e), "\n"))
+  #           NULL
+  #         }), cost_scale_factor * cost_transform),
+  #       list(gen_patch_break(df1 = df1, col1 = i, df2 = df2, col2 = j),
+  #            cost_scale_factor * cost_break)
+  #     )
+  #     tx_list <- purrr::discard(tx_list, .p = function(x) { is.null(x[[1]]) })
+  #
+  #     # Compute the corresponding diffnesses.
+  #     sink <- purrr::map(1:length(tx_list), .f = function(k) {
+  #       p <- tx_list[[k]][[1]]
+  #       d <- diffness(p(df1)[[i]], df2[[j]], scale = FALSE)
+  #       tx_list[[k]] <<- c(tx_list[[k]], d)
+  #     })
+  #
+  #     # Identify which is the best candidate in the list.
+  #     column_costs <- purrr::map_dbl(tx_list, .f = function(x) {
+  #       sum(unlist(purrr::discard(x, .p = is_patch, allow_composed = TRUE)))
+  #     })
+  #     best <- min(which(column_costs == min(column_costs)))
+  #     tx <- tx_list[[best]]
+  #
+  #     # Fill the costs and diffs matrices and return the best candidate patch.
+  #     m_costs[i, j] <<- tx[[2]]
+  #     m_diffs[i, j] <<- tx[[3]]
+  #     tx[[1]]
+  #   })
+  # })
 
-      # Construct a list of all candidate transformation patches for this column
-      # pair, and corresponding costs, in order of preference (in case of a tie).
-      tx_list <- list(
-        list(patch_identity(), 0),
-        list(tryCatch(
-          gen_patch_tx(df1 = df1, col1 = i, df2 = df2, col2 = j),
-          error = function(e) {
-            if (verbose)
-              warning(paste0("gen_patch_tx at [", i, ", ", j,
-                             "] returned error:\n", conditionMessage(e), "\n"))
-            NULL
-          }), cost_scale_factor * cost_transform),
-        list(gen_patch_break(df1 = df1, col1 = i, df2 = df2, col2 = j),
-             cost_scale_factor * cost_break)
-      )
-      tx_list <- purrr::discard(tx_list, .p = function(x) { is.null(x[[1]]) })
-
-      # Compute the corresponding diffnesses.
-      sink <- purrr::map(1:length(tx_list), .f = function(k) {
-        p <- tx_list[[k]][[1]]
-        d <- diffness(p(df1)[[i]], df2[[j]], scale = FALSE)
-        tx_list[[k]] <<- c(tx_list[[k]], d)
-      })
-
-      # Identify which is the best candidate in the list.
-      column_costs <- purrr::map_dbl(tx_list, .f = function(x) {
-        sum(unlist(purrr::discard(x, .p = is_patch, allow_composed = TRUE)))
-      })
-      best <- min(which(column_costs == min(column_costs)))
-      tx <- tx_list[[best]]
-
-      # Fill the costs and diffs matricess and return the best candidate patch.
-      m_costs[i, j] <<- tx[[2]]
-      m_diffs[i, j] <<- tx[[3]]
-      tx[[1]]
-    })
-  })
+  m_penalty <- matrix(purrr::map_dbl(pw_candidates, .f = function(p) {
+    attr(p, "penalty")
+  }))
 
   if (verbose) {
-    cat("costs matrix:\n")
-    print(m_costs)
-    cat("diffs matrix:\n")
-    print(m_diffs)
+    cat("penalty matrix:\n")
+    print(m_penalty)
+    cat("mismatch matrix:\n")
+    print(m_mismatch)
   }
 
   # Sove the assignment problem by applying the Hungarian algorithm to the costs
@@ -119,14 +128,13 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
   # Use order to convert from column indices to perm.
   perm <- order(as.integer(soln))
 
-  # TODO: remove any superfluous identity patches in the selected_tx list.
   # Identify the corresponding transformation patches and compose them, together
   # with the permutation patch, to construct the overall candidate patch.
   patch_list <- c(purrr::map(1:ncol(df1), .f = function(i) {
     candidate_tx[[i]][[soln[i]]]
   }), patch_perm(perm))
   patch_list <- purrr::discard(patch_list, .p = function(p) {
-    identical(patch_type(p, short = TRUE), "identity")
+    is(p, "patch_identity")
   })
   candidate <- Reduce(compose_patch, rev(patch_list))
 
@@ -147,12 +155,28 @@ ddiff <- function(df1, df2, cost_permute, cost_transform, cost_break = -0.01,
   candidate_costs <- purrr::map_dbl(1:ncol(df1), .f = function(i) {
     m_costs[i, soln[i]]
   })
-  candidate_diffness <- diffness(candidate(df1), df2, scale = FALSE)
   candidate_transform_costs <- sum(candidate_costs)
+
+  # TODO NEXT: instead of calling diffness of the entire data frames, we can use
+  # m_diffs matrix to obtain candidate diffness. This has two advantages:
+  # 1. we can set the diffness for the break patch to zero (sidestepping the
+  # issue with identifying break patches and subtracting)
+  # 2. we don't need to treat costsa and diffs separately so we can keep track
+  # of a single matrix m.
+  #   - The disadvantage of this approach is that the final diffness will be
+  #   different from the one on which the decision was made (since it will include
+  #   the break column diffness). But this is inevitable, unless we make the
+  #   'cost' calculation for the break patch include both penalty and mismatch,
+  #   which has it's own drawbacks.
+  candidate_diffness <- diffness(candidate(df1), df2, scale = FALSE)
   candidate_permute_costs <- prod(cost_scale_factor, cost_permute,
                                   sum(perm != 1:ncol(df1)))
   candidate_total <- sum(candidate_diffness, candidate_transform_costs,
                          candidate_permute_costs)
+
+  ### IMP TODO: use the m_diffs matrix here too! i.e. do *not* call diffness.
+  # This is crucial as it makes the diffness function arbitrary (to be set inside
+  # the patch_generators)
 
   # Calculate the total cost of doing nothing as the (unscaled) diffness between
   # the original data frames.

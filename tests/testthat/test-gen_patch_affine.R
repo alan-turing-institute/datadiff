@@ -17,6 +17,8 @@ test_that("the gen_patch_affine function works", {
 
   expect_identical(patch_type(result), c("scale", "shift"))
 
+  expect_identical(attr(result, "diff"), expected = ks)
+
   # In this simple case the optimised parameters agree with those expected,
   # given the underlying distributions.
   expect_equal(get_patch_params(result)[[1]][["scale_factor"]],
@@ -33,6 +35,9 @@ test_that("the gen_patch_affine function works", {
   expect_true(is_patch(result, allow_composed = TRUE))
 
   expect_true(ks(result(df1)[[1L]], df2[[1L]]) < 1/2 * ks(df1[[1L]], df2[[1L]]))
+
+  expect_true(is.function(attr(result, "diff")))
+  expect_identical(attr(result, "diff"), expected = ks)
 
   # TODO: test with samples from various distributions.
 })

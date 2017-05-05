@@ -7,24 +7,23 @@
 #' @param df1
 #' A data frame. The column specified in the \code{col1} argument must contain
 #' a vector of type \code{double} with at least two non-missing values.
-#' @param col1
-#' A column identifier (integer or string column name) of length 1.
 #' @param df2
 #' A data frame. The column specified in the \code{col2} argument must contain
 #' a vector of type \code{double} with at least two non-missing values.
+#' @param mismatch
+#' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).
+#' @param col1
+#' A column identifier (integer or string column name) of length 1.
 #' @param col2
 #' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
-#' @param diff
-#' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).
 #'
 #' @return A \code{patch_scale} object.
 #'
 #' @seealso \code{\link{gen_patch_affine}} \code{\link{mad}}
 #'
 #' @export
-gen_patch_scale <- function(df1, col1, df2, col2 = col1,
-                            diff = ks) {
+gen_patch_scale <- function(df1, df2, mismatch = ks, col1, col2 = col1, ...) {
 
   # Note that the optimal scale factor is never unique, and uniqueness may be
   # lost in two ways:
@@ -42,15 +41,7 @@ gen_patch_scale <- function(df1, col1, df2, col2 = col1,
   stopifnot(sum(!is.na(x1)) != 0 && sum(!is.na(x2)) != 0)
 
   # Naive numerical optimisation:
-  f <- function(lambda) { diff(lambda * x1, x2) }
-
-
-  # MUCH CARE REQUIRED HERE: mean(x1) may well be very close to zero (given the
-  # gen_patch_affine algorithm)
-
-  # MUST ALSO CONSIDER THE POSSIBILITY THAT A CHANGE OF SIGN IS NEEDED *BUT*
-  # NOT INCLUDE IT UNLESS NECESSARY - this is the tricky bit because with
-  # mean(x1) close to zero a minus sign might enter unnecessarily.
+  f <- function(lambda) { mismatch(lambda * x1, x2) }
 
   Q1x1 <- stats::quantile(x1, probs = 0.25, na.rm = TRUE)
   Q3x1 <- stats::quantile(x1, probs = 0.75, na.rm = TRUE)
@@ -102,5 +93,8 @@ gen_patch_scale <- function(df1, col1, df2, col2 = col1,
   optim_par <- stats::optimise(f, interval = interval)
 
   scale_factor <- optim_par$minimum
-  patch_scale(col1, scale_factor)
+  ret <- patch_scale(col1, scale_factor)
+
+  attr(ret, which = "mismatch") <- mismatch
+  ret
 }

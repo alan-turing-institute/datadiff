@@ -6,36 +6,40 @@
 #' between the vector \code{y} and the patch applied to the given data frame.
 #'
 #' Uses the \code{\link{optim}} function to optimise the affine transformation
-#' parameters for the given mismatch (or 'diff') method, which defaults to
-#' \code{\link{ks}}. The numerical methods available to \code{optim} are tried,
-#' in the order in which they apper in that function's default \code{method}
-#' argument, until convergence is achieved. If none of the methods succeeds an
-#' error is thrown.
+#' parameters for the given mismatch (or 'mismatch') method, which defaults to
+#' \code{\link{ks}} (Kolmogorov-Smirnov). The numerical methods available to
+#' \code{optim} are tried, in the order in which they apper in that function's
+#' default \code{method} argument, until convergence is achieved. If none of the
+#' methods succeeds an error is thrown.
 #'
 #' @param df1
 #' A data frame. The column specified in the \code{col1} argument must contain
 #' a vector of type \code{double} with at least two non-missing values.
-#' @param col1
-#' A column identifier (integer or string column name) of length 1.
 #' @param df2
 #' A data frame. The column specified in the \code{col2} argument must contain
 #' a vector of type \code{double} with at least one two-missing values.
+#' @param mismatch
+#' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).
+#' @param col1
+#' A column identifier (integer or string column name) of length 1.
 #' @param col2
 #' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
-#' @param diff
-#' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).
 #' @param verbose
 #' A logical flag to turn on/off warnings associated with failed optimisation
 #' attempts.
+#' @param ...
+#' Additional arguments are ignored.
 #'
-#' @return A composite \code{patch} object.
+#' @return An 'affine' \code{patch} object (consisting of the composition of a
+#' shift and scale patch) with an attribute containing the \code{mismatch} measure
+#' used to generate it.
 #'
 #' @seealso \code{\link{optim}}
 #'
 #' @export
-gen_patch_affine <- function(df1, col1, df2, col2 = col1, diff = ks,
-                             verbose = FALSE) {
+gen_patch_affine <- function(df1, df2, mismatch = ks, col1, col2 = col1,
+                             verbose = FALSE, ...) {
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
@@ -47,7 +51,7 @@ gen_patch_affine <- function(df1, col1, df2, col2 = col1, diff = ks,
   stopifnot(sum(!is.na(x1)) != 0 && sum(!is.na(x2)) != 0)
 
   # Naive numerical optimisation:
-  f <- function(params) { diff(params[1] + (params[2] * x1), x2) }
+  f <- function(params) { mismatch(params[1] + (params[2] * x1), x2) }
   par <- c(mean(x2, na.rm = TRUE) - mean(x1, na.rm = TRUE), 1)
 
   # Try all applicable numerical methods, as necessary.
@@ -60,7 +64,7 @@ gen_patch_affine <- function(df1, col1, df2, col2 = col1, diff = ks,
   while(par_optim[["convergence"]] != 0 && i != length(optim_methods) + 1) {
 
     if (verbose) {
-      msg <- paste("Optimisation with method", optim_methods[i],
+      msg <- paste("Optimisation attempt with method", optim_methods[i],
                    "failed with code:", par_optim[["convergence"]])
       if (length(par_optim[["message"]]) != 0)
         msg <- paste(msg, "and message:", par_optim[["message"]])
@@ -78,5 +82,7 @@ gen_patch_affine <- function(df1, col1, df2, col2 = col1, diff = ks,
   p_scale <- patch_scale(cols = col1, scale_factor = par_optim[["par"]][2])
 
   # Given the form of f, the scale must be applied before the shift.
-  compose_patch(p_shift, p_scale)
+  ret <- compose_patch(p_shift, p_scale)
+  attr(ret, which = "mismatch") <- mismatch
+  ret
 }
