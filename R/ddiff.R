@@ -29,7 +29,7 @@ ddiff <- function(df1, df2,
 
   stopifnot(cost_permute >= 0 && cost_permute <= 1)
   stopifnot(cost_transform >= 0 && cost_transform <= 1)
-  stopifnot(cost_break >= 0 && cost_break <= 1)
+  stopifnot(cost_break >= 0)
 
   cost_scale_factor <- cost_scale(nrow(df1), nrow(df2))
 
@@ -51,7 +51,7 @@ ddiff <- function(df1, df2,
   # m_costs <- matrix(NA, nrow = ncol(df1), ncol = ncol(df2))
   # m_diffs <- m_costs
 
-  pw_candidates <- pairwise_candidates(df1, df2 = df2,
+  cw_candidates <- columnwise_candidates(df1, df2 = df2,
                                        mismatch = mismatch,
                                        patch_generators = patch_generators,
                                        patch_penalties = patch_penalties,
@@ -111,27 +111,34 @@ ddiff <- function(df1, df2,
   #   })
   # })
 
-  m_penalty <- matrix(purrr::map_dbl(pw_candidates, .f = function(p) {
-    attr(p, "penalty")
-  }))
+  ### IMP TODO: check carefully that unlist is doing what we want!
+  extract_matrix <- function(attr_name) {
+    matrix(purrr::map_dbl(unlist(cw_candidates), .f = function(p) {
+      attr(p, attr_name)
+    }), nrow = ncol(df1), ncol = ncol(df2), byrow = TRUE)
+  }
+
+  # TODO: make these string function parameters (also in columnwise_candidates).
+  m_mismatch <- extract_matrix("mismatch")
+  m_penalty <- extract_matrix("penalty")
 
   if (verbose) {
-    cat("penalty matrix:\n")
-    print(m_penalty)
     cat("mismatch matrix:\n")
     print(m_mismatch)
+    cat("penalty matrix:\n")
+    print(m_penalty)
   }
 
   # Sove the assignment problem by applying the Hungarian algorithm to the costs
   # matrix, then convert the solution into a permutation patch.
-  soln <- clue::solve_LSAP(m_costs + m_diffs, maximum = FALSE)
+  soln <- clue::solve_LSAP(m_mismatch + m_penalty, maximum = FALSE)
   # Use order to convert from column indices to perm.
   perm <- order(as.integer(soln))
 
   # Identify the corresponding transformation patches and compose them, together
   # with the permutation patch, to construct the overall candidate patch.
   patch_list <- c(purrr::map(1:ncol(df1), .f = function(i) {
-    candidate_tx[[i]][[soln[i]]]
+    cw_candidates[[i]][[soln[i]]]
   }), patch_perm(perm))
   patch_list <- purrr::discard(patch_list, .p = function(p) {
     is(p, "patch_identity")
@@ -142,6 +149,10 @@ ddiff <- function(df1, df2,
     cat("candidate patch:\n")
     print(candidate)
   }
+
+  #### TODO FROM HERE:
+  # - DON'T CALL diffness AGAIN! Instead use the calculations already performed.
+
 
   # Calculate the total cost of the candidate patch. Here cost_permute is scaled
   # by the number of columns _moved_ by the permutation. Therefore the identity
