@@ -20,10 +20,13 @@ ddiff <- function(df1, df2,
                   mismatch = purrr::partial(diffness, scale = FALSE),
                   patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.2,
-                  break_penalty = 0.95,
+                  break_penalty = 0.99,
                   scale_penalty = scale_penalty,
                   as.list = FALSE, verbose = FALSE) {
 
+  ### TODO: RENAME scale_penalty. It's a function, not a penalty value. Also, it
+  # ought to include a reference to the k-s statistic (because the scaling factor
+  # is intimately connected to that particular mismatch function).
 
   stopifnot(is.data.frame(df1) && is.data.frame(df2))
 

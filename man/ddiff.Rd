@@ -6,7 +6,7 @@
 \usage{
 ddiff(df1, df2, mismatch = purrr::partial(diffness, scale = FALSE),
   patch_generators = list(gen_patch_transform), patch_penalties = 0.2,
-  break_penalty = 0.95, scale_penalty = scale_penalty, as.list = FALSE,
+  break_penalty = 0.99, scale_penalty = scale_penalty, as.list = FALSE,
   verbose = FALSE)
 }
 \arguments{
