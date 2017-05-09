@@ -20,7 +20,7 @@
 #' p <- patch_delete(c("mpg", "gear"))
 #'
 #' # The following are equivalent:
-#' colnames(apply_patch(p, mtcars))
+#' colnames(apply_patch(mtcars, p))
 #' colnames(p(mtcars))
 #'
 #' # Attempting to apply a patch to an incompatible data frame throws an error.

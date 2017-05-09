@@ -24,7 +24,7 @@ by an arbitrary permutation of the column indices.
 colnames(mtcars)
 p <- patch_perm(c(2L, 3L, 1L))
 
-apply_patch(p, mtcars)
+apply_patch(mtcars, p)
 
 # Attempting to apply a patch to an incompatible data frame throws an error.
 \dontrun{

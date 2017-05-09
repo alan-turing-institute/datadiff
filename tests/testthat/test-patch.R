@@ -83,3 +83,34 @@ test_that("the decompose_patch function works", {
   expect_equal(result, list(p1, p1, p2))
 
 })
+
+
+test_that("the apply_patch function works", {
+
+  p1 <- patch_shift(1L, shift = 1)
+  p2 <- patch_scale(1L, scale_factor = 3)
+
+  df <- data.frame(x = rep(1, 10), y = rep(1, 10))
+
+  expected <- data.frame(x = rep(2, 10), y = rep(1, 10))
+  expect_identical(apply_patch(df, p1), expected)
+  expect_identical(apply_patch(df, p1), p1(df))
+
+  expected <- data.frame(x = rep(3, 10), y = rep(1, 10))
+  expect_identical(apply_patch(df, p2), expected)
+  expect_identical(apply_patch(df, p2), p2(df))
+
+  expected <- data.frame(x = rep(6, 10), y = rep(1, 10))
+  expect_identical(apply_patch(apply_patch(df, p1), p2), expected)
+  expect_identical(apply_patch(apply_patch(df, p1), p2), p2(p1(df)))
+
+  expected <- data.frame(x = rep(4, 10), y = rep(1, 10))
+  expect_identical(apply_patch(apply_patch(df, p2), p1), expected)
+  expect_identical(apply_patch(apply_patch(df, p2), p1), p1(p2(df)))
+
+  # Note that the magrittr pipe operator %>% also works:
+  # library(magrittr)
+  # expected <- data.frame(x = rep(6, 10), y = rep(1, 10))
+  # expect_identical(df %>% apply_patch(p1) %>% apply_patch(p2), expected)
+
+})

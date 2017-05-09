@@ -26,7 +26,7 @@ p <- patch_insert("gear", mtcars[2:4])
 p <- patch_insert(0L, mtcars[2:4])
 
 # The following are equivalent:
-colnames(apply_patch(p, mtcars))
+colnames(apply_patch(mtcars, p))
 colnames(p(mtcars))
 
 # Attempting to apply a patch to an incompatible data frame throws an error.

@@ -148,17 +148,17 @@ print_patch_params <- function(patch, digits=3) {
 #'
 #' Transform one data frame into another by applying a patch.
 #'
-#' @param patch
-#' A patch object.
 #' @param df
 #' A data frame.
+#' @param patch
+#' A patch object.
 #' @param ...
 #' Additional arguments passed to the patch function.
 #'
 #' @return A transformed data frame.
 #'
 #' @export
-apply_patch <- function(patch, df, ...) {
+apply_patch <- function(df, patch, ...) {
   stopifnot(is_patch(patch) && is.function(patch))
   ret <- do.call(patch, args = list(df, ...))
   stopifnot(is.data.frame(ret))

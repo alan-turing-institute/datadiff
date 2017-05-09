@@ -30,7 +30,7 @@ head(mtcars)
 p <- patch_recode(c(8L, 9L), encoding = c("0" = FALSE, "1" = TRUE))
 
 # The following are equivalent:
-head(apply_patch(p, mtcars))
+head(apply_patch(mtcars, p))
 head(p(mtcars))
 
 # Attempting to apply a patch to an incompatible data frame throws an error.

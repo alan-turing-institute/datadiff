@@ -4,12 +4,12 @@
 \alias{apply_patch}
 \title{Apply a patch to a data frame.}
 \usage{
-apply_patch(patch, df, ...)
+apply_patch(df, patch, ...)
 }
 \arguments{
-\item{patch}{A patch object.}
-
 \item{df}{A data frame.}
+
+\item{patch}{A patch object.}
 
 \item{...}{Additional arguments passed to the patch function.}
 }

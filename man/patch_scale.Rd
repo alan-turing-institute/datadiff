@@ -24,7 +24,7 @@ purrr::map_dbl(mtcars, mean)
 p <- patch_scale(c(1L, 3L), 2)
 
 # The following are equivalent:
-purrr::map_dbl(apply_patch(p, mtcars), mean)
+purrr::map_dbl(apply_patch(mtcars, p), mean)
 purrr::map_dbl(p(mtcars), mean)
 
 # Attempting to apply a patch to an incompatible data frame throws an error.
