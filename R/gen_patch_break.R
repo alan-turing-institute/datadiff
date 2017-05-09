@@ -19,9 +19,7 @@
 #' @param ...
 #' Additional arguments are ignored.
 #'
-#' @return A \code{patch_break} object with an attribute containing the
-#' \code{mismatch} measure which, uniquely in the case of break patches, is always
-#' identically equal to zero.
+#' @return A \code{patch_break} object.
 #'
 #' @seealso \code{\link{patch_break}}
 #'
@@ -41,9 +39,5 @@ gen_patch_break <- function(df1, df2, col1,
   data <- data.frame(rep(NA, times = nrow(df2)))
   names(data) <- ifelse(is.character(col2), yes = col2, no = colnames(df2)[col2])
 
-  ret <- patch_break(col1, data = data)
-
-  # Break patch is unique: the associated mismatch function is identically zero.
-  attr(ret, which = "mismatch") <- function(v1, v2) { 0 }
-  ret
+  patch_break(col1, data = data)
 }

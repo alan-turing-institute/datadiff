@@ -7,7 +7,7 @@
 tv(v1, v2)
 }
 \arguments{
-\item{v1, f2}{A pair of factors. Both must have at least one non-missing value.}
+\item{v1, v2}{A pair of factors. Both must have at least one non-missing value.}
 }
 \value{
 A number between 0 and 1 inclusive.

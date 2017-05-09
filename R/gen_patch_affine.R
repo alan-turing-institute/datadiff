@@ -32,8 +32,7 @@
 #' Additional arguments are ignored.
 #'
 #' @return An 'affine' \code{patch} object (consisting of the composition of a
-#' shift and scale patch) with an attribute containing the \code{mismatch} measure
-#' used to generate it.
+#' shift and scale patch).
 #'
 #' @seealso \code{\link{optim}}
 #'
@@ -82,7 +81,5 @@ gen_patch_affine <- function(df1, df2, mismatch = ks, col1, col2 = col1,
   p_scale <- patch_scale(cols = col1, scale_factor = par_optim[["par"]][2])
 
   # Given the form of f, the scale must be applied before the shift.
-  ret <- compose_patch(p_shift, p_scale)
-  attr(ret, which = "mismatch") <- mismatch
-  ret
+  compose_patch(p_shift, p_scale)
 }

@@ -4,7 +4,7 @@
 #' distributions, coded as unordered factors. The result is a number in the
 #' (closed) unit interval.
 #'
-#' @param v1,f2
+#' @param v1,v2
 #' A pair of factors. Both must have at least one non-missing value.
 #'
 #' @return A number between 0 and 1 inclusive.

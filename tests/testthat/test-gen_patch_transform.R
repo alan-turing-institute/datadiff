@@ -26,8 +26,6 @@ test_that("the gen_patch_transform function works", {
   expect_equal(get_patch_params(result)[[2]][["shift"]],
                expected = 0, tolerance = 0.1)
 
-  expect_true(is.function(attr(result, "diff")))
-
   result <- gen_patch_transform(df1, col1 = 1L, df2 = df2, col2 = 2L)
   expect_true(is_patch(result, allow_composed = TRUE))
   expect_identical(patch_type(result), c("scale", "shift"))
@@ -36,14 +34,10 @@ test_that("the gen_patch_transform function works", {
   expect_equal(get_patch_params(result)[[2]][["shift"]],
                expected = 4, tolerance = 0.1)
 
-  expect_true(is.function(attr(result, "diff")))
-
   ## Test the case of categorical columns.
   result <- gen_patch_transform(df1, col1 = 4L, df2 = df2, col2 = 4L)
   expect_true(is_patch(result, allow_composed = FALSE))
   expect_identical(patch_type(result), "recode")
-
-  expect_true(is.function(attr(result, "diff")))
 
   ## Test the case of incompatible columns.
   result <- gen_patch_transform(df1, col1 = 1L, df2 = df2, col2 = 4L)

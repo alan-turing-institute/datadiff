@@ -28,8 +28,7 @@ attempts.}
 }
 \value{
 An 'affine' \code{patch} object (consisting of the composition of a
-shift and scale patch) with an attribute containing the \code{mismatch} measure
-used to generate it.
+shift and scale patch).
 }
 \description{
 Generates a composite 'affine' \code{patch} object, formed as the composition

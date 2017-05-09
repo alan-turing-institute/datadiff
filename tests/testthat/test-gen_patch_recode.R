@@ -14,9 +14,6 @@ test_that("the gen_patch_recode function works", {
   expect_true(is_patch(result))
   expect_identical(patch_type(result), expected = "recode")
 
-  # TODO: add diff argument to gen_patch_recode.
-  expect_identical(attr(result, "diff"), expected = tv)
-
   expected <- c("1" = 3, "2" = 5, "3" = 1, "4" = 4, "5" = 2)
   expect_equal(get_patch_params(result)[["encoding"]], expected)
 

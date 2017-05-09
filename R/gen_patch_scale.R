@@ -17,6 +17,8 @@
 #' @param col2
 #' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
+#' @param ...
+#' Additional arguments are ignored.
 #'
 #' @return A \code{patch_scale} object.
 #'
@@ -93,8 +95,5 @@ gen_patch_scale <- function(df1, df2, mismatch = ks, col1, col2 = col1, ...) {
   optim_par <- stats::optimise(f, interval = interval)
 
   scale_factor <- optim_par$minimum
-  ret <- patch_scale(col1, scale_factor)
-
-  attr(ret, which = "mismatch") <- mismatch
-  ret
+  patch_scale(col1, scale_factor)
 }

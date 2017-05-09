@@ -21,9 +21,7 @@ this takes the value of \code{col1}.}
 \item{...}{Additional arguments are ignored.}
 }
 \value{
-A \code{patch_break} object with an attribute containing the
-\code{mismatch} measure which, uniquely in the case of break patches, is always
-identically equal to zero.
+A \code{patch_break} object.
 }
 \description{
 Generates a \code{patch_break} object.

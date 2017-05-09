@@ -28,5 +28,4 @@ test_that("the gen_patch_perm function works", {
   result <- gen_patch_perm(df1[, perm], df2)
   expect_equal(perm, expected = get_patch_params(result)[["perm"]])
 
-  expect_true(is.function(attr(result, "diff")))
 })

@@ -19,8 +19,6 @@ a vector of type \code{double} with at least one non-missing value.}
 
 \item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
-
-\item{mismatch}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).}
 }
 \value{
 A \code{patch_shift} object.

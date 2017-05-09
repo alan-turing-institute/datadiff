@@ -52,12 +52,8 @@ gen_patch_perm <- function(df1, df2, mismatch =
 
     perm <- apply(soln$solution, 1, function(v) which(v != 0))
     if (identical(perm, 1:n_cols))
-      ret <- patch_identity()
-    else
-      ret <- patch_perm(perm)
-
-    attr(ret, which = "mismatch") <- mismatch
-    ret
+      return(patch_identity())
+    patch_perm(perm)
 }
 
 

@@ -1,18 +1,36 @@
 #' Diff two data frames
 #'
 #' @description
-#' TODO.
+#' Given two data frames and a collection of patch generator functions, with
+#' associated (numeric) penalties, this function returns a composite patch
+#' object representing the sequence of transformations by which the data frames
+#' differ.
 #'
 #' @param df1,df2
 #' A pair of data frames.
+#' @param mismatch
+#' Mismatch method. The default is (unscaled) \code{\link{diffness}}.
+#' @param patch_generators
+#' A list of patch generator functions from which, for each pair of columns (one
+#' each from \code{df1} & \code{df2}), candidate patches will be generated.
+#' @param patch_penalties
+#' A numeric vector of patch penalties corresponding to the \code{patch_generators}
+#' list. The lengths of these two arguments must be equal.
+#' @param break_penalty
+#' The penalty associated with a break patch.
+#' @param perm_penalty
+#' The penalty associated with a permutation patch.
+#' @param penalty_scaling
+#' A function to be used to scale the penalty associated with each patch.
+#' Defaults to \code{\link{ks_scaling}}.
 #' @param as.list
 #' A logical flag. If \code{TRUE} the return value is a list of patches.
 #' Otherwise a composite patch object is returned.
 #' @param verbose
 #' A logical flag.
 #'
-#' @return A list of patch objects, or their composition if \code{composed} is
-#' \code{TRUE}.
+#' @return A composite patch object or, if \code{as.list} is \code{TRUE}, its
+#' decomposition as a list of elementary patches.
 #'
 #' @export
 #'
@@ -22,7 +40,7 @@ ddiff <- function(df1, df2,
                   patch_penalties = 0.6,
                   break_penalty = 0.99,
                   perm_penalty = 0.4,
-                  penalty_scaling = ks_scaling,
+                  penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny = nrow(df2)),
                   as.list = FALSE, verbose = FALSE) {
 
   stopifnot(is.data.frame(df1) && is.data.frame(df2))
@@ -78,6 +96,7 @@ ddiff <- function(df1, df2,
   soln <- clue::solve_LSAP(m_mismatch + m_penalty, maximum = FALSE)
 
   # Use 'order' to convert from column indices to a permutation.
+  # TODO: if possible use gen_patch_perm here (ncols must be equal)
   perm <- order(as.integer(soln))
   if (identical(perm, 1:ncol(df2)))
     perm_candidate <- patch_identity()
@@ -90,7 +109,7 @@ ddiff <- function(df1, df2,
     cw_candidates[[i]][[soln[i]]]
   }), perm_candidate)
   patch_list <- purrr::discard(patch_list, .p = function(p) {
-    is(p, "patch_identity")
+    methods::is(p, "patch_identity")
   })
   if (length(patch_list) == 0)
     candidate <- patch_identity()
@@ -111,8 +130,7 @@ ddiff <- function(df1, df2,
   # Note that this assumes that the mismatch is additive over columns.
   tc_candidate <- sum(purrr::map_dbl(1:ncol(df1), .f = function(i) {
     m_mismatch[i, soln[i]] + m_penalty[i, soln[i]]
-  })) + prod(penalty_scaling(perm_penalty, nx = nrow(df1), ny = nrow(df2)),
-             sum(perm != 1:ncol(df2)))
+  })) + (penalty_scaling(perm_penalty) * sum(perm != 1:ncol(df2)))
 
   if (verbose) {
     cat(paste("Candidate total cost:", tc_candidate, "\n"))

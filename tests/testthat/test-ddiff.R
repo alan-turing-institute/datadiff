@@ -32,25 +32,25 @@ test_that("the ddiff function works", {
 
   # TODO: unfinished - include some tests!
 
-  # Test with the numeric columns permuted in df1 and a shift.
-  df2[[1]] <- 4 + df2[[1]]
-  df2 <- df2[c(2, 3, 1, 4, 5)]
-
-  result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
-                  cost_transform = cost_transform)
-
-  # Test for the expected result.
-
-  # Now test with a lower cost for a tranformation patch.
-  cost_transform <- 0.01
-  result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
-                  cost_transform = cost_transform)
-
-  # Observe that with this reduced cost, a recoding of column 4 is suggested.
-
-  # TODO: test with data frames containing both factors and integer data (by
-  # setting stringsAsFactors = TRUE above).
-
-
-  ## TODO: test the composed argument.
+  # # Test with the numeric columns permuted in df1 and a shift.
+  # df2[[1]] <- 4 + df2[[1]]
+  # df2 <- df2[c(2, 3, 1, 4, 5)]
+  #
+  # result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
+  #                 cost_transform = cost_transform)
+  #
+  # # Test for the expected result.
+  #
+  # # Now test with a lower cost for a tranformation patch.
+  # cost_transform <- 0.01
+  # result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
+  #                 cost_transform = cost_transform)
+  #
+  # # Observe that with this reduced cost, a recoding of column 4 is suggested.
+  #
+  # # TODO: test with data frames containing both factors and integer data (by
+  # # setting stringsAsFactors = TRUE above).
+  #
+  #
+  # ## TODO: test the composed argument.
 })

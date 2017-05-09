@@ -17,8 +17,6 @@
 #' @param col2
 #' A column identifier (integer or string column name) of length 1. By default
 #' this takes the value of \code{col1}.
-#' @param mismatch
-#' Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov).
 #'
 #' @return A \code{patch_shift} object.
 #'
@@ -51,8 +49,5 @@ gen_patch_shift <- function(df1, df2, mismatch = ks, col1, col2 = col1) {
     stop(paste("Optimisation failed with error code", optim_par$convergence))
 
   shift <- optim_par$par
-  ret <- patch_shift(col1, shift)
-
-  attr(ret, which = "mismatch") <- mismatch
-  ret
+  patch_shift(col1, shift)
 }

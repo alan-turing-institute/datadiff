@@ -19,6 +19,8 @@ a vector of type \code{double} with at least two non-missing values.}
 
 \item{col2}{A column identifier (integer or string column name) of length 1. By default
 this takes the value of \code{col1}.}
+
+\item{...}{Additional arguments are ignored.}
 }
 \value{
 A \code{patch_scale} object.

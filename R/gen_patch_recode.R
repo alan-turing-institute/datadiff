@@ -67,8 +67,5 @@ gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1, ...) {
     encoding <- methods::as(encoding, class(v2))
   names(encoding) <- lev1
 
-  ret <- patch_recode(col1, encoding = encoding, one_to_one = TRUE)
-
-  attr(ret, which = "mismatch") <- mismatch
-  ret
+  patch_recode(col1, encoding = encoding, one_to_one = TRUE)
 }
