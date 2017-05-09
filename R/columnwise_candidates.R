@@ -12,6 +12,7 @@
 #' @param patch_penalties
 #' A vector of patch penalties corresponding to the \code{patch_generators}
 #' list. The lengths of these two parameters must be equal.
+#' @param TODO...
 #' @param verbose
 #' A logical flag.
 #'
@@ -26,7 +27,9 @@ columnwise_candidates <- function(df1, df2,
                                 patch_generators = list(gen_patch_transform),
                                 patch_penalties = 0.2,
                                 break_penalty = 0.95,
-                                scale_penalty = scale_penalty,
+                                penalty_scaling = ks_scaling,
+                                mismatch_attr = "mismatch",
+                                penalty_attr = "penalty",
                                 verbose = FALSE) {
 
   if (verbose)
@@ -39,39 +42,40 @@ columnwise_candidates <- function(df1, df2,
   purrr::map(1:ncol(df1), .f = function(i) {
     purrr::map(1:ncol(df2), .f = function(j) {
 
-      generators <- c(
-        gen_patch_identity,
-        patch_generators,
-        gen_patch_break
-      )
-
-      # Generate the column(pair)wise pre-candidate patch for to each
-      # generator; then compute & attach the (numeric)  mismatch.
-      patches <- purrr::map(generators, .f = function(gen) {
+      # Generate the column(pair)wise pre-candidate patch for to each generator,
+      # then compute & attach the (numeric)  mismatch & penalty.
+      patches <- purrr::map(1:length(patch_generators), .f = function(k) {
+        gen <- patch_generators[[k]]
         p <- gen(df1, df2 = df2, mismatch = mismatch, col1 = i, col2 = j)
-        if (!is.null(p))
-          attr(p, "mismatch") <- attr(p, "mismatch")(p(df1)[[i]], df2[[j]])
+        if (!is.null(p)) {
+          attr(p, mismatch_attr) <- mismatch(p(df1)[[i]], df2[[j]])
+          attr(p, penalty_attr) <-
+            penalty_scaling(patch_penalties[k], nx = nrow(df1), ny = nrow(df2))
+        }
         p
       })
-      # Attach the (numeric) penalty to each patch.
-      attr(patches[[1]], "penalty") <- 0
-      attr(patches[[length(patches)]], "penalty") <-
-        scale_penalty(break_penalty, nx = nrow(df1), ny = nrow(df2))
-      sink <- sapply(1:length(patch_generators), FUN = function(k) {
-        if (!is.null(patches[[k + 1]]))
-          attr(patches[[k + 1]], "penalty") <<-
-            scale_penalty(patch_penalties[k], nx = nrow(df1), ny = nrow(df2))
-      })
 
+      # Add the identity patch and break patch to the patches list.
+      # The identity patch has zero penalty & the break patch has zero mismatch.
+      id_patch <- patch_identity()
+      attr(id_patch, mismatch_attr) <- mismatch(df1[[i]], df2[[j]])
+      attr(id_patch, penalty_attr) <- 0
+
+      br_patch <- gen_patch_break(df1, df2 = df2, col1 = i, col2 = j)
+      attr(br_patch, mismatch_attr) <- 0
+      attr(br_patch, penalty_attr) <-
+        penalty_scaling(break_penalty, nx = nrow(df1), ny = nrow(df2))
+
+      patches <- c(list(id_patch), patches, list(br_patch))
       patches <- purrr::discard(patches, .p = is.null)
 
       # Identify which is the best candidate in the list.
-      mismatches <- purrr::map_dbl(patches, .f = function(p) { attr(p, "mismatch") })
-      penalties <- purrr::map_dbl(patches, .f = function(p) { attr(p, "penalty") })
+      mismatches <- purrr::map_dbl(patches, .f = function(p) { attr(p, mismatch_attr) })
+      penalties <- purrr::map_dbl(patches, .f = function(p) { attr(p, penalty_attr) })
 
       if (verbose) {
         cat(paste0("[", i, ", ", j, "]\n"))
-        cat(mismatches, sep = "\t", "\n")
+        cat(round(mismatches, digits = 5), sep = "\t", "\n")
         cat(round(penalties, digits = 5), sep = "\t", "\n")
       }
 

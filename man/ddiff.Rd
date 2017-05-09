@@ -5,9 +5,9 @@
 \title{Diff two data frames}
 \usage{
 ddiff(df1, df2, mismatch = purrr::partial(diffness, scale = FALSE),
-  patch_generators = list(gen_patch_transform), patch_penalties = 0.2,
-  break_penalty = 0.99, scale_penalty = scale_penalty, as.list = FALSE,
-  verbose = FALSE)
+  patch_generators = list(gen_patch_transform), patch_penalties = 0.6,
+  break_penalty = 0.99, perm_penalty = 0.4, penalty_scaling = ks_scaling,
+  as.list = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}

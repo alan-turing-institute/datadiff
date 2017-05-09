@@ -1,4 +1,4 @@
-#' Scale a numeric penalty
+#' TODO. Scale a numeric penalty
 #'
 #' The scale factor decreases the cost in proportion to the inverse square root
 #' of the number of rows. This means that, when comparing against an unscaled
@@ -12,7 +12,7 @@
 #' @return A number
 #'
 #' @export
-scale_penalty <- function(penalty, nx, ny) {
+ks_scaling <- function(penalty, nx, ny) {
 
   critical_value <- function(alpha) { sqrt(-log(alpha / 2) / 2) }
   critical_value(1 - penalty) * sqrt((nx + ny) / (nx * ny))

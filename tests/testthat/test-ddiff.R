@@ -14,22 +14,17 @@ test_that("the ddiff function works", {
   }
 
   set.seed(22)
-  df1 <- generate_test_df(1000)
-  df2 <- generate_test_df(1000)
+  df1 <- generate_test_df(100)
+  df2 <- generate_test_df(100)
 
-  cost_transform <- 0.7
-  cost_permute <- 0.4
-
-  result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
-                  cost_transform = cost_transform)
+  result <- ddiff(df1, df2 = df2)
 
   expect_true(is_patch(result, allow_composed = FALSE))
   expect_equal(patch_type(result), "identity")
 
-  # Reducing the transformation patch cost changes the result.
-  cost_transform <- 0.6
-  result <- ddiff(df1, df2 = df2, cost_permute = cost_permute,
-                  cost_transform = cost_transform)
+  # Reducing the penalty associated with a transformation patch changes the result.
+  patch_penalties <- 0.4
+  result <- ddiff(df1, df2 = df2, patch_penalties = patch_penalties)
 
   expect_true(is_patch(result, allow_composed = TRUE))
   expect_false(is_patch(result, allow_composed = FALSE))
