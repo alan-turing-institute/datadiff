@@ -4,13 +4,10 @@
 \alias{diffness.integer}
 \title{Compute the mismatch between two integer vectors}
 \usage{
-\method{diffness}{integer}(x, y, scale = TRUE, diff = ks, ...)
+\method{diffness}{integer}(x, y, diff = ks, ...)
 }
 \arguments{
 \item{x, y}{A pair of vectors of type \code{integer}.}
-
-\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
-length of the data.}
 
 \item{diff}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov) for integer
 data.}
@@ -23,7 +20,6 @@ ignore ordering, set the \code{diff} argument to \code{tv} (total variation
 distance).
 }
 \details{
-The mismatch between vectors of different types is always +Inf, if
-\code{scale} is \code{TRUE}, and 1 otherwise. This includes the case of
-an integer vector and a non-integer numeric vector.
+The mismatch between vectors of different types is always 1. This includes
+the case of an integer vector and a non-integer numeric vector.
 }

@@ -4,15 +4,14 @@
 \alias{gen_patch_perm}
 \title{Generate an optimal permutation patch}
 \usage{
-gen_patch_perm(df1, df2, mismatch = purrr::partial(diffness, scale = FALSE),
-  ...)
+gen_patch_perm(df1, df2, mismatch = diffness, ...)
 }
 \arguments{
 \item{df1}{A data frame.}
 
 \item{df2}{A data frame.}
 
-\item{mismatch}{Mismatch method. The default is (unscaled) \code{\link{diffness}}.}
+\item{mismatch}{Mismatch method. The default is \code{\link{diffness}}.}
 
 \item{...}{Additional arguments are ignored.}
 }

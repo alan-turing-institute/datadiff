@@ -5,8 +5,6 @@ test_that("the diffness function works", {
 
   set.seed(22)
 
-  ## IMP TODO: test the scale argument.
-
   ## Test with categorical vectors.
   x <- sample(letters[1:5], size = 100, replace = TRUE)
 
@@ -91,9 +89,9 @@ test_that("the diffness function works", {
   y <- rep(NA, 100)
   result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
-  expect_identical(result, Inf)
+  expect_identical(result, 1)
 
-  result <- diffness(x, y, scale = FALSE)
+  result <- diffness(x, y)
   expect_true(is.numeric(result) && length(result) == 1)
   expect_identical(result, 1)
 
@@ -102,12 +100,12 @@ test_that("the diffness function works", {
   y <- sample(letters[1:5], size = 100, replace = TRUE)
   z <- rnorm(100)
 
-  expect_identical(diffness(x, y), Inf)
-  expect_identical(diffness(x, z), Inf)
-  expect_identical(diffness(y, x), Inf)
-  expect_identical(diffness(y, z), Inf)
-  expect_identical(diffness(z, x), Inf)
-  expect_identical(diffness(z, y), Inf)
+  expect_identical(diffness(x, y), 1)
+  expect_identical(diffness(x, z), 1)
+  expect_identical(diffness(y, x), 1)
+  expect_identical(diffness(y, z), 1)
+  expect_identical(diffness(z, x), 1)
+  expect_identical(diffness(z, y), 1)
 
   ## Test with integer vectors.
   ## By default, integer vectors are treated as ordered categorical data.
@@ -173,11 +171,14 @@ test_that("the diffness function works", {
   expect_true(is.numeric(result) && length(result) == 1)
   expect_true(result > 0)
   expect_identical(diffness(x, y), diffness(y, x))
-  expect_identical(diffness(x, y), Inf)
+  expect_identical(diffness(x, y), diffness(x[1:4], y[1:4]) + 1)
 
   # Test with data frames having different numbers of columns.
-  expect_identical(diffness(x, y[1:3], scale = FALSE),
-                   diffness(x[1:3], y[1:3], scale = FALSE) + 2)
+  expect_identical(diffness(x, y[1:3]), diffness(x[1:3], y[1:3]) + 2)
+  expect_identical(diffness(x, y[1:4], col_diff = 1),
+                   diffness(x[1:4], y[1:4]) + 1)
+  expect_identical(diffness(x, y[1:3], col_diff = 1),
+                   diffness(x[1:3], y[1:3]) + 2)
   expect_identical(diffness(x, y[1:4], col_diff = Inf), Inf)
 
   ## Test with mixtures of vectors and data frames.

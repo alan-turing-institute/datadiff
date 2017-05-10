@@ -4,13 +4,10 @@
 \alias{diffness.character}
 \title{Compute the mismatch between two character vectors}
 \usage{
-\method{diffness}{character}(x, y, scale = TRUE, diff = tv, ...)
+\method{diffness}{character}(x, y, diff = tv, ...)
 }
 \arguments{
 \item{x, y}{A pair of vectors of type \code{character}.}
-
-\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
-length of the data.}
 
 \item{diff}{Mismatch method. The default is \code{tv} (total variation distance) for
 unordered categorical data.}
@@ -21,6 +18,5 @@ unordered categorical data.}
 Character vectors are treated as unordered categorical data.
 }
 \details{
-The mismatch between vectors of different types is always +Inf, if
-\code{scale} is \code{TRUE}, and 1 otherwise.
+The mismatch between vectors of different types is always 1.
 }

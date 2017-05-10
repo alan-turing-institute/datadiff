@@ -4,13 +4,10 @@
 \alias{diffness.double}
 \title{Compute the mismatch between two continuous numeric vectors}
 \usage{
-\method{diffness}{double}(x, y, scale = TRUE, diff = ks, ...)
+\method{diffness}{double}(x, y, diff = ks, ...)
 }
 \arguments{
 \item{x, y}{A pair of vectors of type \code{double}.}
-
-\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
-length of the data.}
 
 \item{diff}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov) for continuous
 numeric data.}
@@ -18,6 +15,5 @@ numeric data.}
 \item{...}{Additional arguments are ignored.}
 }
 \description{
-The mismatch between vectors of different types is always +Inf, if
-\code{scale} is \code{TRUE}, and 1 otherwise.
+The mismatch between vectors of different types is always 1.
 }

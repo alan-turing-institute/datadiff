@@ -4,17 +4,16 @@
 \alias{columnwise_candidates}
 \title{Generate candidate patches by columnwise comparison}
 \usage{
-columnwise_candidates(df1, df2, mismatch = purrr::partial(diffness, scale =
-  FALSE), patch_generators = list(gen_patch_transform),
-  patch_penalties = 0.2, break_penalty = 0.95,
-  penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny =
-  nrow(df2)), mismatch_attr = "mismatch", penalty_attr = "penalty",
-  verbose = FALSE)
+columnwise_candidates(df1, df2, mismatch = diffness,
+  patch_generators = list(gen_patch_transform), patch_penalties = 0.2,
+  break_penalty = 0.95, penalty_scaling = purrr::partial(ks_scaling, nx =
+  nrow(df1), ny = nrow(df2)), mismatch_attr = "mismatch",
+  penalty_attr = "penalty", verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
 
-\item{mismatch}{Mismatch method. The default is (unscaled) \code{\link{diffness}}.}
+\item{mismatch}{Mismatch method. The default is \code{\link{diffness}}.}
 
 \item{patch_generators}{A list of patch generator functions from which, for each pair of columns (one
 each from \code{df1} & \code{df2}), candidate patches will be generated.}

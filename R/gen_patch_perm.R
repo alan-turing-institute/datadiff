@@ -12,15 +12,14 @@
 #' @param df2
 #' A data frame.
 #' @param mismatch
-#' Mismatch method. The default is (unscaled) \code{\link{diffness}}.
+#' Mismatch method. The default is \code{\link{diffness}}.
 #' @param ...
 #' Additional arguments are ignored.
 #'
 #' @return A \code{patch_perm} object.
 #'
 #' @export
-gen_patch_perm <- function(df1, df2, mismatch =
-                             purrr::partial(diffness, scale = FALSE), ...) {
+gen_patch_perm <- function(df1, df2, mismatch = diffness, ...) {
 
     ## The approach here is:
     ## 1. Pre-compute the pairwise set of mismatches;

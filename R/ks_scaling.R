@@ -1,11 +1,20 @@
-#' TODO. Scale a numeric penalty
+#' Scale a penalty for the two-sample Kolmogorov-Smirnov test
 #'
-#' The scale factor decreases the cost in proportion to the inverse square root
-#' of the number of rows. This means that, when comparing against an unscaled
-#' diffness, small diffnesses count more the more data points there are.
+#' @description
+#' A penalty is a number associated with a \code{patch}, which represents the
+#' cost applying the patch. Only patches which reduce the mismatch by an amount
+#' in excess of their associated cost are deemed worthwhile. However, the
+#' penalty is a fixed number (in the unit interval) whereas the mismatch
+#' typically scales with the size of the dataset. Hence, for comparability, the
+#' penalty must also be scaled.
 #'
-#' TODO: explain the origin of the scale factor incl. reference to:
-#' https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test#Two-sample_Kolmogorov.E2.80.93Smirnov_test
+#' This function scales the penalty in proportion to the inverse square root of
+#' the number of rows of data, so that small mismatches count more the more data
+#' points there are.
+#' Specifically, the scaling is that appropriate for the
+#' two-sample Kolmogorov-Smirnov test
+#' \url{https://en.wikipedia.org/wiki/Kolmogorov-Smirnov_test}
+#' where the confidence threshold \eqn{alpha} corresponds to one minus the penalty.
 #'
 #' @param penalty A numeric penalty
 #' @param nx,ny The lengths of the vectors

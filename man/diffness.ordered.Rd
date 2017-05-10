@@ -4,13 +4,10 @@
 \alias{diffness.ordered}
 \title{Compute the mismatch between two vectors of ordered categorical data}
 \usage{
-\method{diffness}{ordered}(x, y, scale = TRUE, diff = ks, ...)
+\method{diffness}{ordered}(x, y, diff = ks, ...)
 }
 \arguments{
 \item{x, y}{A pair of ordered factors.}
-
-\item{scale}{A logical flag. If \code{TRUE} (the default) the result is scaled by the
-length of the data.}
 
 \item{diff}{Mismatch method. The default is \code{ks} (Kolmogorov-Smirnov) for ordered
 categorical data.}

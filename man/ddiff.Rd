@@ -4,7 +4,7 @@
 \alias{ddiff}
 \title{Diff two data frames}
 \usage{
-ddiff(df1, df2, mismatch = purrr::partial(diffness, scale = FALSE),
+ddiff(df1, df2, mismatch = diffness,
   patch_generators = list(gen_patch_transform), patch_penalties = 0.6,
   break_penalty = 0.99, perm_penalty = 0.4,
   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny =
@@ -13,7 +13,7 @@ ddiff(df1, df2, mismatch = purrr::partial(diffness, scale = FALSE),
 \arguments{
 \item{df1, df2}{A pair of data frames.}
 
-\item{mismatch}{Mismatch method. The default is (unscaled) \code{\link{diffness}}.}
+\item{mismatch}{Mismatch method. The default is \code{\link{diffness}}.}
 
 \item{patch_generators}{A list of patch generator functions from which, for each pair of columns (one
 each from \code{df1} & \code{df2}), candidate patches will be generated.}

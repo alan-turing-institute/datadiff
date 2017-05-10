@@ -9,7 +9,7 @@
 #' @param df1,df2
 #' A pair of data frames.
 #' @param mismatch
-#' Mismatch method. The default is (unscaled) \code{\link{diffness}}.
+#' Mismatch method. The default is \code{\link{diffness}}.
 #' @param patch_generators
 #' A list of patch generator functions from which, for each pair of columns (one
 #' each from \code{df1} & \code{df2}), candidate patches will be generated.
@@ -35,7 +35,7 @@
 #' @export
 #'
 ddiff <- function(df1, df2,
-                  mismatch = purrr::partial(diffness, scale = FALSE),
+                  mismatch = diffness,
                   patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.6,
                   break_penalty = 0.99,
