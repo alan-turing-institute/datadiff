@@ -17,27 +17,34 @@
 #'
 #' @examples
 #' colnames(mtcars)
-#' p <- patch_perm(c(2L, 3L, 1L))
+#' p <- patch_perm(c(2L, 3L, 1L, 4:ncol(mtcars)))
 #'
-##' apply_patch(mtcars, p)
-##'
+#' colnames(apply_patch(mtcars, p))
+#'
 #' # Attempting to apply a patch to an incompatible data frame throws an error.
 #' \dontrun{
-#' p <- patch_perm(c(1L, 3L, 22L))
+#' p <- patch_perm(1:(ncol(mtcars) + 1))
 #' p(mtcars)
 #' }
 patch_perm <- function(perm) {
 
   stopifnot(is_valid_columns(perm) && length(perm) >= 1)
+  stopifnot(setequal(perm, 1:max(perm)))
 
   # Construct the patch object as a closure.
   obj <- function(df) {
 
     # Check for compatability between the data frame and the parameters.
     stopifnot(is_compatible_columns(perm, df))
+    stopifnot(length(perm) == ncol(df))
 
     # Transform the data frame according to the parameters.
     ret <- df[, perm]
+    if (any(duplicated(colnames(df))))
+      colnames(ret) <- purrr::map_chr(1:ncol(df), .f = function(i) {
+        colnames(df)[perm][i]
+      })
+
     stopifnot(is.data.frame(ret))
 
     ret

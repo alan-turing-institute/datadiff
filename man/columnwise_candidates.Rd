@@ -39,11 +39,11 @@ A nested list of patch objects with two numeric attributes:
 \code{mismatch} and \code{penalty}.
 }
 \description{
-Generates a candidate patch for each pair of columns (one each from
-\code{df1} & \code{df2}) and returns them in a nested list.
+Helper function for \code{\link{ddiff}}. Generates a candidate patch for each
+pair of columns (one each from \code{df1} & \code{df2}) and returns them in a
+nested list.
 
-Possible
-candidates are:
+Possible candidates are:
 \itemize{
   \item the identity patch
   \item a patch generated from one of the given \code{patch_generators}

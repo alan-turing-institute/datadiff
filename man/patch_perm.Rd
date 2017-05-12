@@ -22,13 +22,13 @@ by an arbitrary permutation of the column indices.
 }
 \examples{
 colnames(mtcars)
-p <- patch_perm(c(2L, 3L, 1L))
+p <- patch_perm(c(2L, 3L, 1L, 4:ncol(mtcars)))
 
-apply_patch(mtcars, p)
+colnames(apply_patch(mtcars, p))
 
 # Attempting to apply a patch to an incompatible data frame throws an error.
 \dontrun{
-p <- patch_perm(c(1L, 3L, 22L))
+p <- patch_perm(1:(ncol(mtcars) + 1))
 p(mtcars)
 }
 }

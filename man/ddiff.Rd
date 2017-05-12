@@ -6,9 +6,10 @@
 \usage{
 ddiff(df1, df2, mismatch = diffness,
   patch_generators = list(gen_patch_transform), patch_penalties = 0.6,
-  break_penalty = 0.99, perm_penalty = 0.4,
+  break_penalty = 0.99, permute_penalty = 0.4,
   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny =
-  nrow(df2)), as.list = FALSE, verbose = FALSE)
+  nrow(df2)), insert_col_name = "INSERT", as.list = FALSE,
+  verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
@@ -23,10 +24,13 @@ list. The lengths of these two arguments must be equal.}
 
 \item{break_penalty}{The penalty associated with a break patch.}
 
-\item{perm_penalty}{The penalty associated with a permutation patch.}
+\item{permute_penalty}{The penalty associated with a permutation patch.}
 
 \item{penalty_scaling}{A function to be used to scale the penalty associated with each patch.
 Defaults to \code{\link{ks_scaling}}.}
+
+\item{insert_col_name}{The column name used for inserted columns, if \code{df1} has fewer columns
+than \code{df2}. Defaults to 'INSERT'.}
 
 \item{as.list}{A logical flag. If \code{TRUE} the return value is a list of patches.
 Otherwise a composite patch object is returned.}

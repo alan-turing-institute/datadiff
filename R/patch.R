@@ -33,6 +33,29 @@ is_patch <- function(obj, allow_composed = TRUE) {
   all(purrr::map_lgl(get("fs", envir=env), .f=is_patch, allow_composed=TRUE))
 }
 
+#' Test for an identity patch object
+#'
+#' Returns \code{TRUE} if the \code{obj} argument is an identity patch or, if
+#' \code{allow_composed} is \code{TRUE}, a composition of identity patches.
+#'
+#' @param obj
+#' Any object.
+#' @param allow_composed
+#' A logicial flag. If \code{TRUE} (the default) then compositions of identity
+#' patches (constructed using either the \code{compose_patch} function or the
+#' \code{compose} function from the \code{purrr} package) are considered to be
+#' identity patches. Otherwise, only an elementary identity patch object is
+#' considered to be an identity patch.
+#'
+#' @export
+is_identity_patch <- function(obj, allow_composed = TRUE) {
+  if (is_patch(obj, allow_composed = FALSE) || !allow_composed)
+    return(methods::is(obj, "patch_identity"))
+  if (!is_patch(obj, allow_composed = TRUE))
+    return(FALSE)
+  all(purrr::map_lgl(decompose_patch(obj), .f = is_identity_patch))
+}
+
 #' Compose patches
 #'
 #' Construct a composite patch object. The advantage of using this function,
@@ -75,10 +98,29 @@ compose_patch <- function(...) {
 #'
 #' @export
 decompose_patch <- function(patch) {
-  stopifnot(is_patch(patch))
+  stopifnot(is_patch(patch, allow_composed = TRUE))
   if (is_patch(patch, allow_composed = FALSE))
     return(patch)
   unlist(purrr::map(rev(get("fs", envir = environment(patch))), decompose_patch))
+}
+
+#' Simplify a composed patch by discarding any superfluous identity patches
+#'
+#' @param patch
+#' A \code{patch} object.
+#'
+#' @return A simplified \code{patch} object.
+#'
+#' @export
+simplify_patch <- function(patch) {
+  stopifnot(is_patch(patch, allow_composed = TRUE))
+  if (is_patch(patch, allow_composed = FALSE))
+    return(patch)
+  if (is_identity_patch(patch, allow_composed = TRUE))
+    return(patch_identity())
+  patch_list <- purrr::discard(decompose_patch(patch), is_identity_patch,
+                      allow_composed = FALSE)
+  Reduce(compose_patch, rev(patch_list))
 }
 
 #' Get the parameters associated with a patch object.

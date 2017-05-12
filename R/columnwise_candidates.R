@@ -1,11 +1,11 @@
 #' Generate candidate patches by columnwise comparison
 #'
 #' @description
-#' Generates a candidate patch for each pair of columns (one each from
-#' \code{df1} & \code{df2}) and returns them in a nested list.
+#' Helper function for \code{\link{ddiff}}. Generates a candidate patch for each
+#' pair of columns (one each from \code{df1} & \code{df2}) and returns them in a
+#' nested list.
 #'
-#' Possible
-#' candidates are:
+#' Possible candidates are:
 #' \itemize{
 #'   \item the identity patch
 #'   \item a patch generated from one of the given \code{patch_generators}
@@ -47,7 +47,6 @@
 #'
 #' @export
 #'
-# patch_penalties is a numeric vector of length equal to length(patch_generators).
 columnwise_candidates <- function(df1, df2,
                                 mismatch = diffness,
                                 patch_generators = list(gen_patch_transform),

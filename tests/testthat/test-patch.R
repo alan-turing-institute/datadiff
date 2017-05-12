@@ -20,6 +20,32 @@ test_that("the is_patch function works", {
   expect_true(is_patch(p, allow_composed = TRUE))
 })
 
+test_that("the is_identity_patch function works", {
+
+  p1 <- patch_identity()
+  expect_true(is_identity_patch(p1))
+  expect_true(is_identity_patch(p1, allow_composed = FALSE))
+
+  p2 <- patch_identity()
+  expect_true(is_identity_patch(p2))
+  expect_true(is_identity_patch(p2, allow_composed = FALSE))
+
+  expect_true(is_identity_patch(compose_patch(p1, p2), allow_composed = TRUE))
+  expect_false(is_identity_patch(compose_patch(p1, p2), allow_composed = FALSE))
+
+  expect_true(is_identity_patch(purrr::compose(p1, p2), allow_composed = TRUE))
+  expect_false(is_identity_patch(purrr::compose(p1, p2), allow_composed = FALSE))
+
+  expect_true(is_identity_patch(compose_patch(p1, p2, p1), allow_composed = TRUE))
+  expect_false(is_identity_patch(compose_patch(p1, p2, p1), allow_composed = FALSE))
+
+  p3 <- patch_shift(1L, shift = 1)
+  expect_false(is_identity_patch(compose_patch(p3, p1, p2), allow_composed = TRUE))
+  expect_false(is_identity_patch(compose_patch(p1, p3, p2), allow_composed = TRUE))
+  expect_false(is_identity_patch(compose_patch(p1, p2, p3), allow_composed = TRUE))
+
+})
+
 test_that("the patch_type function works", {
 
   p <- patch_identity()
