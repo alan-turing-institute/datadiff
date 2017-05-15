@@ -3,7 +3,7 @@
 #' @description
 #' S3 class \code{patch_cycle} which extends the \code{patch} and
 #' \code{function} classes to represent a transformation of a tabular dataset
-#' by permutation of the column indices by a \code{\link{cycle}}.
+#' by permutation of the column indices by a cycle.
 #'
 #' @param cols
 #' A vector of column identifiers.
@@ -42,6 +42,14 @@ patch_cycle <- function(cols) {
     # Transform the data frame according to the parameters.
     if (is.character(cols))
       cols <- purrr::map_int(cols, function(x) { which(names(df) == x) })
+
+    # Function to permute a vector according to a cycle.
+    cycle <- function(v, cyc) {
+      temp <- v
+      rot <- c(cyc[-1], cyc[1])
+      temp[cyc] <- temp[rot]
+      temp
+    }
 
     ret <- df[cycle(seq.int(1:ncol(df)), cyc = cols)]
     stopifnot(is.data.frame(ret))

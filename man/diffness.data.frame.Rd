@@ -7,12 +7,12 @@
 \method{diffness}{data.frame}(x, y, col_diff = 1, ...)
 }
 \arguments{
-\item{x, y}{A pair of datasets}
+\item{x, y}{A pair of data frames.}
 
 \item{col_diff}{A numeric scalar specifying the additional mismatch per column when \code{x}
 and \code{y} have different numbers of columns. Defaults to 1.}
 
-\item{...}{Additional arguments passed to methods.}
+\item{...}{Additional arguments passed to other \code{diffness} methods.}
 }
 \description{
 Compute the mismatch between two data frames

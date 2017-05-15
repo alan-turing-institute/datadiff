@@ -13,7 +13,7 @@ compose_patch(...)
 A composite patch object.
 }
 \description{
-Construct a composite patch object. The advantage of using this function,
+Construct multiple patches. The advantage of using this function,
 rather than calling \code{purrr::compose} directly, is that the class of the
 return value is \code{patch}, which helps when printing. However both methods
 will produce objects for which \code{is_patch} returns \code{TRUE}.

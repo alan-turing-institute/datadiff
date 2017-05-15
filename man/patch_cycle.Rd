@@ -15,7 +15,7 @@ A \code{patch_cycle} object.
 \description{
 S3 class \code{patch_cycle} which extends the \code{patch} and
 \code{function} classes to represent a transformation of a tabular dataset
-by permutation of the column indices by a \code{\link{cycle}}.
+by permutation of the column indices by a cycle.
 }
 \examples{
 colnames(mtcars)

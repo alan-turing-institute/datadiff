@@ -19,9 +19,9 @@ gen_patch_perm(df1, df2, mismatch = diffness, ...)
 A \code{patch_perm} object.
 }
 \description{
-Computes the permutation of columns, expressed as a \code{patch_perm} patch,
-that minimises the mismatch between the patched \code{df1} and \code{df2},
-including a permutation cost. Currently the permutation cost is ignored.
+Computes the permutation of columns, expressed as a \code{patch_perm} object,
+that minimises the mismatch between the data frame \code{df2} and the patched
+\code{df1}.
 }
 \details{
 This function uses an assignment problem solver from the package

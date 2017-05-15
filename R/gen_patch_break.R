@@ -2,9 +2,6 @@
 #'
 #' Generates a \code{patch_break} object.
 #'
-#' Break patches are unique in that the mismatch between a broken column and
-#' any other column is always taken to be zero.
-#'
 #' @param df1
 #' A data frame. The column specified in the \code{col1} argument must contain
 #' a vector of type \code{double} with at least one non-missing value.

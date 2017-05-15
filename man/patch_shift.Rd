@@ -17,7 +17,7 @@ A \code{patch_shift} object.
 \description{
 S3 class \code{patch_shift} which extends the \code{patch} and
 \code{function} classes to represent a transformation of a tabular dataset
-by shifting (adding a constant) numerical data in one or more columns.
+by shifting (adding a constant to) numerical data in one or more columns.
 }
 \examples{
 purrr::map_dbl(mtcars, mean)

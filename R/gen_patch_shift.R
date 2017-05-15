@@ -1,8 +1,12 @@
 #' Generate a shift patch
 #'
-#' Generates a \code{patch_shift} object whose 'shift' parameter has been
+#' Generates a \code{patch_shift} object whose \code{shift} parameter has been
 #' selected with the aim of minimising the mismatch between the specified
 #' columns after application of the patch to \code{df1}.
+#'
+#' Uses the \code{\link{optim}} function to optimise the \code{shift}
+#' parameter for the given mismatch method. If the numerical optimisation fails
+#' to converge an error is thrown.
 #'
 #' @param df1
 #' A data frame. The column specified in the \code{col1} argument must contain
@@ -43,7 +47,8 @@ gen_patch_shift <- function(df1, df2, mismatch = ks, col1, col2 = col1) {
                stats::quantile(x2, probs = 0.75, na.rm = TRUE))
   par <- mean(x2, na.rm = TRUE) - mean(x1, na.rm = TRUE)
 
-  optim_par <- stats::optim(par, fn = f, method = "Brent", lower = qlow, upper = qhigh)
+  optim_par <- stats::optim(par, fn = f, method = "Brent", lower = qlow,
+                            upper = qhigh)
 
   if (optim_par$convergence != 0)
     stop(paste("Optimisation failed with error code", optim_par$convergence))

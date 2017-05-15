@@ -1,8 +1,7 @@
 #' Generate a recode patch
 #'
-#' Generates a \code{patch_recode} object whose 'encoding' parameter has been
-#' selected with the aim of minimising the mismatch between the specified
-#' columns after application of the patch to \code{df1}.
+#' Generates a \code{patch_recode} object that minimises the mismatch between
+#' the specified columns after application of the patch to \code{df1}.
 #'
 #' @param df1
 #' A data frame.
@@ -44,7 +43,7 @@ gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1, ...) {
   if (length(lev2) < length(lev1))
     stop("Insufficient target codes")
 
-  ## IMP TODO:
+  ## TODO:
   # In the case of the default mismatch function (tv) we can compare possible
   # recodings in polynomial time by looking pairwise (i'th level in f1 is
   # recoded as j'th level in f2) and applying the Hungarian method.

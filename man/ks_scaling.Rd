@@ -12,10 +12,10 @@ ks_scaling(penalty, nx, ny)
 \item{nx, ny}{The lengths of the vectors}
 }
 \value{
-A number
+A (numeric) scaled penalty.
 }
 \description{
-A penalty is a number associated with a \code{patch}, which represents the
+A penalty is a number associated with a \code{patch} which represents the
 cost applying the patch. Only patches which reduce the mismatch by an amount
 in excess of their associated cost are deemed worthwhile. However, the
 penalty is a fixed number (in the unit interval) whereas the mismatch
@@ -23,7 +23,7 @@ typically scales with the size of the dataset. Hence, for comparability, the
 penalty must also be scaled.
 
 This function scales the penalty in proportion to the inverse square root of
-the number of rows of data, so that small mismatches count more the more data
+the sample size, so that small mismatches count more the more data
 points there are.
 Specifically, the scaling is that appropriate for the
 two-sample Kolmogorov-Smirnov test

@@ -43,7 +43,7 @@ decomposition as a list of elementary patches.
 }
 \description{
 Given two data frames and a collection of patch generator functions, with
-associated (numeric) penalties, this function returns a composite patch
-object representing the sequence of transformations by which the data frames
-differ.
+associated (numeric) penalties, this function attempts to identify a
+sequence of transformations to best explain the difference and returns the
+result as a (composite) patch.
 }

@@ -4,19 +4,17 @@
 \alias{columnwise_candidates}
 \title{Generate candidate patches by columnwise comparison}
 \usage{
-columnwise_candidates(df1, df2, mismatch = diffness,
-  patch_generators = list(gen_patch_transform), patch_penalties = 0.2,
-  break_penalty = 0.95, penalty_scaling = purrr::partial(ks_scaling, nx =
-  nrow(df1), ny = nrow(df2)), mismatch_attr = "mismatch",
-  penalty_attr = "penalty", verbose = FALSE)
+columnwise_candidates(df1, df2, mismatch, patch_generators, patch_penalties,
+  break_penalty, penalty_scaling, mismatch_attr, penalty_attr,
+  verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
 
 \item{mismatch}{Mismatch method. The default is \code{\link{diffness}}.}
 
-\item{patch_generators}{A list of patch generator functions from which, for each pair of columns (one
-each from \code{df1} & \code{df2}), candidate patches will be generated.}
+\item{patch_generators}{A list of patch generator functions from which candidate patches will be
+generated for every pair of columns (one each from \code{df1} & \code{df2}).}
 
 \item{patch_penalties}{A numeric vector of patch penalties corresponding to the \code{patch_generators}
 list. The lengths of these two arguments must be equal.}
@@ -26,16 +24,16 @@ list. The lengths of these two arguments must be equal.}
 \item{penalty_scaling}{A function to be used to scale the penalty associated with each patch.
 Defaults to \code{\link{ks_scaling}}.}
 
-\item{mismatch_attr}{The name of the attribute containing the calculated mismatch associated with
-each candidate patch in the return value. Defaults to "mismatch".}
+\item{mismatch_attr}{The name of the attribute in the return value containing the calculated mismatch associated with
+each candidate patch. Defaults to "mismatch".}
 
-\item{penalty_attr}{The name of the attribute containing the calculated penalty associated with
-each candidate patch in the return value. Defaults to "penalty".}
+\item{penalty_attr}{The name of the attributein the return value containing the calculated penalty associated with
+each candidate patch. Defaults to "penalty".}
 
 \item{verbose}{A logical flag.}
 }
 \value{
-A nested list of patch objects with two numeric attributes:
+A nested list of patch objects, each with two numeric attributes:
 \code{mismatch} and \code{penalty}.
 }
 \description{
@@ -55,4 +53,14 @@ sum of the (columwise) mismatch (after application of the patch) plus the
 patch for which the mismatch is always taken to be zero.
 
 The actual candidate is then the one with the minimum total cost.
+}
+\details{
+Each element in the \code{patch_generators} list must be a 'patch generator'
+function. That is, a function, with arguments \code{df1}, \code{df2},
+\code{mismatch}, \code{col1} and \code{col2}, which returns a patch such that
+the mismatch between data frame \code{df2} and the patched \code{df1} is
+minimised to the extent possible using the type of patch in question. If the
+attempt at patch generation fails, the generator function should return
+\code{NULL}. An example of such a patch generator is
+\code{\link{gen_patch_transform}}.
 }

@@ -2,20 +2,31 @@
 % Please edit documentation in R/solve_pairwise_assignment.R
 \name{solve_pairwise_assignment}
 \alias{solve_pairwise_assignment}
-\title{Solve the linear sum assignment problem}
+\title{Solve the linear sum assignment problem between column pairs}
 \usage{
 solve_pairwise_assignment(m, maximum = FALSE)
 }
 \arguments{
-\item{m}{A matrix with nonnegative entries.}
+\item{m}{A costs matrix with nonnegative entries.}
 
-\item{maximum}{A logical flag indicating whether to minimize of maximize the sum of assigned
+\item{maximum}{A logical flag indicating whether to minimise or maximise the sum of assigned
 costs.}
 }
 \value{
-An integer vector.
+An integer vector containing the solution of the assignment problem.
+The \code{i}th element is the index of the column to which the \code{i}th row
+is assigned.
 }
 \description{
-Helper function for \code{\link{ddiff}}. Solves the problem of optimally
-assigning column... TODO.
+Helper function for \code{\link{ddiff}}. Solves the optimal assignment
+problem,  based on the given costs matrix, via the Hungarian algorithm using
+the implementation in \code{\link{solve_LSAP}} from the \code{clue} package.
+}
+\details{
+If it is not already square, the costs matrix \code{m} is augmented with rows
+or columns of zeros to obtain a square matrix. In case
+\code{ncol(m) < nrow(m)}, rows in \code{m} which are not assigned to any
+column in \code{m} are instead assigned to the augmented rows. Similarly, in
+case \code{nrow(m) < ncol(m)}, columns in \code{m} to which no row is
+assigned are instead assigned from the augmented columns.
 }

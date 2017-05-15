@@ -2,8 +2,7 @@
 #'
 #' @description
 #' S3 class \code{patch_identity} which extends the \code{patch} and
-#' \code{function} classes to represent the identity transformation of a
-#' tabular dataset.
+#' \code{function} classes to represent the identity transformation.
 #'
 #' @return A \code{patch_identity} object.
 #'

@@ -24,9 +24,14 @@ this takes the value of \code{col1}.}
 A \code{patch_shift} object.
 }
 \description{
-Generates a \code{patch_shift} object whose 'shift' parameter has been
+Generates a \code{patch_shift} object whose \code{shift} parameter has been
 selected with the aim of minimising the mismatch between the specified
 columns after application of the patch to \code{df1}.
+}
+\details{
+Uses the \code{\link{optim}} function to optimise the \code{shift}
+parameter for the given mismatch method. If the numerical optimisation fails
+to converge an error is thrown.
 }
 \seealso{
 \code{\link{gen_patch_affine}}

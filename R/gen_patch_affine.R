@@ -1,13 +1,13 @@
 #' Generate an affine patch
 #'
-#' Generates a composite 'affine' \code{patch} object, formed as the composition
-#' of a \code{patch_shift} and a \code{patch_scale}, whose 'shift' and 'scale
-#' factor' parameters hav been selected with the aim of minimising the mismatch
-#' between the vector \code{y} and the patch applied to the given data frame.
+#' Generates a composite \code{patch} object representing an affine
+#' transformation, formed as the composition of a \code{patch_shift} and a
+#' \code{patch_scale} object, whose \code{shift} and \code{scale_factor} parameters
+#' have been selected with the aim of minimising the mismatch between the specified
+#' columns after application of the patch to \code{df1}.
 #'
 #' Uses the \code{\link{optim}} function to optimise the affine transformation
-#' parameters for the given mismatch (or 'mismatch') method, which defaults to
-#' \code{\link{ks}} (Kolmogorov-Smirnov). The numerical methods available to
+#' parameters for the given mismatch method. The numerical methods available to
 #' \code{optim} are tried, in the order in which they apper in that function's
 #' default \code{method} argument, until convergence is achieved. If none of the
 #' methods succeeds an error is thrown.
@@ -32,7 +32,7 @@
 #' Additional arguments are ignored.
 #'
 #' @return An 'affine' \code{patch} object (consisting of the composition of a
-#' shift and scale patch).
+#' shift and a scale patch).
 #'
 #' @seealso \code{\link{optim}}
 #'

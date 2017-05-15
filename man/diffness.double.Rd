@@ -15,5 +15,8 @@ numeric data.}
 \item{...}{Additional arguments are ignored.}
 }
 \description{
+Vectors of type \code{double} are treated as continuous numerical data.
+}
+\details{
 The mismatch between vectors of different types is always 1.
 }

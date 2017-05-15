@@ -19,6 +19,9 @@ A \code{patch_break} object.
 S3 class \code{patch_break} which extends the \code{patch} and
 \code{function} classes to represent a transformation of a tabular dataset
 by an abrubt break in one or more columns.
+
+Break patches are unique in that the mismatch between a broken column and
+any other column is always taken to be zero.
 }
 \seealso{
 \code{\link{is_valid_columns}} \code{\link{is_compatible_columns}}

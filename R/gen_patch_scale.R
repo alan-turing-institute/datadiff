@@ -1,8 +1,11 @@
 #' Generate a scale patch
 #'
-#' Generates a \code{patch_scale} object whose 'scale factor' parameter has been
-#' selected with the aim of minimising the mismatch between the specified
+#' Generates a \code{patch_scale} object whose \code{scale_factor} parameter has
+#' been selected with the aim of minimising the mismatch between the specified
 #' columns after application of the patch to \code{df1}.
+#'
+#' Uses the \code{\link{optimise}} function to optimise the \code{scale_factor}
+#' parameter for the given mismatch method.
 #'
 #' @param df1
 #' A data frame. The column specified in the \code{col1} argument must contain

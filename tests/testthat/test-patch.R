@@ -110,6 +110,31 @@ test_that("the decompose_patch function works", {
 
 })
 
+test_that("the simplify_patch function works", {
+
+  p <- patch_identity()
+  p1 <- patch_shift(1L, shift = 1)
+  p2 <- patch_scale(1L, scale_factor = 3)
+
+  target <- compose_patch(p, p)
+  expect_equal(simplify_patch(target), expected = p)
+
+  target <- compose_patch(p, p, p1)
+  expect_equal(decompose_patch(simplify_patch(target)),
+               expected = p1)
+
+  target <- compose_patch(p, compose_patch(p1, p2), p)
+  expected <- decompose_patch(compose_patch(p1, p2))
+  expect_equal(decompose_patch(simplify_patch(target)), expected = expected)
+
+  target <- compose_patch(p, compose_patch(p1, p2), p)
+  expected <- decompose_patch(compose_patch(p1, p2))
+  expect_equal(decompose_patch(simplify_patch(target)), expected = expected)
+
+  target <- compose_patch(p1, p, compose_patch(p, p2), p, compose_patch(p, p1))
+  expected <- decompose_patch(compose_patch(p1, p2, p1))
+  expect_equal(decompose_patch(simplify_patch(target)), expected = expected)
+})
 
 test_that("the apply_patch function works", {
 

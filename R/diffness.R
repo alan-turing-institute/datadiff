@@ -17,12 +17,12 @@ diffness <- function(x, y, ...) UseMethod("diffness")
 #' Compute the mismatch between two data frames
 #'
 #' @param x,y
-#' A pair of datasets
+#' A pair of data frames.
 #' @param col_diff
 #' A numeric scalar specifying the additional mismatch per column when \code{x}
 #' and \code{y} have different numbers of columns. Defaults to 1.
 #' @param ...
-#' Additional arguments passed to methods.
+#' Additional arguments passed to other \code{diffness} methods.
 #'
 #' @export
 diffness.data.frame <- function(x, y, col_diff = 1, ...) {
@@ -47,6 +47,8 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 # diffness.integer & diffness.double, and omit diffness.numeric.
 
 #' Compute the mismatch between two continuous numeric vectors
+#'
+#' Vectors of type \code{double} are treated as continuous numerical data.
 #'
 #' The mismatch between vectors of different types is always 1.
 #'

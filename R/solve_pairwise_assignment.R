@@ -1,16 +1,25 @@
-#' Solve the linear sum assignment problem
+#' Solve the linear sum assignment problem between column pairs
 #'
-#' @description
-#' Helper function for \code{\link{ddiff}}. Solves the problem of optimally
-#' assigning column... TODO.
+#' Helper function for \code{\link{ddiff}}. Solves the optimal assignment
+#' problem,  based on the given costs matrix, via the Hungarian algorithm using
+#' the implementation in \code{\link{solve_LSAP}} from the \code{clue} package.
+#'
+#' If it is not already square, the costs matrix \code{m} is augmented with rows
+#' or columns of zeros to obtain a square matrix. In case
+#' \code{ncol(m) < nrow(m)}, rows in \code{m} which are not assigned to any
+#' column in \code{m} are instead assigned to the augmented rows. Similarly, in
+#' case \code{nrow(m) < ncol(m)}, columns in \code{m} to which no row is
+#' assigned are instead assigned from the augmented columns.
 #'
 #' @param m
-#' A matrix with nonnegative entries.
+#' A costs matrix with nonnegative entries.
 #' @param maximum
-#' A logical flag indicating whether to minimize of maximize the sum of assigned
+#' A logical flag indicating whether to minimise or maximise the sum of assigned
 #' costs.
 #'
-#' @return An integer vector.
+#' @return An integer vector containing the solution of the assignment problem.
+#' The \code{i}th element is the index of the column to which the \code{i}th row
+#' is assigned.
 #'
 #' @export
 #'

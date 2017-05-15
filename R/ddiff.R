@@ -2,9 +2,9 @@
 #'
 #' @description
 #' Given two data frames and a collection of patch generator functions, with
-#' associated (numeric) penalties, this function returns a composite patch
-#' object representing the sequence of transformations by which the data frames
-#' differ.
+#' associated (numeric) penalties, this function attempts to identify a
+#' sequence of transformations to best explain the difference and returns the
+#' result as a (composite) patch.
 #'
 #' @param df1,df2
 #' A pair of data frames.
@@ -43,7 +43,8 @@ ddiff <- function(df1, df2,
                   patch_penalties = 0.6,
                   break_penalty = 0.99,
                   permute_penalty = 0.4,
-                  penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny = nrow(df2)),
+                  penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1),
+                                                   ny = nrow(df2)),
                   insert_col_name = "INSERT",
                   as.list = FALSE, verbose = FALSE) {
 
@@ -77,7 +78,8 @@ ddiff <- function(df1, df2,
     cat("penalty matrix:\n"); print(m_penalty)
   }
 
-  # Solve the assignment problem. The soln has length max(ncol(df1), ncol(df2)).
+  # Solve the problem of assigning columns in df1 to those in df2 with minimum
+  # cost. The solution has length max(ncol(df1), ncol(df2)).
   soln <- solve_pairwise_assignment(m_mismatch + m_penalty, maximum = FALSE)
 
   column_is_unassigned <- soln > ncol(df2)
@@ -119,11 +121,6 @@ ddiff <- function(df1, df2,
     cw_candidates[[i]][[soln[i]]]
   })
 
-  # IMP TODO: redefine patch_insert so that insertion_point is the (first) column
-  # index of the newly-inserted data. That way, we can omit the "- 1" above and
-  # the column indices in the patches in p_candidates will refer one to each
-  # column, even when insert patches are presnt.
-
   # Identify any insert or delete patches (at most one list will be non-trivial).
   identify_insert_patches <- function(column_is_not_assigned_to) {
     if (!any(column_is_not_assigned_to))
@@ -152,20 +149,16 @@ ddiff <- function(df1, df2,
   # Construct the candidate as a list of patches (for composition).
   # Note that the order is important here: columnwise patches must be applied
   # before any insertions/deletions but the permutation must go them.
+  # Note: we compose even when as.list is TRUE to return only elementary patches.
   patch_list <- c(p_columnwise, p_insert, p_delete, p_permute)
   p <- simplify_patch(Reduce(compose_patch, rev(patch_list)))
-
-  # old (note that we _always_ compose and then decompose if necessary, to
-  # guarantee that the returned list only contains elementary patches):
-  # patch_list <- purrr::discard(patch_list, .p = is_identity_patch,
-  #                              allow_composed = FALSE)
 
   if (verbose) {
     cat("candidate patch list:\n")
     print(p)
   }
 
-  if (!as.list)
-    return(p)
-  decompose_patch(p)
+  if (as.list)
+    return(decompose_patch(p))
+  p
 }

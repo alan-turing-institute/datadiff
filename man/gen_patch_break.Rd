@@ -26,10 +26,6 @@ A \code{patch_break} object.
 \description{
 Generates a \code{patch_break} object.
 }
-\details{
-Break patches are unique in that the mismatch between a broken column and
-any other column is always taken to be zero.
-}
 \seealso{
 \code{\link{patch_break}}
 }

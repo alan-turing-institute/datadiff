@@ -5,6 +5,9 @@
 #' \code{function} classes to represent a transformation of a tabular dataset
 #' by an abrubt break in one or more columns.
 #'
+#' Break patches are unique in that the mismatch between a broken column and
+#' any other column is always taken to be zero.
+#'
 #' @param cols
 #' A vector of column identifiers.
 #' @param data

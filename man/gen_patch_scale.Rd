@@ -26,9 +26,13 @@ this takes the value of \code{col1}.}
 A \code{patch_scale} object.
 }
 \description{
-Generates a \code{patch_scale} object whose 'scale factor' parameter has been
-selected with the aim of minimising the mismatch between the specified
+Generates a \code{patch_scale} object whose \code{scale_factor} parameter has
+been selected with the aim of minimising the mismatch between the specified
 columns after application of the patch to \code{df1}.
+}
+\details{
+Uses the \code{\link{optimise}} function to optimise the \code{scale_factor}
+parameter for the given mismatch method.
 }
 \seealso{
 \code{\link{gen_patch_affine}} \code{\link{mad}}

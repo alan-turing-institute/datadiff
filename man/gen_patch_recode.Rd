@@ -24,9 +24,8 @@ this takes the value of \code{col1}.}
 A \code{patch_recode} object.
 }
 \description{
-Generates a \code{patch_recode} object whose 'encoding' parameter has been
-selected with the aim of minimising the mismatch between the specified
-columns after application of the patch to \code{df1}.
+Generates a \code{patch_recode} object that minimises the mismatch between
+the specified columns after application of the patch to \code{df1}.
 }
 \seealso{
 \code{\link{patch_recode}}
