@@ -16,10 +16,10 @@
 #' @param patch_penalties
 #' A numeric vector of patch penalties corresponding to the \code{patch_generators}
 #' list. The lengths of these two arguments must be equal.
-#' @param break_penalty
-#' The penalty associated with a break patch.
 #' @param permute_penalty
 #' The penalty associated with a permutation patch.
+#' @param break_penalty
+#' The penalty associated with a break patch.
 #' @param penalty_scaling
 #' A function to be used to scale the penalty associated with each patch.
 #' Defaults to \code{\link{ks_scaling}}.
@@ -41,8 +41,8 @@ ddiff <- function(df1, df2,
                   mismatch = diffness,
                   patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.6,
-                  break_penalty = 0.99,
                   permute_penalty = 0.4,
+                  break_penalty = 0.99,
                   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1),
                                                    ny = nrow(df2)),
                   insert_col_name = "INSERT",
@@ -75,6 +75,7 @@ ddiff <- function(df1, df2,
                                          mismatch = mismatch,
                                          patch_generators = patch_generators,
                                          patch_penalties = patch_penalties,
+                                         permute_penalty = permute_penalty,
                                          break_penalty = break_penalty,
                                          penalty_scaling = penalty_scaling,
                                          mismatch_attr = mismatch_attr,
@@ -112,7 +113,8 @@ ddiff <- function(df1, df2,
   ## TODO: better would be to add the permutation costs to the costs matrix
   # and _then_ solve the assignment problem. *Care will be needed* when there
   # are inserts/deletes as we must not penalise permutations of those 'dummy'
-  # columns. All this would best be done inside columnwise_candidates.
+  # columns (and what about break patches?). All this would best be done inside
+  # columnwise_candidates.
   # Main benefits:
   # - separates the permutation from the other patches so we can accept
   # columnwise patches without accepting the permutation (which is important
@@ -123,17 +125,18 @@ ddiff <- function(df1, df2,
   # account the permutation penalty, so we sometimes choose a candidate including
   # a permutation when there ought not to be one.
   # - permutation patch has the same status as other patches.
-  # - calcualtion of the permutation penalty is easier: we just add the
+  # - calculation of the permutation penalty is easier: we just add the
   # (scaled) permute_penalty to all off-diagonal entries in m_penalty.
 
-  # Identify the permuation corresponding to the solution (using 'order' to go
-  # from column indices to a permutation) and calculate the associated penalty.
-  perm <- order(soln[!column_is_unassigned])
-  candidate_perm_penalty <- penalty_scaling(permute_penalty) *
-    sum(perm != 1:ncol(df2))
+  # old:
+  # # Identify the permutation corresponding to the solution (using 'order' to go
+  # # from column indices to a permutation) and calculate the associated penalty.
+  # perm <- order(soln[!column_is_unassigned])
+  # candidate_perm_penalty <- penalty_scaling(permute_penalty) *
+  #   sum(perm != 1:ncol(df2))
 
   ## Compare the total cost of the (composed) candidate vs. doing nothing.
-  tc_candidate <- cw_candidates_total_cost + candidate_perm_penalty
+  tc_candidate <- cw_candidates_total_cost # old: + candidate_perm_penalty
   tc_identity <- mismatch(df1, df2)
 
   if (verbose) {
@@ -153,6 +156,10 @@ ddiff <- function(df1, df2,
       return(patch_identity()) # Do nothing to columns which will be deleted.
     cw_candidates[[i]][[soln[i]]]
   })
+
+  # Identify the permutation corresponding to the solution (using 'order' to go
+  # from column indices to a permutation) and calculate the associated penalty.
+  perm <- order(soln[!column_is_unassigned])
 
   # Identify any insert or delete patches (at most one list will be non-trivial).
   identify_insert_patches <- function(column_is_not_assigned_to) {

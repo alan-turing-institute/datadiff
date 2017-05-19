@@ -6,7 +6,7 @@
 \usage{
 ddiff(df1, df2, mismatch = diffness,
   patch_generators = list(gen_patch_transform), patch_penalties = 0.6,
-  break_penalty = 0.99, permute_penalty = 0.4,
+  permute_penalty = 0.4, break_penalty = 0.99,
   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny =
   nrow(df2)), insert_col_name = "INSERT", as.list = FALSE,
   verbose = FALSE)
@@ -22,9 +22,9 @@ each from \code{df1} & \code{df2}), candidate patches will be generated.}
 \item{patch_penalties}{A numeric vector of patch penalties corresponding to the \code{patch_generators}
 list. The lengths of these two arguments must be equal.}
 
-\item{break_penalty}{The penalty associated with a break patch.}
-
 \item{permute_penalty}{The penalty associated with a permutation patch.}
+
+\item{break_penalty}{The penalty associated with a break patch.}
 
 \item{penalty_scaling}{A function to be used to scale the penalty associated with each patch.
 Defaults to \code{\link{ks_scaling}}.}

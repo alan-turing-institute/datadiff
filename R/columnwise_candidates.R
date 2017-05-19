@@ -38,6 +38,8 @@
 #' @param patch_penalties
 #' A numeric vector of patch penalties corresponding to the \code{patch_generators}
 #' list. The lengths of these two arguments must be equal.
+#' @param permute_penalty
+#' The penalty associated with a permutation patch.
 #' @param break_penalty
 #' The penalty associated with a break patch.
 #' @param penalty_scaling
@@ -61,6 +63,7 @@ columnwise_candidates <- function(df1, df2,
                                 mismatch,
                                 patch_generators,
                                 patch_penalties,
+                                permute_penalty,
                                 break_penalty,
                                 penalty_scaling,
                                 mismatch_attr,
@@ -113,8 +116,14 @@ columnwise_candidates <- function(df1, df2,
       }
 
       costs <- mismatches + penalties
-      best <- min(which(costs == min(costs)))
-      patches[[best]]
+      ret <- patches[[min(which(costs == min(costs)))]]
+
+      # Add the (scaled) permute penalty.
+      if (i != j)
+        attr(ret, penalty_attr) <- attr(ret, penalty_attr) +
+          penalty_scaling(permute_penalty)
+
+      ret
     })
   })
 }

@@ -7,7 +7,7 @@
 ks_scaling(penalty, nx, ny)
 }
 \arguments{
-\item{penalty}{A numeric penalty}
+\item{penalty}{A numeric penalty in the range [0, 1)}
 
 \item{nx, ny}{The lengths of the vectors}
 }

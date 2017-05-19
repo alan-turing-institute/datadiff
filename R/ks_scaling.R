@@ -16,7 +16,7 @@
 #' \url{https://en.wikipedia.org/wiki/Kolmogorov-Smirnov_test}
 #' where the confidence threshold \eqn{alpha} corresponds to one minus the penalty.
 #'
-#' @param penalty A numeric penalty
+#' @param penalty A numeric penalty in the range [0, 1)
 #' @param nx,ny The lengths of the vectors
 #' @return A (numeric) scaled penalty.
 #'
