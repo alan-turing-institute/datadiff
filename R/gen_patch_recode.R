@@ -14,6 +14,9 @@
 #' @param col2
 #' A column identifier (integer or string column name) with length 1. By default
 #' this takes the value of \code{col1}.
+#' @param allow_new_categories
+#' A logical flag. If \code{FALSE}, the number of distinct categories in the
+#' specified columns must be equal.
 #' @param ...
 #' Additional arguments are ignored.
 #'
@@ -22,7 +25,8 @@
 #' @seealso \code{\link{patch_recode}}
 #'
 #' @export
-gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1, ...) {
+gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1,
+                             allow_new_categories = FALSE, ...) {
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
@@ -40,6 +44,8 @@ gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1, ...) {
   lev1 <- levels(f1)
   lev2 <- levels(f2)
 
+  if (!allow_new_categories && length(lev2) != length(lev1))
+    stop("Conflicting number of categories & allow_new_categories is FALSE")
   if (length(lev2) < length(lev1))
     stop("Insufficient target codes")
 

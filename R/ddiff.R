@@ -98,6 +98,22 @@ ddiff <- function(df1, df2,
   # cost. The solution has length max(ncol(df1), ncol(df2)).
   soln <- solve_pairwise_assignment(m_mismatch + m_penalty, maximum = FALSE)
 
+  ## TODO: to implement the change described below we must execute the following
+  # twice: once with the soln to the assignment problem and once with soln
+  # replaced with no_perm = 1:max(ncol(df1), ncol(df2)). Then we will compare
+  # tc_candidate_perm with tc_candidate_no_perm and, if the no_perm total cost
+  # is less we continue with no_perm instead of soln (and corresponding
+  # values of column_is_unassigned, column_is_not_assigned_to and perm (which
+  # will be equal to no_perm in this case)).
+  # So we want functions:
+  # - compute_candidate_total_cost(m_costs, ...)
+  # - construct_candidate_patch(soln, ...)
+  # but the annoying bit is we need the intermediate results, such as
+  # column_is_unassigned, in both parts, and it's ugly to recompute them.
+  #
+  # SO, consider a function which, given (only?) the costs matrix, constructs the
+  # candidate and includes the total cost as an attribute. - TRY THIS.
+
   column_is_unassigned <- soln > ncol(df2)
   column_is_not_assigned_to <- !(1:length(soln) %in% soln[1:ncol(df1)])
 
@@ -109,23 +125,6 @@ ddiff <- function(df1, df2,
     m_mismatch[i, soln[i]] + m_penalty[i, soln[i]]
   }))
 
-  ## TODO: better would be to add the permutation costs to the costs matrix
-  # and _then_ solve the assignment problem. *Care will be needed* when there
-  # are inserts/deletes as we must not penalise permutations of those 'dummy'
-  # columns. All this would best be done inside columnwise_candidates.
-  # Main benefits:
-  # - separates the permutation from the other patches so we can accept
-  # columnwise patches without accepting the permutation (which is important
-  # because currently there are cases where the total cost is minimised by just
-  # applying columnwise patches, without a permutation, but that are not identified
-  # as such - i.e. either the permutation must be included, or the entire patch
-  # is rejected). Currently we pick the permutation *without* taking into
-  # account the permutation penalty, so we sometimes choose a candidate including
-  # a permutation when there ought not to be one.
-  # - permutation patch has the same status as other patches.
-  # - calcualtion of the permutation penalty is easier: we just add the
-  # (scaled) permute_penalty to all off-diagonal entries in m_penalty.
-
   # Identify the permuation corresponding to the solution (using 'order' to go
   # from column indices to a permutation) and calculate the associated penalty.
   perm <- order(soln[!column_is_unassigned])
@@ -136,10 +135,17 @@ ddiff <- function(df1, df2,
   tc_candidate <- cw_candidates_total_cost + candidate_perm_penalty
   tc_identity <- mismatch(df1, df2)
 
+
   if (verbose) {
     cat(paste("Candidate total cost:\t", tc_candidate, "\n"))
     cat(paste("Unpatched mismatch:\t", tc_identity, "\n"))
   }
+
+  ### MOST IMP TODO: OUGHT WE TO COMPARE AGAINST THE COMPOSED PATCHES ON THE
+  # DIAGONAL, RATHER THAN THE IDENTITY? YES! (Since those have been selected in
+  # preference to the identity inside columnwise_candidates.) This should fix
+  # the problem of not being able to reject the permutation without rejecting
+  # everything.
 
   # Unless the mismatch reduction exceeds the total candidate cost, do nothing.
   if (tc_identity <= tc_candidate)

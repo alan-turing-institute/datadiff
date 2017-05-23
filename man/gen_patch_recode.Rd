@@ -4,7 +4,8 @@
 \alias{gen_patch_recode}
 \title{Generate a recode patch}
 \usage{
-gen_patch_recode(df1, df2, mismatch = tv, col1, col2 = col1, ...)
+gen_patch_recode(df1, df2, mismatch = tv, col1, col2 = col1,
+  allow_new_categories = FALSE, ...)
 }
 \arguments{
 \item{df1}{A data frame.}
@@ -17,6 +18,9 @@ gen_patch_recode(df1, df2, mismatch = tv, col1, col2 = col1, ...)
 
 \item{col2}{A column identifier (integer or string column name) with length 1. By default
 this takes the value of \code{col1}.}
+
+\item{allow_new_categories}{A logical flag. If \code{FALSE}, the number of distinct categories in the
+specified columns must be equal.}
 
 \item{...}{Additional arguments are ignored.}
 }

@@ -62,8 +62,10 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 #'
 #' @export
 diffness.double <- function(x, y, diff = ks, ...) {
-  stopifnot(is.vector(y))
+  stopifnot(is.vector(y) || is.factor(y))
 
+  if (is.factor(y))
+    return(1)
   if (!is.double(y))
     return(1)
 
@@ -77,7 +79,8 @@ diffness.double <- function(x, y, diff = ks, ...) {
 #' distance).
 #'
 #' The mismatch between vectors of different types is always 1. This includes
-#' the case of an integer vector and a non-integer numeric vector.
+#' the case of an integer vector and a non-integer numeric vector, and the case
+#' of an integer vector and a factor.
 #'
 #' @param x,y
 #' A pair of vectors of type \code{integer}.
@@ -89,8 +92,10 @@ diffness.double <- function(x, y, diff = ks, ...) {
 #'
 #' @export
 diffness.integer <- function(x, y, diff = ks, ...) {
-  stopifnot(is.vector(y))
+  stopifnot(is.vector(y) || is.factor(y))
 
+  if (is.factor(y))
+    return(1)
   if (!is.integer(y))
     return(1)
 
@@ -128,7 +133,9 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
 #' Compute the mismatch between two vectors of unordered categorical data
 #'
 #' @param x,y
-#' A pair of unordered factors.
+#' A pair of unordered factors. If \code{y} is not already a factor it is
+#' converted to one, unless it contains continuous numerical data, in which case
+#' the mismatch is always 1.
 #' @param diff
 #' Mismatch method. The default is \code{tv} (total variation distance) for
 #' unordered categorical data.
@@ -137,7 +144,11 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
 #'
 #' @export
 diffness.factor <- function(x, y, diff = tv, ...) {
-  stopifnot(is.factor(y))
+  if (is.double(y))
+    return(1)
+
+  if (!is.factor(y))
+    y <- as.factor(y)
 
   diff(x, y)
 }
@@ -149,7 +160,8 @@ diffness.factor <- function(x, y, diff = tv, ...) {
 #' The mismatch between vectors of different types is always 1.
 #'
 #' @param x,y
-#' A pair of vectors of type \code{character}.
+#' A pair of vectors of type \code{character}. Argument \code{y} may also be a
+#' factor with levels of type \code{character}.
 #' @param diff
 #' Mismatch method. The default is \code{tv} (total variation distance) for
 #' unordered categorical data.
@@ -158,9 +170,11 @@ diffness.factor <- function(x, y, diff = tv, ...) {
 #'
 #' @export
 diffness.character <- function(x, y, diff = tv, ...) {
-  stopifnot(is.vector(y))
+  stopifnot(is.vector(y) || is.factor(y))
 
-  if (!is.character(y))
+  if (is.factor(y) && !is.character(levels(y)))
+    return(1)
+  if (!is.factor(y) && !is.character(y))
     return(1)
 
   diffness(as.factor(x), as.factor(y), diff = diff)
@@ -173,7 +187,8 @@ diffness.character <- function(x, y, diff = tv, ...) {
 #' The mismatch between vectors of different types is always 1.
 #'
 #' @param x,y
-#' A pair of vectors of type \code{logical}.
+#' A pair of vectors of type \code{logical}. Argument \code{y} may also be a
+#' factor with levels of type \code{logical}.
 #' @param diff
 #' Mismatch method. The default is \code{tv} (total variation distance) for
 #' unordered categorical data.
@@ -182,9 +197,11 @@ diffness.character <- function(x, y, diff = tv, ...) {
 #'
 #' @export
 diffness.logical <- function(x, y, diff = tv, ...) {
-  stopifnot(is.vector(y))
+  stopifnot(is.vector(y) || is.factor(y))
 
-  if (!is.logical(y))
+  if (is.factor(y) && !is.logical(levels(y)))
+    return(1)
+  if (!is.factor(y) && !is.logical(y))
     return(1)
 
   diffness(as.factor(x), as.factor(y), diff = diff)

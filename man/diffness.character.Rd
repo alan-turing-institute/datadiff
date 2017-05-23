@@ -7,7 +7,8 @@
 \method{diffness}{character}(x, y, diff = tv, ...)
 }
 \arguments{
-\item{x, y}{A pair of vectors of type \code{character}.}
+\item{x, y}{A pair of vectors of type \code{character}. Argument \code{y} may also be a
+factor with levels of type \code{character}.}
 
 \item{diff}{Mismatch method. The default is \code{tv} (total variation distance) for
 unordered categorical data.}

@@ -7,7 +7,9 @@
 \method{diffness}{factor}(x, y, diff = tv, ...)
 }
 \arguments{
-\item{x, y}{A pair of unordered factors.}
+\item{x, y}{A pair of unordered factors. If \code{y} is not already a factor it is
+converted to one, unless it contains continuous numerical data, in which case
+the mismatch is always 1.}
 
 \item{diff}{Mismatch method. The default is \code{tv} (total variation distance) for
 unordered categorical data.}

@@ -7,7 +7,8 @@
 \method{diffness}{logical}(x, y, diff = tv, ...)
 }
 \arguments{
-\item{x, y}{A pair of vectors of type \code{logical}.}
+\item{x, y}{A pair of vectors of type \code{logical}. Argument \code{y} may also be a
+factor with levels of type \code{logical}.}
 
 \item{diff}{Mismatch method. The default is \code{tv} (total variation distance) for
 unordered categorical data.}
