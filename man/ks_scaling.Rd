@@ -29,4 +29,6 @@ Specifically, the scaling is that appropriate for the
 two-sample Kolmogorov-Smirnov test
 \url{https://en.wikipedia.org/wiki/Kolmogorov-Smirnov_test}
 where the confidence threshold \eqn{alpha} corresponds to one minus the penalty.
+
+If the \code{penalty} is zero, the return value is also zero.
 }

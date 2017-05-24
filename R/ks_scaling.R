@@ -16,6 +16,8 @@
 #' \url{https://en.wikipedia.org/wiki/Kolmogorov-Smirnov_test}
 #' where the confidence threshold \eqn{alpha} corresponds to one minus the penalty.
 #'
+#' If the \code{penalty} is zero, the return value is also zero.
+#'
 #' @param penalty A numeric penalty
 #' @param nx,ny The lengths of the vectors
 #' @return A (numeric) scaled penalty.
@@ -23,6 +25,8 @@
 #' @export
 ks_scaling <- function(penalty, nx, ny) {
 
+  if (penalty == 0)
+    return(0)
   critical_value <- function(alpha) { sqrt(-log(alpha / 2) / 2) }
   critical_value(1 - penalty) * sqrt((nx + ny) / (nx * ny))
 }
