@@ -9,7 +9,8 @@
 #' @param df1,df2
 #' A pair of data frames.
 #' @param mismatch
-#' Mismatch method. The default is \code{\link{diffness}}.
+#' Mismatch method, which must be additive over columns. The default is
+#' \code{\link{diffness}}.
 #' @param patch_generators
 #' A list of patch generator functions from which, for each pair of columns (one
 #' each from \code{df1} & \code{df2}), candidate patches will be generated.
@@ -65,9 +66,10 @@ ddiff <- function(df1, df2,
   # patches, perhaps followed by a permutation patch.
   #
   # - Compare the total cost of the final candidate patch p, i.e.
-  # mismatch(p(df1), df2) + penalty(p), with the cost of doing nothing, i.e.
-  # mismatch(df1, df2). If the candidate improves the cost, return that (composed)
-  # patch, otherwise return the identity patch.
+  # mismatch(p(df1), df2) + penalty(p), with the cost of the best patch which
+  # does not include a permutation (i.e. the trace of the costs matrix, when
+  # ncol(df1) and ncol(df2) are equal). Of these two (composed) patches, return
+  # the one with the lowest total cost.
 
   # Construct a nested list of candidate patches between column pairs.
   mismatch_attr <- "mismatch"; penalty_attr <- "penalty"
@@ -80,6 +82,75 @@ ddiff <- function(df1, df2,
                                          mismatch_attr = mismatch_attr,
                                          penalty_attr = penalty_attr,
                                          verbose = verbose)
+
+  # NEW
+  # Function to construct, and cost, a final candidate patch.
+  cost_attr <- "cost"
+  final_candidate <- function(assignment) {
+
+    column_is_unassigned <- assignment > ncol(df2)
+    column_is_not_assigned_to <- !(1:length(assignment) %in% assignment[1:ncol(df1)])
+
+    # Calculate the total cost (mismatch + penalty) of the candidate patch
+    # corresponding to the given assignment. Note that this assumes that the
+    # mismatch is additive over columns.
+    assignment_total_cost <- sum(purrr::map_dbl(1:ncol(df1), .f = function(i) {
+      if (column_is_unassigned[i])
+        return(0) # Unassigned columns from df1 will be deleted (without cost).
+      m_mismatch[i, assignment[i]] + m_penalty[i, assignment[i]]
+    }))
+
+    # Identify the permuation corresponding to the assignment (using 'order' to
+    # go from column indices to a permutation) & calculate the associated penalty.
+    perm <- order(assignment[!column_is_unassigned])
+    assignment_perm_penalty <- penalty_scaling(permute_penalty) *
+      sum(perm != 1:ncol(df2))
+
+    # ## Compare the total cost of the (composed) candidate vs. doing nothing.
+    # tc_candidate <- cw_candidates_total_cost + candidate_perm_penalty
+    # tc_identity <- mismatch(df1, df2)
+
+    # Identify the columnwise candidate patches.
+    p_columnwise <- purrr::map(1:ncol(df1), .f = function(i) {
+      if (column_is_unassigned[i])
+        return(patch_identity()) # Do nothing to columns which will be deleted.
+      cw_candidates[[i]][[assignment[i]]]
+    })
+
+    # Identify any insert or delete patches (at most one list will be non-trivial).
+    identify_insert_patches <- function(column_is_not_assigned_to) {
+      if (!any(column_is_not_assigned_to))
+        return(patch_identity())
+      insert_col_data <- data.frame(rep(NA, nrow(df2)))
+      colnames(insert_col_data) <- insert_col_name
+      purrr::map(which(column_is_not_assigned_to), .f = function(i) {
+        patch_insert(as.integer(perm[i] - 1), data = insert_col_data)
+      })
+    }
+    identify_delete_patches <- function(column_is_unassigned) {
+      if (!any(column_is_unassigned))
+        return(patch_identity())
+      purrr::map(sort(which(column_is_unassigned), decreasing = TRUE),
+                 .f = patch_delete)
+    }
+    p_insert <- identify_insert_patches(column_is_not_assigned_to)
+    p_delete <- identify_delete_patches(column_is_unassigned)
+
+    # Construct the permutation patch.
+    if (identical(perm, 1:ncol(df2)))
+      p_permute <- patch_identity()
+    else
+      p_permute <- patch_perm(perm)
+
+    # Construct the candidate as a list of patches (for composition).
+    # Note that the order is important here: columnwise patches must be applied
+    # before any insertions/deletions but the permutation must go them.
+    # Note: we compose even when as.list is TRUE to return only elementary patches.
+    patch_list <- c(p_columnwise, p_insert, p_delete, p_permute)
+    ret <- simplify_patch(Reduce(compose_patch, rev(patch_list)))
+    attr(ret, which = cost_attr) <- assignment_total_cost + assignment_perm_penalty
+    ret
+  }
 
   # Extract the costs matrix (from attributes attached to the candidates).
   extract_matrix <- function(attr_name) {
@@ -98,104 +169,113 @@ ddiff <- function(df1, df2,
   # cost. The solution has length max(ncol(df1), ncol(df2)).
   soln <- solve_pairwise_assignment(m_mismatch + m_penalty, maximum = FALSE)
 
-  ## TODO: to implement the change described below we must execute the following
-  # twice: once with the soln to the assignment problem and once with soln
-  # replaced with no_perm = 1:max(ncol(df1), ncol(df2)). Then we will compare
-  # tc_candidate_perm with tc_candidate_no_perm and, if the no_perm total cost
-  # is less we continue with no_perm instead of soln (and corresponding
-  # values of column_is_unassigned, column_is_not_assigned_to and perm (which
-  # will be equal to no_perm in this case)).
-  # So we want functions:
-  # - compute_candidate_total_cost(m_costs, ...)
-  # - construct_candidate_patch(soln, ...)
-  # but the annoying bit is we need the intermediate results, such as
-  # column_is_unassigned, in both parts, and it's ugly to recompute them.
+  p <- final_candidate(soln)
+
+  # If the candidate includes a permutation, compare with the best patch which
+  # does not permute.
+  if (!identical(soln, sort(soln))) {
+    no_perm_p <- final_candidate(1:length(soln))
+
+    if (attr(no_perm_p, which = cost_attr) < attr(p, which = cost_attr))
+      p <- no_perm_p
+  }
+
+
+  # # OLD:
   #
-  # SO, consider a function which, given (only?) the costs matrix, constructs the
-  # candidate and includes the total cost as an attribute. - TRY THIS.
-
-  column_is_unassigned <- soln > ncol(df2)
-  column_is_not_assigned_to <- !(1:length(soln) %in% soln[1:ncol(df1)])
-
-  # Calculate the total cost (mismatch + penalty) of the candidate.
-  # Note that this assumes that the mismatch is additive over columns.
-  cw_candidates_total_cost <- sum(purrr::map_dbl(1:ncol(df1), .f = function(i) {
-    if (column_is_unassigned[i])
-      return(0) # Unassigned columns from df1 will be deleted (without cost).
-    m_mismatch[i, soln[i]] + m_penalty[i, soln[i]]
-  }))
-
-  # Identify the permuation corresponding to the solution (using 'order' to go
-  # from column indices to a permutation) and calculate the associated penalty.
-  perm <- order(soln[!column_is_unassigned])
-  candidate_perm_penalty <- penalty_scaling(permute_penalty) *
-    sum(perm != 1:ncol(df2))
-
-  ## Compare the total cost of the (composed) candidate vs. doing nothing.
-  tc_candidate <- cw_candidates_total_cost + candidate_perm_penalty
-  tc_identity <- mismatch(df1, df2)
-
-
-  if (verbose) {
-    cat(paste("Candidate total cost:\t", tc_candidate, "\n"))
-    cat(paste("Unpatched mismatch:\t", tc_identity, "\n"))
-  }
-
-  ### MOST IMP TODO: OUGHT WE TO COMPARE AGAINST THE COMPOSED PATCHES ON THE
-  # DIAGONAL, RATHER THAN THE IDENTITY? YES! (Since those have been selected in
-  # preference to the identity inside columnwise_candidates.) This should fix
-  # the problem of not being able to reject the permutation without rejecting
-  # everything.
-
-  # Unless the mismatch reduction exceeds the total candidate cost, do nothing.
-  if (tc_identity <= tc_candidate)
-    return(patch_identity())
-
-  ## Now that the candidate has been accepted, construct the patch itself.
-
-  # Identify the columnwise candidate patches.
-  p_columnwise <- purrr::map(1:ncol(df1), .f = function(i) {
-    if (column_is_unassigned[i])
-      return(patch_identity()) # Do nothing to columns which will be deleted.
-    cw_candidates[[i]][[soln[i]]]
-  })
-
-  # Identify any insert or delete patches (at most one list will be non-trivial).
-  identify_insert_patches <- function(column_is_not_assigned_to) {
-    if (!any(column_is_not_assigned_to))
-      return(patch_identity())
-    insert_col_data <- data.frame(rep(NA, nrow(df2)))
-    colnames(insert_col_data) <- insert_col_name
-    purrr::map(which(column_is_not_assigned_to), .f = function(i) {
-      patch_insert(as.integer(perm[i] - 1), data = insert_col_data)
-    })
-  }
-  identify_delete_patches <- function(column_is_unassigned) {
-    if (!any(column_is_unassigned))
-      return(patch_identity())
-    purrr::map(sort(which(column_is_unassigned), decreasing = TRUE),
-               .f = patch_delete)
-  }
-  p_insert <- identify_insert_patches(column_is_not_assigned_to)
-  p_delete <- identify_delete_patches(column_is_unassigned)
-
-  # Construct the permutation patch.
-  if (identical(perm, 1:ncol(df2)))
-    p_permute <- patch_identity()
-  else
-    p_permute <- patch_perm(perm)
-
-  # Construct the candidate as a list of patches (for composition).
-  # Note that the order is important here: columnwise patches must be applied
-  # before any insertions/deletions but the permutation must go them.
-  # Note: we compose even when as.list is TRUE to return only elementary patches.
-  patch_list <- c(p_columnwise, p_insert, p_delete, p_permute)
-  p <- simplify_patch(Reduce(compose_patch, rev(patch_list)))
-
-  if (verbose) {
-    cat("candidate patch list:\n")
-    print(p)
-  }
+  # ## TODO: to implement the change described below we must execute the following
+  # # twice: once with the soln to the assignment problem and once with soln
+  # # replaced with no_perm = 1:max(ncol(df1), ncol(df2)). Then we will compare
+  # # tc_candidate_perm with tc_candidate_no_perm and, if the no_perm total cost
+  # # is less we continue with no_perm instead of soln (and corresponding
+  # # values of column_is_unassigned, column_is_not_assigned_to and perm (which
+  # # will be equal to no_perm in this case)).
+  # # So we want functions:
+  # # - compute_candidate_total_cost(m_costs, ...)
+  # # - construct_candidate_patch(soln, ...)
+  # # but the annoying bit is we need the intermediate results, such as
+  # # column_is_unassigned, in both parts, and it's ugly to recompute them.
+  # #
+  # # SO, consider a function which, given (only?) the costs matrix, constructs the
+  # # candidate and includes the total cost as an attribute. - TRY THIS.
+  #
+  # column_is_unassigned <- soln > ncol(df2)
+  # column_is_not_assigned_to <- !(1:length(soln) %in% soln[1:ncol(df1)])
+  #
+  # # Calculate the total cost (mismatch + penalty) of the candidate.
+  # # Note that this assumes that the mismatch is additive over columns.
+  # cw_candidates_total_cost <- sum(purrr::map_dbl(1:ncol(df1), .f = function(i) {
+  #   if (column_is_unassigned[i])
+  #     return(0) # Unassigned columns from df1 will be deleted (without cost).
+  #   m_mismatch[i, soln[i]] + m_penalty[i, soln[i]]
+  # }))
+  #
+  # # Identify the permuation corresponding to the solution (using 'order' to go
+  # # from column indices to a permutation) and calculate the associated penalty.
+  # perm <- order(soln[!column_is_unassigned])
+  # candidate_perm_penalty <- penalty_scaling(permute_penalty) *
+  #   sum(perm != 1:ncol(df2))
+  #
+  # ## Compare the total cost of the (composed) candidate vs. doing nothing.
+  # tc_candidate <- cw_candidates_total_cost + candidate_perm_penalty
+  # tc_identity <- mismatch(df1, df2)
+  #
+  #
+  # if (verbose) {
+  #   cat(paste("Candidate total cost:\t", tc_candidate, "\n"))
+  #   cat(paste("Unpatched mismatch:\t", tc_identity, "\n"))
+  # }
+  #
+  # ### MOST IMP TODO: OUGHT WE TO COMPARE AGAINST THE COMPOSED PATCHES ON THE
+  # # DIAGONAL, RATHER THAN THE IDENTITY? YES! (Since those have been selected in
+  # # preference to the identity inside columnwise_candidates.) This should fix
+  # # the problem of not being able to reject the permutation without rejecting
+  # # everything.
+  #
+  # # Unless the mismatch reduction exceeds the total candidate cost, do nothing.
+  # if (tc_identity <= tc_candidate)
+  #   return(patch_identity())
+  #
+  # ## Now that the candidate has been accepted, construct the patch itself.
+  #
+  # # Identify the columnwise candidate patches.
+  # p_columnwise <- purrr::map(1:ncol(df1), .f = function(i) {
+  #   if (column_is_unassigned[i])
+  #     return(patch_identity()) # Do nothing to columns which will be deleted.
+  #   cw_candidates[[i]][[soln[i]]]
+  # })
+  #
+  # # Identify any insert or delete patches (at most one list will be non-trivial).
+  # identify_insert_patches <- function(column_is_not_assigned_to) {
+  #   if (!any(column_is_not_assigned_to))
+  #     return(patch_identity())
+  #   insert_col_data <- data.frame(rep(NA, nrow(df2)))
+  #   colnames(insert_col_data) <- insert_col_name
+  #   purrr::map(which(column_is_not_assigned_to), .f = function(i) {
+  #     patch_insert(as.integer(perm[i] - 1), data = insert_col_data)
+  #   })
+  # }
+  # identify_delete_patches <- function(column_is_unassigned) {
+  #   if (!any(column_is_unassigned))
+  #     return(patch_identity())
+  #   purrr::map(sort(which(column_is_unassigned), decreasing = TRUE),
+  #              .f = patch_delete)
+  # }
+  # p_insert <- identify_insert_patches(column_is_not_assigned_to)
+  # p_delete <- identify_delete_patches(column_is_unassigned)
+  #
+  # # Construct the permutation patch.
+  # if (identical(perm, 1:ncol(df2)))
+  #   p_permute <- patch_identity()
+  # else
+  #   p_permute <- patch_perm(perm)
+  #
+  # # Construct the candidate as a list of patches (for composition).
+  # # Note that the order is important here: columnwise patches must be applied
+  # # before any insertions/deletions but the permutation must go them.
+  # # Note: we compose even when as.list is TRUE to return only elementary patches.
+  # patch_list <- c(p_columnwise, p_insert, p_delete, p_permute)
+  # p <- simplify_patch(Reduce(compose_patch, rev(patch_list)))
 
   if (as.list)
     return(decompose_patch(p))
