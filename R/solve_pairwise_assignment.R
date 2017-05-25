@@ -16,6 +16,8 @@
 #' @param maximum
 #' A logical flag indicating whether to minimise or maximise the sum of assigned
 #' costs.
+#' @param verbose
+#' A logical flag.
 #'
 #' @return An integer vector containing the solution of the assignment problem.
 #' The \code{i}th element is the index of the column to which the \code{i}th row
@@ -23,13 +25,14 @@
 #'
 #' @export
 #'
-solve_pairwise_assignment <- function(m, maximum = FALSE) {
+solve_pairwise_assignment <- function(m, maximum = FALSE, verbose = FALSE) {
 
-  # The reasoning behind the augmentation of m with zeros (in the case of a
-  # non-square matrix) is based on the following identities:
+  # The reasoning behind the augmentation of m with zeros in the case of a
+  # non-square matrix is based on the following identities:
   # (Here soln refers to the solution obtained from clue::solve_LSAP)
   #
-  # 1. soln(m) = rev(soln(m'))
+  # 1. soln(m) = rev(soln(m')), where m' is the transpose of m and rev reverses
+  #    the assignment, i.e. if i => j in soln then j => i in rev(soln).
   # 2. if nrow(m) < ncol(m) then soln(m) = soln(M)|_{1:nrow(m)} where
   #    M is the matrix obtained from m by adding rows of zeros.
   # 3. if ncol(m) < nrow(m) then soln(m') = rev(soln(M)|_{1:ncol(m)}) where
@@ -69,5 +72,7 @@ solve_pairwise_assignment <- function(m, maximum = FALSE) {
     soln[!is_assigned] <- sort(soln[!is_assigned])
   }
 
+  if (verbose)
+    print(soln)
   as.integer(soln)
 }
