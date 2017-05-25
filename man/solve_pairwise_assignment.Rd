@@ -4,13 +4,15 @@
 \alias{solve_pairwise_assignment}
 \title{Solve the linear sum assignment problem between column pairs}
 \usage{
-solve_pairwise_assignment(m, maximum = FALSE)
+solve_pairwise_assignment(m, maximum = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{m}{A costs matrix with nonnegative entries.}
 
 \item{maximum}{A logical flag indicating whether to minimise or maximise the sum of assigned
 costs.}
+
+\item{verbose}{A logical flag.}
 }
 \value{
 An integer vector containing the solution of the assignment problem.
