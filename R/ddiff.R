@@ -107,65 +107,6 @@ ddiff <- function(df1, df2,
   # from column indices to a permutation) and calculate the associated penalty.
   perm <- order(soln[!column_is_unassigned])
 
-  # superfluous (in this imporoved algorithm)
-  #
-  # # Calculate the total cost (mismatch + penalty) of the candidate.
-  # # Note that this assumes that the mismatch is additive over columns.
-  # cw_candidates_total_cost <- sum(purrr::map_dbl(1:ncol(df1), .f = function(i) {
-  #   if (column_is_unassigned[i])
-  #     return(0) # Unassigned columns from df1 will be deleted (without cost).
-  #   m_mismatch[i, soln[i]] + m_penalty[i, soln[i]]
-  # }))
-
-  ## TODO: better would be to add the permutation costs to the costs matrix
-  # and _then_ solve the assignment problem. *Care will be needed* when there
-  # are inserts/deletes as we must not penalise permutations of those 'dummy'
-  # columns (and what about break patches?). All this would best be done inside
-  # columnwise_candidates.
-  # Main benefits:
-  # - separates the permutation from the other patches so we can accept
-  # columnwise patches without accepting the permutation (which is important
-  # because currently there are cases where the total cost is minimised by just
-  # applying columnwise patches, without a permutation, but that are not identified
-  # as such - i.e. either the permutation must be included, or the entire patch
-  # is rejected). Currently we pick the permutation *without* taking into
-  # account the permutation penalty, so we sometimes choose a candidate including
-  # a permutation when there ought not to be one.
-  # - permutation patch has the same status as other patches.
-  # - calculation of the permutation penalty is easier: we just add the
-  # (scaled) permute_penalty to all off-diagonal entries in m_penalty.
-
-  # old:
-  # # Identify the permutation corresponding to the solution (using 'order' to go
-  # # from column indices to a permutation) and calculate the associated penalty.
-  # perm <- order(soln[!column_is_unassigned])
-  # candidate_perm_penalty <- penalty_scaling(permute_penalty) *
-  #   sum(perm != 1:ncol(df2))
-
-  ### MOST IMP TODO: isn't this superfluous? if doing nothing were the best
-  # option it would have been selected. (i.e. This is just a leftover from the previous
-  # (buggy) version of the algorithm.) Since the mismatch is additive over columns
-  # we are actually doing this comparison (i.e. patch vs. do nothing) columnwise
-  # - while doing other comparison(s) (vs break, for instance) at the same time!
-
-
-  # superfluous (in this improved algorithm):
-  # ## Compare the total cost of the (composed) candidate vs. doing nothing.
-  # tc_candidate <- cw_candidates_total_cost # old: + candidate_perm_penalty
-  # tc_identity <- mismatch(df1, df2)
-  #
-  # # superfluous (easy for the user to check this if required)
-  # # if (verbose) {
-  # #   cat(paste("Candidate total cost:\t", tc_candidate, "\n"))
-  # #   cat(paste("Unpatched mismatch:\t", tc_identity, "\n"))
-  # # }
-  #
-  # # Unless the mismatch reduction exceeds the total candidate cost, do nothing.
-  # if (tc_identity <= tc_candidate)
-  #   return(patch_identity())
-
-  ## Now that the candidate has been accepted, construct the patch itself.
-
   # Identify the columnwise candidate patches.
   p_columnwise <- purrr::map(1:ncol(df1), .f = function(i) {
     if (column_is_unassigned[i])
