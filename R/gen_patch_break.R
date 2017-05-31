@@ -3,11 +3,9 @@
 #' Generates a \code{patch_break} object.
 #'
 #' @param df1
-#' A data frame. The column specified in the \code{col1} argument must contain
-#' a vector of type \code{double} with at least one non-missing value.
+#' A data frame.
 #' @param df2
-#' A data frame. The column specified in the \code{col2} argument must contain
-#' a vector of type \code{double} with at least one non-missing value.
+#' A data frame.
 #' @param col1
 #' A column identifier (integer or string column name) of length 1.
 #' @param col2
@@ -30,10 +28,10 @@ gen_patch_break <- function(df1, df2, col1,
   v1 <- df1[[col1]]
   v2 <- df2[[col2]]
 
-  stopifnot(sum(!is.na(v1)) != 0 && sum(!is.na(v2)) != 0)
+  # old: stopifnot(sum(!is.na(v1)) != 0 && sum(!is.na(v2)) != 0)
 
   # The new column consists entirely of NAs.
-  data <- data.frame(rep(NA, times = nrow(df2)))
+  data <- data.frame(rep(NA, times = nrow(df1)))
   names(data) <- ifelse(is.character(col2), yes = col2, no = colnames(df2)[col2])
 
   patch_break(col1, data = data)

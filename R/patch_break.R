@@ -36,5 +36,6 @@ patch_break <- function(cols, data) {
 
     compose_patch(p_delete, p_insert)
   })
+
   Reduce(compose_patch, rev(patch_list))
 }

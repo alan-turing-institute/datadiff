@@ -3,7 +3,7 @@ context("ddiff")
 
 test_that("the ddiff function works", {
 
-  generate_normal_df <- function(n = 100) {
+  generate_normal_df <- function(n) {
     v1 <- rnorm(n)
     v2 <- rnorm(n, sd = 4)
     v3 <- rnorm(n, mean = 2)
@@ -14,7 +14,7 @@ test_that("the ddiff function works", {
 
   set.seed(22)
   df1 <- generate_normal_df(100)
-  df2 <- generate_normal_df(100)
+  df2 <- generate_normal_df(101)
 
   result <- ddiff(df1, df2 = df2, patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.6, break_penalty = 0.99, permute_penalty = 0.1)
@@ -34,7 +34,7 @@ test_that("the ddiff function works", {
   ## Test with an affine transformation.
   set.seed(22)
   df1 <- generate_normal_df(100)
-  df2 <- generate_normal_df(100)
+  df2 <- generate_normal_df(101)
 
   df2[[1]] <- 32 + (9/5) * df2[[1]]
   result <- ddiff(df1, df2 = df2, patch_generators = list(gen_patch_transform),
@@ -56,7 +56,7 @@ test_that("the ddiff function works", {
   ## Repeat the affine test with more difficult parameters...
   set.seed(22)
   df1 <- generate_normal_df(100)
-  df2 <- generate_normal_df(100)
+  df2 <- generate_normal_df(101)
 
   df2[[1]] <- 2 + (7/5) * df2[[1]]
   result <- ddiff(df1, df2 = df2, patch_generators = list(gen_patch_transform),
@@ -68,16 +68,16 @@ test_that("the ddiff function works", {
   expect_equal(patch_type(result[[1]]), expected = "scale")
   expect_equal(get_patch_params(result[[1]])[["cols"]], expected = 1)
   expect_equal(get_patch_params(result[[1]])[["scale_factor"]], expected = 2,
-               tolerance = 0.2)
+               tolerance = 0.3)
   expect_equal(patch_type(result[[2]]), "shift")
   expect_equal(get_patch_params(result[[2]])[["cols"]], expected = 1)
   expect_equal(get_patch_params(result[[2]])[["shift"]], expected = 2,
-               tolerance = 0.01)
+               tolerance = 0.02)
 
   ## Repeat again with even more difficult parameters...
   set.seed(22)
   df1 <- generate_normal_df(100)
-  df2 <- generate_normal_df(100)
+  df2 <- generate_normal_df(101)
 
   df2[[1]] <- 2 + (6/5) * df2[[1]]
   result <- ddiff(df1, df2 = df2, patch_generators = list(gen_patch_transform),
@@ -92,7 +92,7 @@ test_that("the ddiff function works", {
   ## Test with differing numbers of columns.
   set.seed(22)
   df1 <- generate_normal_df(100)
-  df2 <- generate_normal_df(100)
+  df2 <- generate_normal_df(101)
 
   result <- ddiff(df1, df2 = df2[1:3], patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.6, break_penalty = 0.99, permute_penalty = 0.1)
@@ -141,7 +141,7 @@ test_that("the ddiff function works", {
 
   set.seed(22)
   df1 <- generate_mixed_df(100)
-  df2 <- generate_mixed_df(100)
+  df2 <- generate_mixed_df(101)
 
   result <- ddiff(df1, df2 = df2, patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.6, break_penalty = 0.99, permute_penalty = 0.1)
@@ -175,7 +175,7 @@ test_that("the ddiff function works", {
   ## Test with the numeric columns permuted in df1 and a shift.
   set.seed(22)
   df1 <- generate_mixed_df(100)
-  df2 <- generate_mixed_df(100)
+  df2 <- generate_mixed_df(101)
   df2[[1]] <- 4 + df2[[1]]
   perm <- as.integer(c(2, 3, 1, 4, 5))
   df2 <- df2[perm]
@@ -195,7 +195,7 @@ test_that("the ddiff function works", {
   ## Test with recodings of categorical data.
   set.seed(22)
   df1 <- generate_mixed_df(100)
-  df2 <- generate_mixed_df(100)
+  df2 <- generate_mixed_df(101)
 
   df2[[5]] <- ifelse(df2[[5]] == "M", yes = 1L, no = 0L)
 
@@ -230,5 +230,6 @@ test_that("the ddiff function works", {
   # TODO: test with data frames containing both factors and integer data (by
   # setting stringsAsFactors = TRUE above).
 
+  # IMP TODO: test with (significantly) differing numbers of rows in df1 & df2.
 
 })

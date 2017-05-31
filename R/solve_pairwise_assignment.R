@@ -13,9 +13,6 @@
 #'
 #' @param m
 #' A costs matrix with nonnegative entries.
-#' @param maximum
-#' A logical flag indicating whether to minimise or maximise the sum of assigned
-#' costs.
 #' @param verbose
 #' A logical flag.
 #'
@@ -25,7 +22,7 @@
 #'
 #' @export
 #'
-solve_pairwise_assignment <- function(m, maximum = FALSE, verbose = FALSE) {
+solve_pairwise_assignment <- function(m, verbose = FALSE) {
 
   # The reasoning behind the augmentation of m with zeros in the case of a
   # non-square matrix is based on the following identities:
@@ -46,7 +43,7 @@ solve_pairwise_assignment <- function(m, maximum = FALSE, verbose = FALSE) {
     M <- cbind(m, replicate(nrow(m) - ncol(m), rep(0, nrow(m))))
 
   # Solve the assignment problem by applying the Hungarian algorithm.
-  soln <- clue::solve_LSAP(M, maximum = maximum)
+  soln <- clue::solve_LSAP(M, maximum = FALSE)
 
   # Sanity check the effect of augmenting the matrix.
   if (nrow(m) < ncol(m)) {

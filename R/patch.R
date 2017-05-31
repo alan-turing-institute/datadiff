@@ -173,7 +173,7 @@ print_patch_params <- function(patch, digits=3) {
   if (length(params) == 0)
     return(character(1))
   param_string <- function(x) {
-    if (is.integer(x) && length(x) <= 10) # TODO.
+    if (is.integer(x) && length(x) <= 30) # TODO.
       return(paste(x, collapse = " "))
     if (is.double(x) && length(x) == 1)
       return(round(x, digits))

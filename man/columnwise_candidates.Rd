@@ -5,7 +5,7 @@
 \title{Generate candidate patches by columnwise comparison}
 \usage{
 columnwise_candidates(df1, df2, mismatch, patch_generators, patch_penalties,
-  permute_penalty, break_penalty, penalty_scaling, mismatch_attr, penalty_attr,
+  break_penalty, penalty_scaling, mismatch_attr, penalty_attr,
   verbose = FALSE)
 }
 \arguments{
@@ -18,8 +18,6 @@ generated for every pair of columns (one each from \code{df1} & \code{df2}).}
 
 \item{patch_penalties}{A numeric vector of patch penalties corresponding to the \code{patch_generators}
 list. The lengths of these two arguments must be equal.}
-
-\item{permute_penalty}{The penalty associated with a permutation patch.}
 
 \item{break_penalty}{The penalty associated with a break patch.}
 

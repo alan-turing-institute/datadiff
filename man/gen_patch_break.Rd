@@ -7,11 +7,9 @@
 gen_patch_break(df1, df2, col1, col2 = col1, ...)
 }
 \arguments{
-\item{df1}{A data frame. The column specified in the \code{col1} argument must contain
-a vector of type \code{double} with at least one non-missing value.}
+\item{df1}{A data frame.}
 
-\item{df2}{A data frame. The column specified in the \code{col2} argument must contain
-a vector of type \code{double} with at least one non-missing value.}
+\item{df2}{A data frame.}
 
 \item{col1}{A column identifier (integer or string column name) of length 1.}
 
