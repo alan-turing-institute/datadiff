@@ -97,7 +97,7 @@ ddiff <- function(df1, df2,
                   break_penalty = 0.9999,
                   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1),
                                                    ny = nrow(df2)),
-                  insert_col_name = "INSERT",
+                  insert_col_name = "NEW.COLUMN",
                   as.list = FALSE, verbose = FALSE) {
 
   stopifnot(is.data.frame(df1) && is.data.frame(df2))
@@ -153,7 +153,11 @@ ddiff <- function(df1, df2,
     # Update each cost matrix (with a new row corresponding to each column in
     # df2 which is not assigned to) & construct a list of insert patches.
     update_matrix <- function(m, i) {
-      rbind(m[0:(i - 1), ], (1 - diag(ncol(df2)))[i, ], m[i:nrow(m), ]) }
+      ret <- rbind(m[0:(i - 1), ], (1 - diag(ncol(df2)))[i, ])
+      if (i <= nrow(m))
+        ret <- rbind(ret, m[i:nrow(m), ])
+      ret
+    }
     p_insert <- purrr::map(which(column_is_not_assigned_to), .f = function(i) {
       m_mismatch <<- update_matrix(m_mismatch, i)
       m_penalty <<- update_matrix(m_penalty, i)

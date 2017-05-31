@@ -5,7 +5,7 @@
 \title{Generate a recode patch}
 \usage{
 gen_patch_recode(df1, df2, mismatch = tv, col1, col2 = col1,
-  allow_new_categories = FALSE, ...)
+  allow_new_categories = TRUE, ...)
 }
 \arguments{
 \item{df1}{A data frame.}

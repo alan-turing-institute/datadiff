@@ -26,7 +26,7 @@
 #'
 #' @export
 gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1,
-                             allow_new_categories = FALSE, ...) {
+                             allow_new_categories = TRUE, ...) {
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
