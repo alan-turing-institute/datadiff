@@ -80,9 +80,6 @@ compose_patch <- function(...) {
   ret
 }
 
-### TODO NEXT: DECIDE HOW TO IDENTIFY ELEMENTARY PATCHES IN is_patch.
-
-
 #' Decompose a composition of patches
 #'
 #' Patches may be composed using the \code{\link{compose}} function and the
@@ -173,6 +170,8 @@ print_patch_params <- function(patch, digits=3) {
   if (length(params) == 0)
     return(character(1))
   param_string <- function(x) {
+    if (is.vector(x) && length(names(x)) == length(x))
+      return(paste(names(x), "->", x, collapse = ", "))
     if (is.integer(x) && length(x) <= 30) # TODO.
       return(paste(x, collapse = " "))
     if (is.double(x) && length(x) == 1)
