@@ -94,7 +94,8 @@ test_that("the ddiff function works", {
   df1 <- generate_normal_df(100)
   df2 <- generate_normal_df(101)
 
-  result <- ddiff(df1, df2 = df2[1:3], patch_generators = list(gen_patch_transform),
+  cols <- c(1:2, 4)
+  result <- ddiff(df1, df2 = df2[cols], patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.6, break_penalty = 0.99, permute_penalty = 0.1)
   expect_true(is_patch(result, allow_composed = TRUE))
   expect_equal(length(decompose_patch(result)), expected = 2)
@@ -103,29 +104,30 @@ test_that("the ddiff function works", {
                    expected = 5L)
   expect_equal(patch_type(decompose_patch(result)[[2]]), "delete")
   expect_identical(get_patch_params(decompose_patch(result)[[2]])[["cols"]],
-                   expected = 4L)
-  expect_identical(names(result(df1)), expected = names(df2[1:3]))
+                   expected = 3L)
+  expect_identical(names(result(df1)), expected = names(df2[cols]))
 
   ## Test with a permutation only (but with differing numbers of columns)
   perm <- as.integer(c(2, 5, 1, 4, 3))
 
-  result <- ddiff(df1, df2 = df2[perm][1:3], patch_generators = list(gen_patch_transform),
+  result <- ddiff(df1, df2 = df2[perm][cols], patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.6, break_penalty = 0.99, permute_penalty = 0.1)
   expect_true(is_patch(result, allow_composed = TRUE))
 
-  expect_identical(names(result(df1)), expected = names(df2[perm][1:3]))
+  expect_identical(names(result(df1)), expected = names(df2[perm][cols]))
 
   # Note: very high patch_penalty required here for correct identification of the
   # permutation.
   insert_col_name <- "INSERT"
-  result <- ddiff(df1[1:3], df2 = df2[perm], patch_generators = list(gen_patch_transform),
+  result <- ddiff(df1[cols], df2 = df2[perm], patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.8, break_penalty = 0.99, permute_penalty = 0.1,
                   insert_col_name = insert_col_name)
   expect_true(is_patch(result, allow_composed = TRUE))
 
   expected <- names(df2[perm])
-  expected[which(expected %in% c("v4", "v5"))] <- insert_col_name
-  expect_identical(names(result(df1[1:3])), expected = expected)
+  expected[which(expected %in% paste0("v", setdiff(1:5, cols)))] <-
+    insert_col_name
+  expect_identical(names(result(df1[cols])), expected = expected)
 
   #### Test with mixed data types.
 
