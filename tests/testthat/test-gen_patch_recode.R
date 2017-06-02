@@ -92,7 +92,7 @@ test_that("the gen_patch_recode function works", {
   df2 <- data.frame("v2" = sample.int(3, size=1000, replace=TRUE))
 
   expect_error(gen_patch_recode(df1, col1 = 1L, df2 = df2),
-               regexp = "Conflicting number of categories")
+               regexp = "Insufficient target codes")
 
   df1 <- data.frame("v1" = sample.int(5, size=1000, replace=TRUE, prob=prob1))
   df2 <- data.frame("v2" = rnorm(1000))

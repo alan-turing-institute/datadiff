@@ -6,7 +6,7 @@
 \usage{
 ddiff(df1, df2, mismatch = diffness,
   patch_generators = list(gen_patch_transform), patch_penalties = 0.6,
-  permute_penalty = 0.1, break_penalty = 0.9999,
+  permute_penalty = 0.1, break_penalty = 0.95,
   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny =
   nrow(df2)), insert_col_name = "NEW.COLUMN", as.list = FALSE,
   verbose = FALSE)
