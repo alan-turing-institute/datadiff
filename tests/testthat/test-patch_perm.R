@@ -17,6 +17,14 @@ test_that("the patch_perm constructor and get_patch_params function work", {
   expect_identical(get_patch_params(target)[["perm"]], expected = perm)
 })
 
+test_that("the print_patch_params method works", {
+
+  perm <- as.integer(c(2, 4, 1, 3, 5))
+  target <- patch_perm(perm)
+  expected <- "perm: 1 2 3 4 5\n      3 1 4 2 5"
+  expect_identical(print_patch_params(target), expected = expected)
+})
+
 test_that("patch function application works", {
 
   df <- data.frame("a" = 1:10, "b" = 11:20, "c"=21:30)

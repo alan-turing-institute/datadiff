@@ -116,7 +116,7 @@ simplify_patch <- function(patch) {
   if (is_identity_patch(patch, allow_composed = TRUE))
     return(patch_identity())
   patch_list <- purrr::discard(decompose_patch(patch), is_identity_patch,
-                      allow_composed = FALSE)
+                               allow_composed = FALSE)
   Reduce(compose_patch, rev(patch_list))
 }
 
@@ -145,6 +145,73 @@ get_patch_params <- function(patch) {
 #parameter
 
 
+# Convert a patch parameter to a string
+#
+# @param patch
+# A patch object.
+# @param param_name
+# A parameter name.
+# @param ...
+# Optional arguments.
+#
+param_string <- function(patch, param_name, ...) UseMethod("param_string")
+
+# Default implementation of \code{param_string}
+#
+# @param patch
+# A patch object.
+# @param param_name
+# A parameter name.
+# @param digits
+# The number of decimal places to be used when printing
+# parameters of type \code{double}. Defaults to 3.
+# @param ...
+# Additional arguments are ignored.
+#
+param_string.patch <- function(patch, param_name, digits = digits, ...) {
+
+  params <- get_patch_params(patch)
+  if (!(param_name %in% names(params)))
+    return(character(1))
+
+  x <- params[[param_name]]
+  if (is.vector(x) && length(names(x)) == length(x))
+    return(paste(names(x), "->", x, collapse = ", "))
+  if (is.integer(x) && length(x) <= 30) # TODO.
+    return(paste(x, collapse = " "))
+  if (is.double(x) && length(x) == 1)
+    return(round(x, digits))
+  if (!is.list(x) && length(x) == 1)
+    return(as.character(x))
+  paste0("<", paste(class(x), collapse = "|"), ">")
+}
+
+# Permute patch implementation of \code{param_string}
+#
+# @param patch
+# A \code{patch_permute} object.
+# @param param_name
+# A parameter name.
+# @param ...
+# Additional arguments passed to the next method.
+#
+# @return A character string describing the parameters associated with the
+# given \code{patch_permute}.
+#
+param_string.patch_perm <- function(patch, param_name, ...) {
+
+  if (param_name == "perm") {
+    params <- get_patch_params(patch)
+    stopifnot(param_name %in% names(params))
+    perm <- get_patch_params(patch)[[param_name]]
+    ret <- paste0(paste(1:length(perm), collapse = " "), "\n",
+                  paste(rep(" ", nchar("perm") + 2), collapse = ""),
+                  paste(order(perm), collapse = " "))
+    return(ret)
+  }
+  NextMethod(patch, param_name, ...)
+}
+
 #' Print the parameters associated with a patch object.
 #'
 #' @param patch
@@ -166,22 +233,8 @@ print_patch_params <- function(patch, digits=3) {
       !is_patch(patch, allow_composed = FALSE))
     return(purrr::map_chr(decompose_patch(patch), print_patch_params, digits))
 
-  params <- get_patch_params(patch)
-  if (length(params) == 0)
-    return(character(1))
-  param_string <- function(x) {
-    if (is.vector(x) && length(names(x)) == length(x))
-      return(paste(names(x), "->", x, collapse = ", "))
-    if (is.integer(x) && length(x) <= 30) # TODO.
-      return(paste(x, collapse = " "))
-    if (is.double(x) && length(x) == 1)
-      return(round(x, digits))
-    if (!is.list(x) && length(x) == 1)
-      return(as.character(x))
-    paste0("<", paste(class(x), collapse = "|"), ">")
-  }
-  paste(purrr::map_chr(1:length(params), .f = function(i) {
-    paste(names(params)[i], param_string(params[[i]]), sep = ": ")
+  paste(purrr::map_chr(names(get_patch_params(patch)), .f = function(name) {
+    paste(name, param_string(patch, name, digits = digits), sep = ": ")
   }), collapse = "; ")
 }
 
