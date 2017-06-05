@@ -92,7 +92,7 @@
 ddiff <- function(df1, df2,
                   mismatch = diffness,
                   patch_generators = list(gen_patch_transform),
-                  patch_penalties = 0.6,
+                  patch_penalties = 0.99999,
                   permute_penalty = 0.1,
                   break_penalty = 0.95,
                   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1),
