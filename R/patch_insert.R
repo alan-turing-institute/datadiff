@@ -55,7 +55,7 @@ patch_insert <- function(insertion_point, data) {
     post <- seq.int(insertion_point + 1, length(df))
     if (insertion_point == length(df))
       post <- 0
-    ret <- cbind(df[0:insertion_point], data, df[post])
+    ret <- dplyr::bind_cols(df[0:insertion_point], data, df[post])
 
     stopifnot(is.data.frame(ret))
     ret
