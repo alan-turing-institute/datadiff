@@ -79,6 +79,12 @@
 #' @param insert_col_name
 #' The column name used for inserted columns, if \code{df1} has fewer columns
 #' than \code{df2}. Defaults to 'INSERT'.
+#' @param attach_costs_matrices
+#' A logical flag. If \code{TRUE} the square costs matrices, on which the final
+#' column assignment is based, are attached to the return value as attributes
+#' with the names \code{mismatch} and \code{penalty}. This option is
+#' included to make the operation of the function more transparent (for
+#' debugging, say). Defaults to \code{FALSE}.
 #' @param as.list
 #' A logical flag. If \code{TRUE} the return value is a list of patches.
 #' Otherwise a composite patch object is returned.
@@ -99,6 +105,7 @@ ddiff <- function(df1, df2,
                   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1),
                                                    ny = nrow(df2)),
                   insert_col_name = "NEW.COLUMN",
+                  attach_costs_matrices = FALSE,
                   as.list = FALSE, verbose = FALSE) {
 
   stopifnot(is.data.frame(df1) && is.data.frame(df2))
@@ -203,7 +210,12 @@ ddiff <- function(df1, df2,
     patch_list <- c(patch_list, patch_perm(perm))
 
   p <- simplify_patch(Reduce(compose_patch, rev(patch_list)))
+
   if (as.list)
-    return(decompose_patch(p))
+    p <- decompose_patch(p)
+  if (attach_costs_matrices) {
+    attr(p, mismatch_attr) <- m_mismatch
+    attr(p, penalty_attr) <- m_penalty
+  }
   p
 }

@@ -65,8 +65,8 @@ columnwise_candidates <- function(df1, df2,
                                 patch_penalties,
                                 break_penalty,
                                 penalty_scaling,
-                                mismatch_attr,
-                                penalty_attr,
+                                mismatch_attr = "mismatch",
+                                penalty_attr = "penalty",
                                 verbose = FALSE) {
 
   if (verbose)

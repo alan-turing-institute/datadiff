@@ -141,10 +141,6 @@ get_patch_params <- function(patch) {
   purrr::discard(objs, is_patch)
 }
 
-#### TODO: BUGFIX REQD: test print_patch_params with single column data frame
-#parameter
-
-
 # Convert a patch parameter to a string
 #
 # @param patch
@@ -165,10 +161,13 @@ param_string <- function(patch, param_name, ...) UseMethod("param_string")
 # @param digits
 # The number of decimal places to be used when printing
 # parameters of type \code{double}. Defaults to 3.
+# @param n_int
+# The maximum length at which integer vectors are explicitly printed. Defaults
+# to 20.
 # @param ...
 # Additional arguments are ignored.
 #
-param_string.patch <- function(patch, param_name, digits = digits, ...) {
+param_string.patch <- function(patch, param_name, digits = 3, n_int = 20, ...) {
 
   params <- get_patch_params(patch)
   if (!(param_name %in% names(params)))
@@ -177,7 +176,7 @@ param_string.patch <- function(patch, param_name, digits = digits, ...) {
   x <- params[[param_name]]
   if (is.vector(x) && length(names(x)) == length(x))
     return(paste(names(x), "->", x, collapse = ", "))
-  if (is.integer(x) && length(x) <= 30) # TODO.
+  if (is.integer(x) && length(x) <= n_int)
     return(paste(x, collapse = " "))
   if (is.double(x) && length(x) == 1)
     return(round(x, digits))
@@ -219,6 +218,9 @@ param_string.patch_perm <- function(patch, param_name, ...) {
 #' @param digits
 #' The number of decimal places to be used when printing
 #' parameters of type \code{double}. Defaults to 3.
+#' @param n_int
+#' The maximum length at which integer vectors are explicitly printed. Defaults
+#' to 20.
 #'
 #' @return A character string describing the parameters associated with the
 #' given \code{patch}. If \code{patch} is a composition, the return value is a
@@ -226,12 +228,12 @@ param_string.patch_perm <- function(patch, param_name, ...) {
 #' \code{\link{decompose_patch}} on the \code{patch}.
 #'
 #' @export
-print_patch_params <- function(patch, digits=3) {
+print_patch_params <- function(patch, digits = 3, n_int = 20) {
 
   # Handle compositions (will return a character vector).
   if (is_patch(patch, allow_composed = TRUE) &&
       !is_patch(patch, allow_composed = FALSE))
-    return(purrr::map_chr(decompose_patch(patch), print_patch_params, digits))
+    return(purrr::map_chr(decompose_patch(patch), print_patch_params, digits, n_int))
 
   paste(purrr::map_chr(names(get_patch_params(patch)), .f = function(name) {
     paste(name, param_string(patch, name, digits = digits), sep = ": ")

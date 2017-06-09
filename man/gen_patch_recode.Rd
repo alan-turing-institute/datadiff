@@ -12,7 +12,8 @@ gen_patch_recode(df1, df2, mismatch = tv, col1, col2 = col1,
 
 \item{df2}{A data frame.}
 
-\item{mismatch}{Mismatch method. The default is \code{tv} (Total variation distance).}
+\item{mismatch}{Mismatch method. Currently this argument is ignored and the mismatch function
+is \emph{always} taken to be \code{\link{tv}}, the total variation distance.}
 
 \item{col1}{A column identifier (integer or string column name) with length 1.}
 
@@ -30,6 +31,10 @@ A \code{patch_recode} object.
 \description{
 Generates a \code{patch_recode} object that minimises the mismatch between
 the specified columns after application of the patch to \code{df1}.
+}
+\details{
+Note that the mismatch argument is ignored: the mismatch function is
+\emph{always} taken to be \code{\link{tv}}, the total variation distance.
 }
 \seealso{
 \code{\link{patch_recode}}

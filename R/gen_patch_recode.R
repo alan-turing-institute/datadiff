@@ -3,12 +3,16 @@
 #' Generates a \code{patch_recode} object that minimises the mismatch between
 #' the specified columns after application of the patch to \code{df1}.
 #'
+#' Note that the mismatch argument is ignored: the mismatch function is
+#' \emph{always} taken to be \code{\link{tv}}, the total variation distance.
+#'
 #' @param df1
 #' A data frame.
 #' @param df2
 #' A data frame.
 #' @param mismatch
-#' Mismatch method. The default is \code{tv} (Total variation distance).
+#' Mismatch method. Currently this argument is ignored and the mismatch function
+#' is \emph{always} taken to be \code{\link{tv}}, the total variation distance.
 #' @param col1
 #' A column identifier (integer or string column name) with length 1.
 #' @param col2

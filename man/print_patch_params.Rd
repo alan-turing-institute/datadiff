@@ -4,13 +4,16 @@
 \alias{print_patch_params}
 \title{Print the parameters associated with a patch object.}
 \usage{
-print_patch_params(patch, digits = 3)
+print_patch_params(patch, digits = 3, n_int = 20)
 }
 \arguments{
 \item{patch}{A \code{patch} object.}
 
 \item{digits}{The number of decimal places to be used when printing
 parameters of type \code{double}. Defaults to 3.}
+
+\item{n_int}{The maximum length at which integer vectors are explicitly printed. Defaults
+to 20.}
 }
 \value{
 A character string describing the parameters associated with the

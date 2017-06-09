@@ -8,8 +8,8 @@ ddiff(df1, df2, mismatch = diffness,
   patch_generators = list(gen_patch_transform), patch_penalties = 0.99999,
   permute_penalty = 0.1, break_penalty = 0.95,
   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny =
-  nrow(df2)), insert_col_name = "NEW.COLUMN", as.list = FALSE,
-  verbose = FALSE)
+  nrow(df2)), insert_col_name = "NEW.COLUMN", attach_costs_matrices = FALSE,
+  as.list = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
@@ -34,6 +34,12 @@ Defaults to \code{\link{ks_scaling}}.}
 
 \item{insert_col_name}{The column name used for inserted columns, if \code{df1} has fewer columns
 than \code{df2}. Defaults to 'INSERT'.}
+
+\item{attach_costs_matrices}{A logical flag. If \code{TRUE} the square costs matrices, on which the final
+column assignment is based, are attached to the return value as attributes
+with the names \code{mismatch} and \code{penalty}. This option is
+included to make the operation of the function more transparent (for
+debugging, say). Defaults to \code{FALSE}.}
 
 \item{as.list}{A logical flag. If \code{TRUE} the return value is a list of patches.
 Otherwise a composite patch object is returned.}

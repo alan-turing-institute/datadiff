@@ -73,3 +73,6 @@ solve_pairwise_assignment <- function(m, verbose = FALSE) {
     print(soln)
   as.integer(soln)
 }
+
+
+
