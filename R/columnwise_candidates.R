@@ -12,20 +12,21 @@
 #'   \item a break patch.
 #' }
 #' The "total cost" of each of these possible candidates is computed as the
-#' sum of the (columwise) mismatch (after application of the patch) plus the
-#' (scaled) penalty associated with the patch, except for the case of the break
-#' patch for which the mismatch is always taken to be zero.
+#' sum of the residual (columwise) mismatch (after application of the patch)
+#' plus the (scaled) penalty associated with the patch, except for the case of
+#' the break patch for which the mismatch is always taken to be zero and the
+#' penalty is not scaled.
 #'
 #' The actual candidate is then the one with the minimum total cost.
 #'
 #' @details
-#' Each element in the \code{patch_generators} list must be a 'patch generator'
+#' Each element in the \code{patch_generators} list must be a patch generator
 #' function. That is, a function, with arguments \code{df1}, \code{df2},
 #' \code{mismatch}, \code{col1} and \code{col2}, which returns a patch such that
-#' the mismatch between data frame \code{df2} and the patched \code{df1} is
-#' minimised to the extent possible using the type of patch in question. If the
-#' attempt at patch generation fails, the generator function should return
-#' \code{NULL}. An example of such a patch generator is
+#' the mismatch between column \code{col2} in \code{df2} and the patched column
+#' \code{col1} in \code{df1} is minimised to the extent possible using the type
+#' of patch in question. If the attempt at patch generation fails, the generator
+#' function must return \code{NULL}. An example of such a patch generator is
 #' \code{\link{gen_patch_transform}}.
 #'
 #' @param df1,df2
@@ -39,7 +40,8 @@
 #' A numeric vector of patch penalties corresponding to the \code{patch_generators}
 #' list. The lengths of these two arguments must be equal.
 #' @param break_penalty
-#' The penalty associated with a break patch.
+#' The penalty associated with a break patch. No scaling is applied to the
+#' \code{break_penalty}.
 #' @param penalty_scaling
 #' A function to be used to scale the penalty associated with each patch.
 #' Defaults to \code{\link{ks_scaling}}.
@@ -53,7 +55,7 @@
 #' A logical flag.
 #'
 #' @return A nested list of patch objects, each with two numeric attributes:
-#' \code{mismatch} and \code{penalty}.
+#' one for the residual columnwise mismatch and one for the patch penalty.
 #'
 #' @export
 #'
@@ -70,10 +72,8 @@ columnwise_candidates <- function(df1, df2,
   if (verbose)
     cat("Columnwise candidates' mismatch & penalty:\n")
 
-  # Construct a nested list of candidate transformation (or break) patches and
-  # simultaneously fill the costs & diffs matrices. Note that the costs + diffs
-  # matrix cannot be processed until all elements have been calculated, after
-  # which we must be able to recover the patches involved in those calculations.
+  # Construct a nested list of candidate patches with attributes for the
+  # residual mismatch and the associated penalty.
   purrr::map(1:ncol(df1), .f = function(i) {
     purrr::map(1:ncol(df2), .f = function(j) {
 
@@ -97,17 +97,14 @@ columnwise_candidates <- function(df1, df2,
 
       br_patch <- gen_patch_break(df1, df2 = df2, col1 = i, col2 = j)
       attr(br_patch, mismatch_attr) <- 0
-      # OLD:
-      # attr(br_patch, penalty_attr) <- penalty_scaling(break_penalty)
-      # NEW (break penalty is not scaled - to be justified!)
       attr(br_patch, penalty_attr) <- break_penalty
 
       patches <- c(list(id_patch), patches, list(br_patch))
       patches <- purrr::discard(patches, .p = is.null)
 
       # Identify which is the best candidate in the list.
-      mismatches <- purrr::map_dbl(patches, function(p) { attr(p, mismatch_attr) })
-      penalties <- purrr::map_dbl(patches, function(p) { attr(p, penalty_attr) })
+      mismatches <- purrr::map_dbl(patches, attr, mismatch_attr)
+      penalties <- purrr::map_dbl(patches, attr, penalty_attr)
 
       if (verbose) {
         cat(paste0("[", i, ", ", j, "]\n"))
@@ -115,8 +112,7 @@ columnwise_candidates <- function(df1, df2,
         cat(round(penalties, digits = 5), sep = "\t", "\n")
       }
 
-      costs <- mismatches + penalties
-      patches[[min(which(costs == min(costs)))]]
+      patches[[which.min(mismatches + penalties)]]
     })
   })
 }

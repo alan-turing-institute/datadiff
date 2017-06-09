@@ -19,7 +19,8 @@ generated for every pair of columns (one each from \code{df1} & \code{df2}).}
 \item{patch_penalties}{A numeric vector of patch penalties corresponding to the \code{patch_generators}
 list. The lengths of these two arguments must be equal.}
 
-\item{break_penalty}{The penalty associated with a break patch.}
+\item{break_penalty}{The penalty associated with a break patch. No scaling is applied to the
+\code{break_penalty}.}
 
 \item{penalty_scaling}{A function to be used to scale the penalty associated with each patch.
 Defaults to \code{\link{ks_scaling}}.}
@@ -34,7 +35,7 @@ each candidate patch. Defaults to "penalty".}
 }
 \value{
 A nested list of patch objects, each with two numeric attributes:
-\code{mismatch} and \code{penalty}.
+one for the residual columnwise mismatch and one for the patch penalty.
 }
 \description{
 Helper function for \code{\link{ddiff}}. Generates a candidate patch for each
@@ -48,19 +49,20 @@ Possible candidates are:
   \item a break patch.
 }
 The "total cost" of each of these possible candidates is computed as the
-sum of the (columwise) mismatch (after application of the patch) plus the
-(scaled) penalty associated with the patch, except for the case of the break
-patch for which the mismatch is always taken to be zero.
+sum of the residual (columwise) mismatch (after application of the patch)
+plus the (scaled) penalty associated with the patch, except for the case of
+the break patch for which the mismatch is always taken to be zero and the
+penalty is not scaled.
 
 The actual candidate is then the one with the minimum total cost.
 }
 \details{
-Each element in the \code{patch_generators} list must be a 'patch generator'
+Each element in the \code{patch_generators} list must be a patch generator
 function. That is, a function, with arguments \code{df1}, \code{df2},
 \code{mismatch}, \code{col1} and \code{col2}, which returns a patch such that
-the mismatch between data frame \code{df2} and the patched \code{df1} is
-minimised to the extent possible using the type of patch in question. If the
-attempt at patch generation fails, the generator function should return
-\code{NULL}. An example of such a patch generator is
+the mismatch between column \code{col2} in \code{df2} and the patched column
+\code{col1} in \code{df1} is minimised to the extent possible using the type
+of patch in question. If the attempt at patch generation fails, the generator
+function must return \code{NULL}. An example of such a patch generator is
 \code{\link{gen_patch_transform}}.
 }

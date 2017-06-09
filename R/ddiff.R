@@ -71,7 +71,8 @@
 #' the \code{penalty_scaling} argument, and multiplied by the number of columns
 #' whose index is changed by the permutation.
 #' @param break_penalty
-#' The penalty associated with a break patch.
+#' The penalty associated with a break patch. No scaling is applied to the
+#' \code{break_penalty}.
 #' @param penalty_scaling
 #' A function to be used to scale the penalty associated with each patch.
 #' Defaults to \code{\link{ks_scaling}}.
