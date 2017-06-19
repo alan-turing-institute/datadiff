@@ -2,7 +2,7 @@
 % Please edit documentation in R/patch.R
 \name{print_patch_params}
 \alias{print_patch_params}
-\title{Print the parameters associated with a patch object.}
+\title{Print the parameters associated with a patch object}
 \usage{
 print_patch_params(patch, digits = 3, n_int = 20)
 }
@@ -22,5 +22,5 @@ vector with one element for each elementary patch obtained by calling
 \code{\link{decompose_patch}} on the \code{patch}.
 }
 \description{
-Print the parameters associated with a patch object.
+Print the parameters associated with a patch object
 }

@@ -1,0 +1,123 @@
+PackratFormat: 1.4
+PackratVersion: 0.4.8.1
+RVersion: 3.3.2
+Repos: BioCsoft=https://bioconductor.org/packages/3.4/bioc,
+    BioCann=https://bioconductor.org/packages/3.4/data/annotation,
+    BioCexp=https://bioconductor.org/packages/3.4/data/experiment,
+    BioCextra=https://bioconductor.org/packages/3.4/extra,
+    CRAN=https://cran.rstudio.com/
+
+Package: BH
+Source: CRAN
+Version: 1.62.0-1
+Hash: 14dfb3e8ffe20996118306ff4de1fab2
+
+Package: DBI
+Source: CRAN
+Version: 0.7
+Hash: 1ab72df487f06ad5f0de05446cdd4bd6
+
+Package: R6
+Source: CRAN
+Version: 2.2.2
+Hash: b2366cd9d2f3851a5704b4e192b985c2
+
+Package: Rcpp
+Source: CRAN
+Version: 0.12.11
+Hash: 2ee22f3b5e75dec80b1d8eca61cd96d8
+
+Package: assertthat
+Source: CRAN
+Version: 0.2.0
+Hash: e8805df54c65ac96d50235c44a82615c
+
+Package: clue
+Source: CRAN
+Version: 0.3-53
+Hash: b7605767f2250f7c089688578945974d
+Requires: cluster
+
+Package: cluster
+Source: CRAN
+Version: 2.0.6
+Hash: 8aa5c05d0394b5659e122d096aff8f63
+
+Package: crayon
+Source: CRAN
+Version: 1.3.2
+Hash: 576a9d297a567d6a5ebd164ca5221590
+
+Package: digest
+Source: CRAN
+Version: 0.6.12
+Hash: e53fb8c58673df868183697e39a6a4d6
+
+Package: dplyr
+Source: CRAN
+Version: 0.5.0
+Hash: 09fc57f582c74ffa20a57e0a48b27150
+Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr, tibble
+
+Package: lazyeval
+Source: CRAN
+Version: 0.2.0
+Hash: 3d6e7608e65bbf5cb170dab1e3c9ed8b
+
+Package: lpSolve
+Source: CRAN
+Version: 5.6.13
+Hash: 179cd1170ef9f0a25c689dba0d5b4163
+
+Package: magrittr
+Source: CRAN
+Version: 1.5
+Hash: bdc4d48c3135e8f3b399536ddf160df4
+
+Package: packrat
+Source: CRAN
+Version: 0.4.8-1
+Hash: 6ad605ba7b4b476d84be6632393f5765
+
+Package: praise
+Source: CRAN
+Version: 1.0.0
+Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
+
+Package: purrr
+Source: CRAN
+Version: 0.2.2.2
+Hash: faada139260184912fea03f3fea13842
+Requires: Rcpp, lazyeval, magrittr, tibble
+
+Package: rlang
+Source: github
+Version: 0.1.1.9000
+Hash: 6168dedcf8198845025cf7e356d883e8
+GithubRepo: rlang
+GithubUsername: hadley
+GithubRef: master
+GithubSha1: 7f53e56a5cc429cf6f784937cb90a2580512c85d
+
+Package: stringi
+Source: CRAN
+Version: 1.1.5
+Hash: b6308e49357a0b475f433599e0d8b5eb
+
+Package: stringr
+Source: CRAN
+Version: 1.2.0
+Hash: 25a86d7f410513ebb7c0bc6a5e16bdc3
+Requires: magrittr, stringi
+
+Package: testthat
+Source: CRAN
+Version: 1.0.2
+Hash: 88d5291104227f9dc2e7c7c1d0eb6c74
+Requires: R6, crayon, digest, magrittr, praise
+
+Package: tibble
+Source: CRAN
+Version: 1.3.3
+Hash: cff4362530fb71e27b84a02054bcb315
+Requires: Rcpp, rlang
