@@ -78,7 +78,7 @@
 #' Defaults to \code{\link{ks_scaling}}.
 #' @param insert_col_name
 #' The column name used for inserted columns, if \code{df1} has fewer columns
-#' than \code{df2}. Defaults to 'INSERT'.
+#' than \code{df2}. Defaults to 'NEW.COLUMN'.
 #' @param attach_costs_matrices
 #' A logical flag. If \code{TRUE} the square costs matrices, on which the final
 #' column assignment is based, are attached to the return value as attributes
