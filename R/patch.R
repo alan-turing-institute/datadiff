@@ -141,7 +141,7 @@ get_patch_params <- function(patch) {
   purrr::discard(objs, is_patch)
 }
 
-# Convert a patch parameter to a string
+# Convert a patch parameter to a string for printing
 #
 # @param patch
 # A patch object.
@@ -211,7 +211,7 @@ param_string.patch_perm <- function(patch, param_name, ...) {
   NextMethod(patch, param_name, ...)
 }
 
-#' Print the parameters associated with a patch object.
+#' Print the parameters associated with a patch object
 #'
 #' @param patch
 #' A \code{patch} object.
