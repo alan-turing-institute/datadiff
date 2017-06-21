@@ -118,15 +118,15 @@ test_that("the ddiff function works", {
 
   # Note: very high patch_penalty required here for correct identification of the
   # permutation.
-  insert_col_name <- "INSERT"
+  insert_col_prefix <- "INSERT."
   result <- ddiff(df1[cols], df2 = df2[perm], patch_generators = list(gen_patch_transform),
                   patch_penalties = 0.8, break_penalty = 0.99, permute_penalty = 0.1,
-                  insert_col_name = insert_col_name)
+                  insert_col_prefix = insert_col_prefix)
   expect_true(is_patch(result, allow_composed = TRUE))
 
   expected <- names(df2[perm])
-  expected[which(expected %in% paste0("v", setdiff(1:5, cols)))] <-
-    insert_col_name
+  inserted_cols <- which(expected %in% paste0("v", setdiff(1:5, cols)))
+  expected[inserted_cols] <- paste0(insert_col_prefix, expected[inserted_cols])
   expect_identical(names(result(df1[cols])), expected = expected)
 
   #### Test with mixed data types.

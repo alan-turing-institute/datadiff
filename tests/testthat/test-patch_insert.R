@@ -73,6 +73,8 @@ test_that("patch function application works", {
   expect_identical(result[1:2], df)
 
   # Test with conflicting column names.
+  # Note the use of tibble::repair_names (which is indirectly used by
+  # patch_insert as a result of the call to dplyr::bind_cols).
   data <- data.frame("x" = rep(NA, 10), "col2" = 10:1)
 
   target <- patch_insert("col1", data = data)
@@ -80,9 +82,11 @@ test_that("patch function application works", {
 
   expect_true(is.data.frame(result))
   expect_equal(length(result), expected = 4)
-  expect_identical(names(result), c("col1", names(data), "col2"))
+  expect_identical(names(result),
+                   names(tibble::repair_names(cbind(df[1], data, df[2]))))
   expect_identical(result[2:3], data)
-  expect_identical(result[c(1, 4)], df)
+  expect_identical(result[c(1, 4)],
+                   tibble::repair_names(cbind(df[1], data, df[2]))[c(1, 4)])
 
   data <- data.frame("x" = rep(NA, 10), "col2" = 10:1)
 
@@ -91,8 +95,10 @@ test_that("patch function application works", {
 
   expect_true(is.data.frame(result))
   expect_equal(length(result), expected = 4)
-  expect_identical(names(result), c(names(df), names(data)))
-  expect_identical(result[3:4], data)
+  expect_identical(names(result),
+                   names(tibble::repair_names(cbind(df, data))))
+  expect_identical(result[3:4],
+                   tibble::repair_names(cbind(df, data))[3:4])
   expect_identical(result[1:2], df)
 
   # Apply to an incompatible data frame.

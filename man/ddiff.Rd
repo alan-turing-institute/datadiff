@@ -8,7 +8,7 @@ ddiff(df1, df2, mismatch = diffness,
   patch_generators = list(gen_patch_transform), patch_penalties = 0.99999,
   permute_penalty = 0.1, break_penalty = 0.95,
   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1), ny =
-  nrow(df2)), insert_col_name = "NEW.COLUMN", attach_costs_matrices = FALSE,
+  nrow(df2)), insert_col_prefix = "INSERT.", attach_costs_matrices = FALSE,
   as.list = FALSE, verbose = FALSE)
 }
 \arguments{
@@ -32,8 +32,8 @@ whose index is changed by the permutation.}
 \item{penalty_scaling}{A function to be used to scale the penalty associated with each patch.
 Defaults to \code{\link{ks_scaling}}.}
 
-\item{insert_col_name}{The column name used for inserted columns, if \code{df1} has fewer columns
-than \code{df2}. Defaults to 'INSERT'.}
+\item{insert_col_prefix}{The prefix used to name inserted columns, if \code{df1} has fewer columns
+than \code{df2}. Defaults to 'INSERT.'.}
 
 \item{attach_costs_matrices}{A logical flag. If \code{TRUE} the square costs matrices, on which the final
 column assignment is based, are attached to the return value as attributes

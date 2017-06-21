@@ -76,9 +76,9 @@
 #' @param penalty_scaling
 #' A function to be used to scale the penalty associated with each patch.
 #' Defaults to \code{\link{ks_scaling}}.
-#' @param insert_col_name
-#' The column name used for inserted columns, if \code{df1} has fewer columns
-#' than \code{df2}. Defaults to 'NEW.COLUMN'.
+#' @param insert_col_prefix
+#' The prefix used to name inserted columns, if \code{df1} has fewer columns
+#' than \code{df2}. Defaults to 'INSERT.'.
 #' @param attach_costs_matrices
 #' A logical flag. If \code{TRUE} the square costs matrices, on which the final
 #' column assignment is based, are attached to the return value as attributes
@@ -104,7 +104,8 @@ ddiff <- function(df1, df2,
                   break_penalty = 0.95,
                   penalty_scaling = purrr::partial(ks_scaling, nx = nrow(df1),
                                                    ny = nrow(df2)),
-                  insert_col_name = "NEW.COLUMN",
+                  # old: insert_col_name = "NEW.COLUMN",
+                  insert_col_prefix = "INSERT.",
                   attach_costs_matrices = FALSE,
                   as.list = FALSE, verbose = FALSE) {
 
@@ -154,9 +155,6 @@ ddiff <- function(df1, df2,
   # In case ncol(df1) < ncol(df2), identify the requisite insert patch(es).
   if (any(column_is_not_assigned_to)) {
 
-    insert_col_data <- data.frame(rep(NA, nrow(df1)))
-    colnames(insert_col_data) <- insert_col_name
-
     # Update each cost matrix (with a new row corresponding to each column in
     # df2 which is not assigned to) & construct a list of insert patches.
     update_matrix <- function(m, i) {
@@ -168,7 +166,8 @@ ddiff <- function(df1, df2,
     p_insert <- purrr::map(which(column_is_not_assigned_to), .f = function(i) {
       m_mismatch <<- update_matrix(m_mismatch, i)
       m_penalty <<- update_matrix(m_penalty, i)
-      patch_insert(as.integer(i - 1), data = insert_col_data)
+      gen_patch_insert(df1, df2 = df2, col2 = as.integer(i),
+                       prefix = insert_col_prefix)
     })
     patch_list <- c(patch_list, p_insert)
   }
