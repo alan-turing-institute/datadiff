@@ -5,6 +5,11 @@
 #' \code{function} classes to represent a transformation of a tabular dataset
 #' by inserting one or more new columns.
 #'
+#' When applied to a data frame, a \code{patch_insert} calls the
+#' \code{dplyr::bind_cols} function to produce its result. As such, it is that
+#' function which determines how column name conflicts are handled. As of
+#' \code{dplyr} v0.7, this is done with a call to \code{tibble::repair_names}.
+#'
 #' @param insertion_point
 #' A scalar column identifier. The new columns will be inserted immediately
 #' after this column.
