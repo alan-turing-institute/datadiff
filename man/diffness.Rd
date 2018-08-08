@@ -19,3 +19,11 @@ datasets.
 \code{diffness} is a generic function: the type of the first argument
 determines which method is called.
 }
+\examples{
+diffness(purrr::rbernoulli(10), purrr::rbernoulli(10))
+diffness(1:10, 10:1)
+diffness(1:10, 20:1)
+diffness(stats::rnorm(10), stats::rnorm(10, sd = 2))
+diffness(letters[1:10], letters[20:1])
+diffness(mtcars, mtcars[1:10, ])
+}

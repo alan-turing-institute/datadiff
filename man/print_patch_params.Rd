@@ -4,16 +4,23 @@
 \alias{print_patch_params}
 \title{Print the parameters associated with a patch object}
 \usage{
-print_patch_params(patch, digits = 3, n_int = 20)
+print_patch_params(patch, df = NULL, indent = "  ", digits = 3,
+  n_int = 20, ...)
 }
 \arguments{
-\item{patch}{A \code{patch} object.}
+\item{patch}{An elementary \code{patch} object.}
+
+\item{df}{(Optional) A data frame compatible with the given \code{patch}.}
+
+\item{indent}{A character string specifying the intra-patch indentation.}
 
 \item{digits}{The number of decimal places to be used when printing
 parameters of type \code{double}. Defaults to 3.}
 
 \item{n_int}{The maximum length at which integer vectors are explicitly printed. Defaults
 to 20.}
+
+\item{...}{Additional arguments passed to the \code{param_string} function.}
 }
 \value{
 A character string describing the parameters associated with the

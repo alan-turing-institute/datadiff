@@ -19,3 +19,4 @@ unordered categorical data.}
 \description{
 Compute the mismatch between two vectors of unordered categorical data
 }
+\keyword{internal}

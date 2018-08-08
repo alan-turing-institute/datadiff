@@ -16,3 +16,4 @@ A number between 0 and 1 inclusive.
 Internal function to calculate the K-S statistic for two empirical
 cumulative distribution functions.
 }
+\keyword{internal}

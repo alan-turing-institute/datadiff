@@ -25,9 +25,7 @@
 #' \code{mismatch}, \code{col1} and \code{col2}, which returns a patch such that
 #' the mismatch between column \code{col2} in \code{df2} and the patched column
 #' \code{col1} in \code{df1} is minimised to the extent possible using the type
-#' of patch in question. If the attempt at patch generation fails, the generator
-#' function must return \code{NULL}. An example of such a patch generator is
-#' \code{\link{gen_patch_transform}}.
+#' of patch in question.
 #'
 #' @param df1,df2
 #' A pair of data frames.
@@ -51,6 +49,9 @@
 #' @param penalty_attr
 #' The name of the attributein the return value containing the calculated penalty associated with
 #' each candidate patch. Defaults to "penalty".
+#' @param scale_break_penalty
+#' A logical flag to turn on/off scaling of the break penalty. Defaults to
+#' \code{FALSE}.
 #' @param verbose
 #' A logical flag.
 #'
@@ -60,14 +61,15 @@
 #' @export
 #'
 columnwise_candidates <- function(df1, df2,
-                                mismatch,
-                                patch_generators,
-                                patch_penalties,
-                                break_penalty,
-                                penalty_scaling,
-                                mismatch_attr = "mismatch",
-                                penalty_attr = "penalty",
-                                verbose = FALSE) {
+                                  mismatch,
+                                  patch_generators,
+                                  patch_penalties,
+                                  break_penalty,
+                                  penalty_scaling,
+                                  mismatch_attr = "mismatch",
+                                  penalty_attr = "penalty",
+                                  scale_break_penalty = FALSE,
+                                  verbose = FALSE) {
 
   if (verbose)
     cat("Columnwise candidates' mismatch & penalty:\n")
@@ -81,7 +83,11 @@ columnwise_candidates <- function(df1, df2,
       # then compute & attach the (numeric)  mismatch & penalty.
       patches <- purrr::map(1:length(patch_generators), .f = function(k) {
         gen <- patch_generators[[k]]
-        p <- gen(df1, df2 = df2, mismatch = mismatch, col1 = i, col2 = j)
+
+        p <- tryCatch(
+          gen(df1, df2 = df2, mismatch = mismatch, col1 = i, col2 = j),
+          error = function(e) { NULL })
+
         if (!is.null(p)) {
           attr(p, mismatch_attr) <- mismatch(p(df1)[[i]], df2[[j]])
           attr(p, penalty_attr) <- penalty_scaling(patch_penalties[k])
@@ -97,7 +103,10 @@ columnwise_candidates <- function(df1, df2,
 
       br_patch <- gen_patch_break(df1, df2 = df2, col1 = i, col2 = j)
       attr(br_patch, mismatch_attr) <- 0
-      attr(br_patch, penalty_attr) <- break_penalty
+      if (scale_break_penalty)
+        break_penalty <- penalty_scaling(break_penalty)
+      # Broken columns must not be permuted.
+      attr(br_patch, penalty_attr) <- ifelse(i == j, yes = break_penalty, no = 1.0)
 
       patches <- c(list(id_patch), patches, list(br_patch))
       patches <- purrr::discard(patches, .p = is.null)

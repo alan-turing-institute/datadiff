@@ -17,3 +17,9 @@ lists is returned.
 \description{
 Returns the \code{patch} parameters object.
 }
+\examples{
+get_patch_params(patch_shift(2L, shift = 10))
+get_patch_params(patch_rescale(1L, shift = 0, scale_factor = 2))
+get_patch_params(patch_identity())
+
+}

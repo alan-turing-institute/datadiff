@@ -29,3 +29,15 @@ column in \code{m} are instead assigned to the augmented rows. Similarly, in
 case \code{nrow(m) < ncol(m)}, columns in \code{m} to which no row is
 assigned are instead assigned from the augmented columns.
 }
+\examples{
+m <- matrix(rexp(36), nrow = 6, ncol = 6)
+solve_pairwise_assignment(m)
+
+# The matrix m need not be square:
+m <- matrix(rexp(48), nrow = 6, ncol = 8)
+solve_pairwise_assignment(m)
+
+m <- matrix(rexp(48), nrow = 8, ncol = 6)
+solve_pairwise_assignment(m)
+
+}

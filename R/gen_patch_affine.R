@@ -37,6 +37,10 @@
 #' @seealso \code{\link{optim}}
 #'
 #' @export
+#'
+#' @examples
+#' gen_patch_affine(mtcars, mtcars, col1 = "wt", col2 = "qsec")
+#'
 gen_patch_affine <- function(df1, df2, mismatch = ks, col1, col2 = col1,
                              verbose = FALSE, ...) {
 

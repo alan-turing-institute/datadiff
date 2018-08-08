@@ -17,3 +17,9 @@ Compute the total variation distance for samples from two discrete
 distributions, coded as unordered factors. The result is a number in the
 (closed) unit interval.
 }
+\examples{
+v1 <- sample(1:10, size = 40, replace = TRUE)
+v2 <- sample(1:8, size = 20, replace = TRUE)
+tv(as.factor(v1), as.factor(v2))
+
+}

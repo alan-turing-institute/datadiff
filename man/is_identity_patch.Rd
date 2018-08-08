@@ -16,6 +16,18 @@ identity patches. Otherwise, only an elementary identity patch object is
 considered to be an identity patch.}
 }
 \description{
-Returns \code{TRUE} if the \code{obj} argument is an identity patch or, if
+Returns \code{TRUE} if the \code{obj} argument is the identity patch or, if
 \code{allow_composed} is \code{TRUE}, a composition of identity patches.
+}
+\examples{
+is_identity_patch(patch_identity())
+is_identity_patch(compose_patch(patch_identity(), patch_identity()))
+is_identity_patch(compose_patch(patch_identity(), patch_identity()),
+                  allow_composed = FALSE)
+# Patches of other types are not considered to be the identity,
+# regardless of their parameter values.
+is_identity_patch(patch_rescale(1L, shift = 0, scale_factor = 1))
+is_identity_patch(patch_permute(1:10))
+is_identity_patch(mtcars)
+
 }

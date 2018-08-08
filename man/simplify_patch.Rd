@@ -15,3 +15,11 @@ A simplified \code{patch} object.
 \description{
 Simplify a composed patch by discarding any superfluous identity patches
 }
+\examples{
+patch <- compose_patch(patch_identity(),
+                       patch_permute(8:1),
+                       patch_identity(),
+                       patch_shift(2L, shift = 10))
+simplify_patch(patch)
+
+}

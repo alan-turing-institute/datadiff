@@ -19,3 +19,11 @@ A transformed data frame.
 \description{
 Transform one data frame into another by applying a patch.
 }
+\examples{
+patch <- patch_delete(1L)
+head(mtcars)
+head(apply_patch(mtcars, patch))
+# Equivalent to patch function application:
+head(patch(mtcars))
+
+}

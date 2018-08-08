@@ -274,3 +274,43 @@ test_that("patch function application works", {
   expect_error(target(df[, 1:4]), regexp = "is_compatible_columns.*not TRUE")
 })
 
+test_that("the sample_patch_recode function works", {
+
+  df <- mtcars
+
+  condition <- function(x) { all(as.integer(x) == x) }
+  codes <- letters[1:26]
+  result <- sample_patch_recode(mtcars, codes = codes, condition = condition)
+
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "recode")
+  expect_equal(ncol(result(df)), ncol(df))
+  expect_false(any(sapply(df, is.character)))
+  expect_true(any(sapply(result(df), is.character)))
+
+  # Test with too few codes.
+  codes <- letters[1]
+  expect_error(sample_patch_recode(mtcars, codes = codes, condition = condition),
+               regexp = "cannot take a sample larger than the population")
+
+  # Test the default codes argument (i.e. NULL); recodes to type character.
+  result <- sample_patch_recode(mtcars, condition = condition)
+
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "recode")
+  expect_equal(ncol(result(df)), ncol(df))
+  expect_false(any(sapply(df, is.character)))
+  expect_true(any(sapply(result(df), is.character)))
+
+  # Another test.
+  condition <- function(x) { length(unique(x)) == 2 }
+  codes <- c(TRUE, FALSE)
+  result <- sample_patch_recode(mtcars, codes = codes, condition = condition)
+
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "recode")
+  expect_equal(ncol(result(df)), ncol(df))
+  expect_false(any(sapply(df, is.logical)))
+  expect_true(any(sapply(result(df), is.logical)))
+
+})

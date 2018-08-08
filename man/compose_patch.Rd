@@ -18,6 +18,15 @@ rather than calling \code{purrr::compose} directly, is that the class of the
 return value is \code{patch}, which helps when printing. However both methods
 will produce objects for which \code{is_patch} returns \code{TRUE}.
 }
+\examples{
+# Patches are applied from right to left (as in mathematical function
+# composition) and are printed in order of application:
+compose_patch(patch_permute(8:1), patch_shift(2L, shift = 10))
+
+# Use do.call if the components are in a list.
+patch_list <- list(patch_permute(8:1), patch_shift(2L, shift = 10))
+do.call(compose_patch, args = patch_list)
+}
 \seealso{
-\code{\link{compose}}
+\code{\link{decompose_patch}} \code{\link{compose}}
 }

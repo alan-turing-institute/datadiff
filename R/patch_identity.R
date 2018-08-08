@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' p <- patch_identity()
+#' patch_identity()
 #'
 patch_identity <- function() {
 
@@ -21,4 +21,18 @@ patch_identity <- function() {
 
   class(obj) <- c("patch_identity", "patch", "function")
   obj
+}
+
+#' 'Sample' an identity patch
+#'
+#' A trivial helper function (since the identity patch is unique). It is
+#' identical to the \code{patch_identity} constructor except it accepts (and
+#' ignores) any arguments.
+#'
+#' @param ...
+#' Arguments are ignored.
+#'
+#' @export
+sample_patch_identity <- function(...) {
+  patch_identity()
 }

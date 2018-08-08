@@ -56,3 +56,34 @@ test_that("patch function application works", {
   # Apply to an incompatible data frame.
   expect_error(target(df[, 1:4]), regexp = "is_compatible_columns.*not TRUE")
 })
+
+test_that("the sample_patch_scale function works", {
+
+  df <- mtcars
+  result <- sample_patch_scale(df)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "scale")
+
+  result <- sample_patch_scale(df, mean = 20)
+  expect_true(is_patch(result))
+
+  # Test that the default scale factor is 1.
+  result <- sample_patch_scale(df, sd = 0)
+  expect_true(is_patch(result))
+  expect_equal(get_patch_params(result)[["scale_factor"]], expected = 1)
+
+  result <- sample_patch_scale(df, rdist = rnorm, sd = 0)
+  expect_true(is_patch(result))
+  expect_equal(get_patch_params(result)[["scale_factor"]], expected = 0)
+
+  result <- sample_patch_scale(df, mean = 5, sd = 0)
+  expect_true(is_patch(result))
+  expect_equal(get_patch_params(result)[["scale_factor"]], expected = 5)
+
+  # Test with a different distribution function.
+  result <- sample_patch_scale(df, rdist = rexp)
+  expect_true(is_patch(result))
+
+  result <- sample_patch_scale(df, rdist = rexp, rate = 3)
+  expect_true(is_patch(result))
+})

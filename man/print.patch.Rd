@@ -4,12 +4,16 @@
 \alias{print.patch}
 \title{Print a patch object.}
 \usage{
-\method{print}{patch}(x, ...)
+\method{print}{patch}(x, df = NULL, flag_composed = TRUE, ...)
 }
 \arguments{
 \item{x}{A patch object}
 
-\item{...}{Any additional arguments are ignored.}
+\item{df}{(Optional) A data frame compatible with the given patch \code{x}.}
+
+\item{flag_composed}{A logical flag for internal use.}
+
+\item{...}{Any additional arguments are passed to the \code{print_patch_params} function.}
 }
 \description{
 \code{print} prints its argument and returns it invisibly (via
@@ -22,3 +26,4 @@ use \code{\link{decompose_patch}}.
 \seealso{
 \code{\link{decompose_patch}}
 }
+\keyword{internal}

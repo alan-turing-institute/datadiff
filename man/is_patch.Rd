@@ -18,3 +18,13 @@ patches.}
 \description{
 Returns \code{TRUE} if the \code{obj} argument is a \code{patch} object.
 }
+\examples{
+is_patch(patch_rescale(1L, shift = 0, scale_factor = 2))
+is_patch(patch_identity())
+is_patch(patch_identity)
+is_patch(mtcars)
+is_patch(compose_patch(patch_permute(10:1), patch_delete(1L)))
+is_patch(compose_patch(patch_permute(10:1), patch_delete(1L)),
+         allow_composed = FALSE)
+
+}

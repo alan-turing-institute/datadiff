@@ -4,9 +4,10 @@
 \alias{columnwise_candidates}
 \title{Generate candidate patches by columnwise comparison}
 \usage{
-columnwise_candidates(df1, df2, mismatch, patch_generators, patch_penalties,
-  break_penalty, penalty_scaling, mismatch_attr = "mismatch",
-  penalty_attr = "penalty", verbose = FALSE)
+columnwise_candidates(df1, df2, mismatch, patch_generators,
+  patch_penalties, break_penalty, penalty_scaling,
+  mismatch_attr = "mismatch", penalty_attr = "penalty",
+  scale_break_penalty = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
@@ -30,6 +31,9 @@ each candidate patch. Defaults to "mismatch".}
 
 \item{penalty_attr}{The name of the attributein the return value containing the calculated penalty associated with
 each candidate patch. Defaults to "penalty".}
+
+\item{scale_break_penalty}{A logical flag to turn on/off scaling of the break penalty. Defaults to
+\code{FALSE}.}
 
 \item{verbose}{A logical flag.}
 }
@@ -62,7 +66,5 @@ function. That is, a function, with arguments \code{df1}, \code{df2},
 \code{mismatch}, \code{col1} and \code{col2}, which returns a patch such that
 the mismatch between column \code{col2} in \code{df2} and the patched column
 \code{col1} in \code{df1} is minimised to the extent possible using the type
-of patch in question. If the attempt at patch generation fails, the generator
-function must return \code{NULL}. An example of such a patch generator is
-\code{\link{gen_patch_transform}}.
+of patch in question.
 }

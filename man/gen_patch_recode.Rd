@@ -5,7 +5,7 @@
 \title{Generate a recode patch}
 \usage{
 gen_patch_recode(df1, df2, mismatch = tv, col1, col2 = col1,
-  allow_new_categories = TRUE, ...)
+  allow_new_categories = TRUE, limit_int_categories = 2^5, ...)
 }
 \arguments{
 \item{df1}{A data frame.}
@@ -23,6 +23,9 @@ this takes the value of \code{col1}.}
 \item{allow_new_categories}{A logical flag. If \code{FALSE}, the number of distinct categories in the
 specified columns must be equal.}
 
+\item{limit_int_categories}{An integer specifying the limit on the number of categories above which
+integer data shall no longer be considered categorical.}
+
 \item{...}{Additional arguments are ignored.}
 }
 \value{
@@ -35,6 +38,10 @@ the specified columns after application of the patch to \code{df1}.
 \details{
 Note that the mismatch argument is ignored: the mismatch function is
 \emph{always} taken to be \code{\link{tv}}, the total variation distance.
+}
+\examples{
+gen_patch_recode(esoph, esoph, col1 = "alcgp", col2 = "tobgp")
+
 }
 \seealso{
 \code{\link{patch_recode}}

@@ -23,3 +23,4 @@ functions obtained from the \code{\link{ecdf}} function.
 \seealso{
 \code{\link{ecdf}}
 }
+\keyword{internal}

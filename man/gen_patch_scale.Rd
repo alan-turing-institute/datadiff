@@ -34,6 +34,10 @@ columns after application of the patch to \code{df1}.
 Uses the \code{\link{optimise}} function to optimise the \code{scale_factor}
 parameter for the given mismatch method.
 }
+\examples{
+gen_patch_scale(mtcars, mtcars, col1 = "wt", col2 = "qsec")
+
+}
 \seealso{
 \code{\link{gen_patch_affine}} \code{\link{mad}}
 }

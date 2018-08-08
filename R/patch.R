@@ -12,30 +12,61 @@
 #' patches.
 #'
 #' @export
+#'
+#' @examples
+#' is_patch(patch_rescale(1L, shift = 0, scale_factor = 2))
+#' is_patch(patch_identity())
+#' is_patch(patch_identity)
+#' is_patch(mtcars)
+#' is_patch(compose_patch(patch_permute(10:1), patch_delete(1L)))
+#' is_patch(compose_patch(patch_permute(10:1), patch_delete(1L)),
+#'          allow_composed = FALSE)
+#'
 is_patch <- function(obj, allow_composed = TRUE) {
 
+  # no good, since composed patches are patch objects if made with compose_patch
+  # if (methods::is(obj, "patch"))
+  #   return(TRUE)
+  # if (!allow_composed)
+  #   return(FALSE)
+
+  if (methods::is(obj, "patch") && allow_composed)
+    return(TRUE)
   if (!methods::is(obj, "patch") && !allow_composed)
     return(FALSE)
+
+  # Note that the other two possible cases are trickier:
+  # 1. is patch class & !allow composed
+  #     - patches composed using compose_patch are patch objects by class, but
+  #       must return FALSE if allow composed is FALSE. The hard part is
+  #       distinguishing between composed and elementary in this case.
+  # 2. !is patch class & allow composed
+  #     - patches composed using purrr::compose rather than compose_patch are
+  #       not patch objects by class, but must be considered composed patches.
+  # To determine these cases we must look at the obj environment.
+
   if (!is.function(obj))
     return(FALSE)
   env <- environment(obj)
 
-  # If the obj environment does not contain an object named "fs" then the obj is
-  # deemed to be an elementary patch.
-  if (!("fs" %in% names(env)))
-    return(TRUE)
-  if (!allow_composed)
-    return(FALSE)
-
   # If the obj environment contains a list named "fs", all elements of which
   # are themselves (possibly composed) patches, then the obj is deemed to be a
   # composed patch.
-  all(purrr::map_lgl(get("fs", envir=env), .f=is_patch, allow_composed=TRUE))
+  if (!methods::is(obj, "patch") && allow_composed) {
+    if (!("fs" %in% names(env)))
+      return(FALSE)
+    return(all(purrr::map_lgl(get("fs", envir=env), .f=is_patch, allow_composed=TRUE)))
+  }
+
+  # The only case left is that in which obj is a patch class object but
+  # allow_composed is FALSE. The environment of every composed patch contains an
+  # object named "fs", so we just look for the absence of such an object.
+  !("fs" %in% names(env))
 }
 
 #' Test for an identity patch object
 #'
-#' Returns \code{TRUE} if the \code{obj} argument is an identity patch or, if
+#' Returns \code{TRUE} if the \code{obj} argument is the identity patch or, if
 #' \code{allow_composed} is \code{TRUE}, a composition of identity patches.
 #'
 #' @param obj
@@ -48,6 +79,18 @@ is_patch <- function(obj, allow_composed = TRUE) {
 #' considered to be an identity patch.
 #'
 #' @export
+#'
+#' @examples
+#' is_identity_patch(patch_identity())
+#' is_identity_patch(compose_patch(patch_identity(), patch_identity()))
+#' is_identity_patch(compose_patch(patch_identity(), patch_identity()),
+#'                   allow_composed = FALSE)
+#' # Patches of other types are not considered to be the identity,
+#' # regardless of their parameter values.
+#' is_identity_patch(patch_rescale(1L, shift = 0, scale_factor = 1))
+#' is_identity_patch(patch_permute(1:10))
+#' is_identity_patch(mtcars)
+#'
 is_identity_patch <- function(obj, allow_composed = TRUE) {
   if (is_patch(obj, allow_composed = FALSE) || !allow_composed)
     return(methods::is(obj, "patch_identity"))
@@ -68,9 +111,18 @@ is_identity_patch <- function(obj, allow_composed = TRUE) {
 #'
 #' @return A composite patch object.
 #'
-#' @seealso \code{\link{compose}}
+#' @seealso \code{\link{decompose_patch}} \code{\link{compose}}
 #'
 #' @export
+#'
+#' @examples
+#' # Patches are applied from right to left (as in mathematical function
+#' # composition) and are printed in order of application:
+#' compose_patch(patch_permute(8:1), patch_shift(2L, shift = 10))
+#'
+#' # Use do.call if the components are in a list.
+#' patch_list <- list(patch_permute(8:1), patch_shift(2L, shift = 10))
+#' do.call(compose_patch, args = patch_list)
 compose_patch <- function(...) {
 
   ret <- purrr::compose(...)
@@ -93,11 +145,18 @@ compose_patch <- function(...) {
 #'
 #' @return A list of elementary \code{patch} objects.
 #'
+#' @seealso \code{\link{compose_patch}}
+#'
 #' @export
+#'
+#' @examples
+#' patch <- compose_patch(patch_permute(8:1), patch_shift(2L, shift = 10))
+#' decompose_patch(patch)
+#'
 decompose_patch <- function(patch) {
   stopifnot(is_patch(patch, allow_composed = TRUE))
   if (is_patch(patch, allow_composed = FALSE))
-    return(patch)
+    return(list(patch))
   unlist(purrr::map(rev(get("fs", envir = environment(patch))), decompose_patch))
 }
 
@@ -109,6 +168,14 @@ decompose_patch <- function(patch) {
 #' @return A simplified \code{patch} object.
 #'
 #' @export
+#'
+#' @examples
+#' patch <- compose_patch(patch_identity(),
+#'                        patch_permute(8:1),
+#'                        patch_identity(),
+#'                        patch_shift(2L, shift = 10))
+#' simplify_patch(patch)
+#'
 simplify_patch <- function(patch) {
   stopifnot(is_patch(patch, allow_composed = TRUE))
   if (is_patch(patch, allow_composed = FALSE))
@@ -132,6 +199,12 @@ simplify_patch <- function(patch) {
 #' lists is returned.
 #'
 #' @export
+#'
+#' @examples
+#' get_patch_params(patch_shift(2L, shift = 10))
+#' get_patch_params(patch_rescale(1L, shift = 0, scale_factor = 2))
+#' get_patch_params(patch_identity())
+#'
 get_patch_params <- function(patch) {
   stopifnot(is_patch(patch, allow_composed = TRUE) && is.function(patch))
   if (!is_patch(patch, allow_composed = FALSE))
@@ -147,10 +220,12 @@ get_patch_params <- function(patch) {
 # A patch object.
 # @param param_name
 # A parameter name.
+# @param df
+# (Optional) A data frame compatible with the given \code{patch}.
 # @param ...
 # Optional arguments.
 #
-param_string <- function(patch, param_name, ...) UseMethod("param_string")
+param_string <- function(patch, param_name, df = NULL, ...) UseMethod("param_string")
 
 # Default implementation of \code{param_string}
 #
@@ -158,6 +233,10 @@ param_string <- function(patch, param_name, ...) UseMethod("param_string")
 # A patch object.
 # @param param_name
 # A parameter name.
+# @param df
+# (Optional) A data frame compatible with the given \code{patch}.
+# @param indent
+# A character string specifying the intra-patch indentation.
 # @param digits
 # The number of decimal places to be used when printing
 # parameters of type \code{double}. Defaults to 3.
@@ -167,13 +246,21 @@ param_string <- function(patch, param_name, ...) UseMethod("param_string")
 # @param ...
 # Additional arguments are ignored.
 #
-param_string.patch <- function(patch, param_name, digits = 3, n_int = 20, ...) {
+param_string.patch <- function(patch, param_name, df = NULL,
+                               indent, digits = 3, n_int = 20, ...) {
 
   params <- get_patch_params(patch)
   if (!(param_name %in% names(params)))
     return(character(1))
 
   x <- params[[param_name]]
+
+  if (!is.null(df) && length(colnames(df)) == ncol(df)
+      && param_name == "cols" && is.integer(x))
+    x <- colnames(df)[x]
+
+  if (is.character(x) && length(names(x)) == 0)
+    return(paste(x, collapse = ", "))
   if (is.vector(x) && length(names(x)) == length(x))
     return(paste(names(x), "->", x, collapse = ", "))
   if (is.integer(x) && length(x) <= n_int)
@@ -191,36 +278,59 @@ param_string.patch <- function(patch, param_name, digits = 3, n_int = 20, ...) {
 # A \code{patch_permute} object.
 # @param param_name
 # A parameter name.
+# @param df
+# (Optional) A data frame compatible with the given \code{patch}.
+# @param indent
+# A character string specifying the intra-patch indentation.
 # @param ...
 # Additional arguments passed to the next method.
 #
 # @return A character string describing the parameters associated with the
-# given \code{patch_permute}.
+# given \code{patchute}.
 #
-param_string.patch_perm <- function(patch, param_name, ...) {
+param_string.patch_permute <- function(patch, param_name, df = NULL,
+                                       indent, all_cols = FALSE, ...) {
 
   if (param_name == "perm") {
     params <- get_patch_params(patch)
     stopifnot(param_name %in% names(params))
     perm <- get_patch_params(patch)[[param_name]]
-    ret <- paste0(paste(1:length(perm), collapse = " "), "\n",
-                  paste(rep(" ", nchar("perm") + 2), collapse = ""),
-                  paste(order(perm), collapse = " "))
+
+    if (all_cols)
+      cols <- 1:length(perm)
+    else
+      cols <- which(perm != 1:length(perm))
+
+    f_colnames <- identity
+    if (!is.null(df) && length(colnames(df)) == ncol(df) && is.integer(cols)) {
+      stopifnot(is_compatible_columns(perm, df))
+      f_colnames <- f_colnames <- function(x) { colnames(df)[x] }
+    }
+
+    ret <- paste0(purrr::map_chr(cols, .f = function(i) {
+      paste0(indent, f_colnames((1:length(perm))[i]), " -> ", f_colnames(order(perm)[i]))
+    }), collapse = "\n")
     return(ret)
   }
-  NextMethod(patch, param_name, ...)
+  NextMethod(patch, param_name, df, ...)
 }
 
 #' Print the parameters associated with a patch object
 #'
 #' @param patch
-#' A \code{patch} object.
+#' An elementary \code{patch} object.
+#' @param df
+#' (Optional) A data frame compatible with the given \code{patch}.
+#' @param indent
+#' A character string specifying the intra-patch indentation.
 #' @param digits
 #' The number of decimal places to be used when printing
 #' parameters of type \code{double}. Defaults to 3.
 #' @param n_int
 #' The maximum length at which integer vectors are explicitly printed. Defaults
 #' to 20.
+#' @param ...
+#' Additional arguments passed to the \code{param_string} function.
 #'
 #' @return A character string describing the parameters associated with the
 #' given \code{patch}. If \code{patch} is a composition, the return value is a
@@ -228,16 +338,18 @@ param_string.patch_perm <- function(patch, param_name, ...) {
 #' \code{\link{decompose_patch}} on the \code{patch}.
 #'
 #' @export
-print_patch_params <- function(patch, digits = 3, n_int = 20) {
+print_patch_params <- function(patch, df = NULL, indent = "  ", digits = 3,
+                               n_int = 20, ...) {
 
-  # Handle compositions (will return a character vector).
-  if (is_patch(patch, allow_composed = TRUE) &&
-      !is_patch(patch, allow_composed = FALSE))
-    return(purrr::map_chr(decompose_patch(patch), print_patch_params, digits, n_int))
+  stopifnot(is_patch(patch, allow_composed = FALSE))
 
   paste(purrr::map_chr(names(get_patch_params(patch)), .f = function(name) {
-    paste(name, param_string(patch, name, digits = digits), sep = ": ")
-  }), collapse = "; ")
+    str <- param_string(patch, name, df = df, indent = indent, digits = digits,
+                        n_int = n_int, ...)
+    if (name == "perm")
+      return(str)
+    paste(paste0(indent, name), str, sep = ": ")
+  }), collapse = "\n")
 }
 
 #' Apply a patch to a data frame.
@@ -254,6 +366,14 @@ print_patch_params <- function(patch, digits = 3, n_int = 20) {
 #' @return A transformed data frame.
 #'
 #' @export
+#'
+#' @examples
+#' patch <- patch_delete(1L)
+#' head(mtcars)
+#' head(apply_patch(mtcars, patch))
+#' # Equivalent to patch function application:
+#' head(patch(mtcars))
+#'
 apply_patch <- function(df, patch, ...) {
   stopifnot(is_patch(patch) && is.function(patch))
   ret <- do.call(patch, args = list(df, ...))
@@ -263,22 +383,34 @@ apply_patch <- function(df, patch, ...) {
 
 #' Get the patch type.
 #'
-#' Transform one data frame into another by applying a patch.
-#'
 #' @param patch
 #' A patch object.
 #' @param short
 #' A logical flag. If \code{TRUE} (the default) the prefix "patch_" is omitted
 #' from the return value.
+#' @param unique
+#' A logical flag. If \code{TRUE} any duplicates in the return value will be
+#' removed. This may happen only if \code{patch} is a composition. Defaults to
+#' \code{FALSE}.
+#'
 #' @return A character string, or a vector if \code{patch} is a composition of
 #' patches.
 #'
 #' @export
-patch_type <- function(patch, short=TRUE) {
+#'
+#' @examples
+#' patch <- compose_patch(patch_shift(6L, shift = 4),
+#'                        patch_permute(8:1),
+#'                        patch_shift(2L, shift = 10))
+#' patch_type(patch)
+#' patch_type(patch, unique = TRUE)
+patch_type <- function(patch, short = TRUE, unique = FALSE) {
   stopifnot(is_patch(patch, allow_composed = TRUE))
 
-  if (!is_patch(patch, allow_composed = FALSE))
-    return(purrr::map_chr(decompose_patch(patch), .f = patch_type, short = short))
+  if (!is_patch(patch, allow_composed = FALSE)) {
+    g <- ifelse(unique, yes = get("unique", pos = baseenv()), no = identity)
+    return(g(purrr::map_chr(decompose_patch(patch), .f = patch_type, short = short)))
+  }
   ret <- setdiff(class(patch), c("patch", "function"))
   if (!short)
     return(ret)
@@ -289,6 +421,163 @@ patch_type <- function(patch, short=TRUE) {
   stringr::str_replace(ret[i], pattern, replacement = "")
 }
 
+#' Admit new column indices
+#'
+#' Modifies the index parameter in the given \code{patch} to admit the existence
+#' of new columns at the positions specified by the \code{cols} argument.
+#'
+#' @return This function is invoked for its side effect.
+#'
+#' @param patch
+#' An elementary patch object.
+#' @param cols
+#' A vector of integer column identifiers.
+#' @param cols_param_name
+#' The name of the relevant column index parameter in the \code{patch}.
+#'
+#' @export
+#'
+#' @examples
+#' patch <- patch_permute(6:1)
+#' patch
+#' admit_columns(patch, cols = 3:4)
+#' patch
+#'
+admit_columns <- function(patch, cols, cols_param_name) {
+
+  stopifnot(is.integer(cols))
+  stopifnot(is_patch(patch, allow_composed = FALSE))
+  if (is_identity_patch(patch))
+    return(invisible())
+  UseMethod("admit_columns")
+}
+
+#' Default implementation of \code{admit_columns} for column-wise patches.
+#'
+#' @param patch
+#' An elementary patch object.
+#' @param cols
+#' A vector of integer column identifiers.
+#' @param cols_param_name
+#' The name of the relevant column index parameter in the \code{patch}.
+#'
+#' @return This function is invoked for its side effect. It returns \code{NULL}
+#' invisibly.
+#'
+#' @keywords internal
+#' @export
+admit_columns.patch <- function(patch, cols, cols_param_name = "cols") {
+
+  stopifnot(cols_param_name %in% names(get_patch_params(patch)))
+  stopifnot(is.integer(get_patch_params(patch)[[cols_param_name]]))
+
+  cols <- sort(cols)
+  cols_param <- get_patch_params(patch)[[cols_param_name]]
+
+  # Admit the smallest new column index and call recursively if necessary.
+  cols_shift <- as.integer(cols_param >= cols[1])
+  assign(cols_param_name, value = cols_param + cols_shift,
+         envir = environment(patch), inherits = FALSE)
+
+  if (length(cols) > 1)
+    admit_columns(patch, cols = cols[-1], cols_param_name = cols_param_name)
+}
+
+#' Insert patch implementation of \code{admit_columns}
+#'
+#' @param patch
+#' An elementary patch object.
+#' @param cols
+#' A vector of integer column identifiers which are compatible with the
+#' permutation in the given \code{patch}.
+#' @param cols_param_name
+#' The name of the relevant column index parameter in the \code{patch}.
+#'
+#' @return This function is invoked for its side effect. The return value is
+#' that of a tail call to the \code{\link{assign}} function, which is the
+#' value assigned to the parameter named in the \code{cols_param_name} argument.
+#'
+#' @keywords internal
+#' @export
+admit_columns.patch_insert <- function(patch, cols,
+                                       cols_param_name = "insertion_point") {
+
+  stopifnot(cols_param_name %in% names(get_patch_params(patch)))
+  stopifnot(is.integer(get_patch_params(patch)[[cols_param_name]]))
+
+  cols <- sort(cols)
+  cols_param <- get_patch_params(patch)[[cols_param_name]]
+
+  # Admit the smallest new column index and call recursively if necessary.
+  cols_shift <- as.integer(cols_param >= cols[1] - 1)
+  assign(cols_param_name, value = cols_param + cols_shift,
+         envir = environment(patch), inherits = FALSE)
+
+  if (length(cols) > 1)
+    admit_columns(patch, cols = cols[-1], cols_param_name = cols_param_name)
+}
+
+#' Permute patch implementation of \code{admit_columns}
+#'
+#' @param patch
+#' An elementary patch object.
+#' @param cols
+#' A vector of integer column identifiers which are compatible with the
+#' permutation in the given \code{patch}.
+#' @param cols_param_name
+#' The name of the relevant column index parameter in the \code{patch}.
+#'
+#' @return This function is invoked for its side effect. The return value is
+#' that of a tail call to the \code{\link{assign}} function, which is the
+#' value assigned to the parameter named in the \code{cols_param_name} argument.
+#'
+#' @keywords internal
+#' @export
+admit_columns.patch_permute <- function(patch, cols, cols_param_name = "perm") {
+
+  stopifnot(cols_param_name %in% names(get_patch_params(patch)))
+  stopifnot(is.integer(get_patch_params(patch)[[cols_param_name]]))
+
+  cols_param <- get_patch_params(patch)[[cols_param_name]]
+  if (!all(cols %in% 1:(length(cols_param) + length(cols))))
+    stop("Inadmissible column or columns")
+
+  cols <- sort(cols)
+  for (i in seq_along(cols)) {
+    i_col <- cols[i]
+    cols_param[cols_param >= i_col] = cols_param[cols_param >= i_col] + 1
+    pre <- cols_param[1:(i_col - 1)]
+    if (i_col == 1)
+      pre <- c()
+    post <- cols_param[i_col:length(cols_param)]
+    if (i_col == length(cols_param) + 1)
+      post <- c()
+    cols_param <- as.integer(c(pre, i_col, post))
+  }
+  assign(cols_param_name, value = cols_param, envir = environment(patch),
+         inherits = FALSE)
+}
+
+#' Identity patch implementation of \code{admit_columns}
+#'
+#' @param patch
+#' An elementary patch object.
+#' @param cols
+#' A vector of integer column identifiers.
+#' @param cols_param_name
+#' The name of the relevant column index parameter in the \code{patch}.
+#'
+#' @return This function is invoked for its side effect, which is no effect
+#' whatsoever in this case.
+#'
+#' @export
+admit_columns.patch_identity <- function(patch, cols, cols_param_name) {
+}
+
+# Capitalise the first character of a string.
+first_toupper <- function(str) {
+  paste0(toupper(substring(str, 1, 1)), substring(str, 2, nchar(str)))
+}
 
 #' Print a patch object.
 #'
@@ -300,25 +589,40 @@ patch_type <- function(patch, short=TRUE) {
 #'
 #' @param x
 #' A patch object
+#' @param df
+#' (Optional) A data frame compatible with the given patch \code{x}.
+#' @param flag_composed
+#' A logical flag for internal use.
 #' @param ...
-#' Any additional arguments are ignored.
+#' Any additional arguments are passed to the \code{print_patch_params} function.
 #'
 #' @seealso \code{\link{decompose_patch}}
+#'
+#' @keywords internal
 #' @export
-print.patch <- function(x, ...) {
+print.patch <- function(x, df = NULL, flag_composed = TRUE, ...) {
   if (!is_patch(x, allow_composed = FALSE)) {
-    cat("Composed patch with elementary constituents:\n")
-    return(invisible(purrr::map(decompose_patch(x), .f = function(p) {
-      print(p)
-    })))
+    if (flag_composed)
+      cat("Composed patch with elementary constituents:\n")
+    decomposed <- decompose_patch(x)
+    # Print the first elementary patch.
+    first_patch <- decomposed[[1]]
+    print(first_patch, df = df, ...)
+    # If the data frame is given, apply the first patch to it before the
+    # recursive call to print (so that structural changes are propagated).
+    if (!is.null(df))
+      df <- first_patch(df)
+    # Recursively print the rest of the patch.
+    leftover_patch <- Reduce(compose_patch, rev(decomposed[2:length(decomposed)]))
+    return(print(leftover_patch, df, flag_composed = FALSE, ...))
   }
-  type <- paste(setdiff(class(x), c("patch", "function")), sep = ",")
-  printed_params <- print_patch_params(x)
+  type <- patch_type(x, short = TRUE)
+  printed_params <- print_patch_params(x, df, ...)
   if (length(printed_params) == 1 && nchar(printed_params) == 0)
     cat(type)
   else {
-    cat(type, "with parameters:\n")
-    cat(paste(print_patch_params(x), collapse = "\n"))
+    cat(first_toupper(type), "patch.\n")
+    cat(paste(printed_params, collapse = "\n"))
   }
   cat("\n")
   invisible(x)

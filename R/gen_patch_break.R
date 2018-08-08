@@ -19,6 +19,10 @@
 #' @seealso \code{\link{patch_break}}
 #'
 #' @export
+#'
+#' @examples
+#' gen_patch_break(mtcars, mtcars, col1 = "wt")
+#'
 gen_patch_break <- function(df1, df2, col1,
                             col2 = col1, ...) {
 

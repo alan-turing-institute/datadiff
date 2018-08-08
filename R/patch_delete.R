@@ -15,13 +15,13 @@
 #' @seealso \code{\link{is_valid_columns}} \code{\link{is_compatible_columns}}
 #'
 #' @examples
-#' colnames(mtcars)
+#' head(mtcars)
 #' p <- patch_delete(c(2L, 5L))
 #' p <- patch_delete(c("mpg", "gear"))
 #'
 #' # The following are equivalent:
-#' colnames(apply_patch(mtcars, p))
-#' colnames(p(mtcars))
+#' head(apply_patch(mtcars, p))
+#' head(p(mtcars))
 #'
 #' # Attempting to apply a patch to an incompatible data frame throws an error.
 #' \dontrun{
@@ -52,4 +52,30 @@ patch_delete <- function(cols) {
 
   class(obj) <- c("patch_delete", "patch", "function")
   obj
+}
+
+#' Pick a delete patch at random
+#'
+#' @param df
+#' A data frame.
+#' @param exclude_cols
+#' An integer vector of column indices to be excluded from the set of possible
+#' target columns for the returned patch.
+#' @param seed
+#' A random seed.
+#'
+#' @export
+#'
+#' @examples
+#' sample_patch_delete(mtcars)
+#'
+sample_patch_delete <- function(df, exclude_cols = integer(0), seed) {
+
+  if (!missing(seed))
+    set.seed(seed)
+
+  condition <- function(x) { TRUE }
+  cols <- sample_cols(df, condition = condition, exclude_cols = exclude_cols,
+                      size = 1)
+  patch_delete(cols)
 }

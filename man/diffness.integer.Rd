@@ -24,3 +24,4 @@ The mismatch between vectors of different types is always 1. This includes
 the case of an integer vector and a non-integer numeric vector, and the case
 of an integer vector and a factor.
 }
+\keyword{internal}

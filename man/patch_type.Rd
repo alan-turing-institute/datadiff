@@ -4,18 +4,29 @@
 \alias{patch_type}
 \title{Get the patch type.}
 \usage{
-patch_type(patch, short = TRUE)
+patch_type(patch, short = TRUE, unique = FALSE)
 }
 \arguments{
 \item{patch}{A patch object.}
 
 \item{short}{A logical flag. If \code{TRUE} (the default) the prefix "patch_" is omitted
 from the return value.}
+
+\item{unique}{A logical flag. If \code{TRUE} any duplicates in the return value will be
+removed. This may happen only if \code{patch} is a composition. Defaults to
+\code{FALSE}.}
 }
 \value{
 A character string, or a vector if \code{patch} is a composition of
 patches.
 }
 \description{
-Transform one data frame into another by applying a patch.
+Get the patch type.
+}
+\examples{
+patch <- compose_patch(patch_shift(6L, shift = 4),
+                       patch_permute(8:1),
+                       patch_shift(2L, shift = 10))
+patch_type(patch)
+patch_type(patch, unique = TRUE)
 }
