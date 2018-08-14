@@ -47,32 +47,31 @@
 #' A logical flag. If \code{TRUE} (the default) a progress bar will be
 #' displayed in the console.
 #' @param logfile
-#' The full path to a logfile. Defaults to \code{log/datadiff.log} under the
-#' package installation directory.
+#' (Optional) The full path to a logfile.
 #'
 #' @return A named numeric vector.
 #'
 #' @export
-joint_iterative_calibration <- function(data_ids,
-                                        datadiff = ddiff,
-                                        patch_generators = list(gen_patch_rescale, gen_patch_recode),
-                                        patch_penalties = c(0.4, 0.4),
-                                        permute_penalty = 0.1,
-                                        break_penalty = 0.95,
-                                        N = 10,
-                                        M = 10,
-                                        split = 0.5,
-                                        hyperseed = sample.int(.Machine$integer.max, size = 1),
-                                        data_reader = get,
-                                        target_fpr = 0.05,
-                                        acceptance_margin = 0.1,
-                                        increment_factor = 1.2,
-                                        decrement_factor = 0.8,
-                                        lower_boundary = 10^(-6),
-                                        upper_boundary = 1 - lower_boundary,
-                                        check_viability = TRUE,
-                                        pb = TRUE,
-                                        logfile = system.file("log/datadiff.log", package = "datadiff")) {
+iterative_calibration <- function(data_ids,
+                                  datadiff = ddiff,
+                                  patch_generators = list(gen_patch_rescale, gen_patch_recode),
+                                  patch_penalties = c(0.4, 0.4),
+                                  permute_penalty = 0.1,
+                                  break_penalty = 0.95,
+                                  N = 10,
+                                  M = 10,
+                                  split = 0.5,
+                                  hyperseed = sample.int(.Machine$integer.max, size = 1),
+                                  data_reader = get,
+                                  target_fpr = 0.05,
+                                  acceptance_margin = 0.1,
+                                  increment_factor = 1.2,
+                                  decrement_factor = 0.8,
+                                  lower_boundary = 10^(-6),
+                                  upper_boundary = 1 - lower_boundary,
+                                  check_viability = TRUE,
+                                  pb = TRUE,
+                                  logfile = NULL) {
 
   stopifnot(is.character(data_ids))
   stopifnot(length(split) == 1)
@@ -86,9 +85,11 @@ joint_iterative_calibration <- function(data_ids,
   if (1/(N*M) > 2 * acceptance_margin * target_fpr)
     stop("Incompatible parameters. Try increasing N and/or M.")
 
-  logging::addHandler(logging::writeToFile, file=logfile, level='DEBUG')
-  logging::loginfo("Iterative calibration with target FPR = %f, margin = %f, hyperseed = %d",
-                   target_fpr, acceptance_margin, hyperseed)
+  if (!is.null(logfile)) {
+    logging::addHandler(logging::writeToFile, file=logfile, level='DEBUG')
+    logging::loginfo("Iterative calibration with target FPR = %f, margin = %f, hyperseed = %d",
+                     target_fpr, acceptance_margin, hyperseed)
+  }
 
   # Identify the relevant patch types by dataset (required for correct
   # computation of the joint false positive rates).
@@ -176,29 +177,36 @@ joint_iterative_calibration <- function(data_ids,
     boundary_penalties <- rep(lower_boundary, times = length(candidate_penalties))
     names(boundary_penalties) <- names(candidate_penalties)
 
-    logging::loginfo(paste("Preliminary run at parameter lower boundary of", lower_boundary))
+    if (!is.null(logfile))
+      logging::loginfo(paste("Preliminary run at parameter lower boundary of", lower_boundary))
+
     boundary_result <- run_experiment(boundary_penalties, seed = hyperseed)
 
     boundary_fpr <- joint_false_positive_rate(boundary_result)
 
-    logging::loginfo(paste("Lower boundary FPR:",
-                           paste(c(rbind(names(boundary_fpr), format(boundary_fpr, digits = 3))),
-                                 collapse = " ")))
+    if (!is.null(logfile)) {
+      logging::loginfo(paste("Lower boundary FPR:",
+                             paste(c(rbind(names(boundary_fpr), format(boundary_fpr, digits = 3))),
+                                   collapse = " ")))
+    }
 
     # Check for any false positive rates below the acceptable region under the
     # bounday (i.e. minimum) parameter values. Assign the boundary value to any
     # such parameters and record them as "non-viable".
     viable_fpr_at_boundary <- boundary_fpr > (1 - acceptance_margin) * target_fpr
-    logging::loginfo(paste("Viability given boundary:",
-                           paste(c(rbind(names(viable_fpr_at_boundary),
-                                         viable_fpr_at_boundary)), collapse = " ")))
+    if (!is.null(logfile)) {
+      logging::loginfo(paste("Viability given boundary:",
+                             paste(c(rbind(names(viable_fpr_at_boundary),
+                                           viable_fpr_at_boundary)), collapse = " ")))
+    }
 
     if (any(!viable_fpr_at_boundary))
       candidate_penalties[!viable_fpr_at_boundary] <- lower_boundary
 
     if (all(!viable_fpr_at_boundary)) {
-      logging::loginfo("Iterative calibration attempt failed: no viable parameters at lower boundary of %f",
-                       lower_boundary)
+      if (!is.null(logfile))
+        logging::loginfo("Iterative calibration attempt failed: no viable parameters at lower boundary of %f",
+                         lower_boundary)
       return(NA)
     }
 
@@ -211,21 +219,24 @@ joint_iterative_calibration <- function(data_ids,
                            collapse = ", "))
         candidate_penalties[!viable_fpr_at_boundary] <- NA
       }
-      logging::loginfo(msg)
+      if (!is.null(logfile))
+        logging::loginfo(msg)
       return(candidate_penalties)
     }
   } else {
     # If check_viability is FALSE, assume viability for all patch types.
-    logging::loginfo("Skipping preliminary run; viability assumed for all patch types.")
+    if (!is.null(logfile))
+      logging::loginfo("Skipping preliminary run; viability assumed for all patch types.")
     viable_fpr_at_boundary <- rep(TRUE, times = length(candidate_penalties))
     names(viable_fpr_at_boundary) <- names(candidate_penalties)
   }
 
   set.seed(hyperseed)
   while(TRUE) {
-    logging::loginfo(paste("Current candidates:",
-                           paste(c(rbind(names(candidate_penalties), format(candidate_penalties, digits = 3))),
-                                 collapse = " ")))
+    if (!is.null(logfile))
+      logging::loginfo(paste("Current candidates:",
+                             paste(c(rbind(names(candidate_penalties), format(candidate_penalties, digits = 3))),
+                                   collapse = " ")))
 
     # Run a multi-batch experiment with the candidate penalty parameters.
     experiment_hyperseed <- sample.int(.Machine$integer.max, size = 1)
@@ -234,13 +245,15 @@ joint_iterative_calibration <- function(data_ids,
     fpr <- joint_false_positive_rate(result)
     accept <- is_acceptable_fpr(fpr)
 
-    logging::loginfo(paste("FPR:       ", paste(c(rbind(names(fpr), format(fpr, digits = 3))),
-                                                collapse = " ")))
-    logging::loginfo(paste("Acceptance:", paste(c(rbind(names(accept), accept)),
-                                                collapse = " ")))
-    logging::loginfo(paste("Viability: ",
-                           paste(c(rbind(names(viable_fpr_at_boundary),
-                                         viable_fpr_at_boundary)), collapse = " ")))
+    if (!is.null(logfile)) {
+      logging::loginfo(paste("FPR:       ", paste(c(rbind(names(fpr), format(fpr, digits = 3))),
+                                                  collapse = " ")))
+      logging::loginfo(paste("Acceptance:", paste(c(rbind(names(accept), accept)),
+                                                  collapse = " ")))
+      logging::loginfo(paste("Viability: ",
+                             paste(c(rbind(names(viable_fpr_at_boundary),
+                                           viable_fpr_at_boundary)), collapse = " ")))
+    }
 
     # If all false positive rates are within the acceptance margin, return the
     # current parameters.
@@ -252,14 +265,16 @@ joint_iterative_calibration <- function(data_ids,
                            collapse = ", "))
         candidate_penalties[!viable_fpr_at_boundary] <- NA
       }
-      logging::loginfo(msg)
+      if (!is.null(logfile))
+        logging::loginfo(msg)
       return(candidate_penalties)
     }
 
     # Guarantee an eventual exit.
     if (any(viable_fpr_at_boundary &
             (candidate_penalties <= lower_boundary | candidate_penalties >= upper_boundary))) {
-      logging::loginfo("Iterative calibration attempt failed: boundary was hit")
+      if (!is.null(logfile))
+        logging::loginfo("Iterative calibration attempt failed: boundary was hit")
       return(NA)
     }
 

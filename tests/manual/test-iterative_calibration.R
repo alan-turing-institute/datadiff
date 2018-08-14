@@ -1,7 +1,7 @@
 require(testthat)
-context("joint_iterative_calibration")
+context("iterative_calibration")
 
-test_that("the joint_iterative_calibration function works", {
+test_that("the iterative_calibration function works", {
 
   ####
   #### Test with the UCI datasets.
@@ -25,7 +25,7 @@ test_that("the joint_iterative_calibration function works", {
   check_viability <- FALSE
   pb = TRUE
 
-  result <- joint_iterative_calibration(data_ids = data_ids,
+  result <- iterative_calibration(data_ids = data_ids,
                                   datadiff = datadiff,
                                   patch_generators = patch_generators,
                                   patch_penalties = patch_penalties,
@@ -78,7 +78,7 @@ test_that("the joint_iterative_calibration function works", {
   # check_viability <- FALSE
   # pb = TRUE
   #
-  # result <- joint_iterative_calibration(data_ids = data_ids,
+  # result <- iterative_calibration(data_ids = data_ids,
   #                                       datadiff = datadiff,
   #                                       patch_generators = patch_generators,
   #                                       patch_penalties = patch_penalties,
