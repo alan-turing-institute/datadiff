@@ -15,3 +15,8 @@ A number between 0 and 1 inclusive.
 \description{
 Computes the two-sample Kolmogorov-Smirnov statistic.
 }
+\examples{
+ks(rnorm(10), rnorm(20))
+ks(as.ordered(1:10), as.ordered(20:1))
+
+}

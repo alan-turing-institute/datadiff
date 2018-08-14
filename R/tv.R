@@ -10,6 +10,12 @@
 #' @return A number between 0 and 1 inclusive.
 #'
 #' @export
+#'
+#' @examples
+#' v1 <- sample(1:10, size = 40, replace = TRUE)
+#' v2 <- sample(1:8, size = 20, replace = TRUE)
+#' tv(as.factor(v1), as.factor(v2))
+#'
 tv <- function(v1, v2) {
 
   stopifnot(is.factor(v1) && is.factor(v2))
@@ -22,6 +28,12 @@ tv <- function(v1, v2) {
 
   # if (length(intersect(lev1, lev2)) == 0)
   #   return(1.0)
+
+  # If v1 & v2 contain character data and their intersection is empty except for
+  # the empty string, return 1.0.
+  if (is.character(lev1) && is.character(lev2) &&
+      identical(intersect(lev1, lev2), character(1)))
+    return(1.0)
 
   # Align levels of v1 and v2, if necessary.
   if (!identical(lev1, lev2)) {

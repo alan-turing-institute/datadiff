@@ -44,6 +44,10 @@ parameters for the given mismatch method. The numerical methods available to
 default \code{method} argument, until convergence is achieved. If none of the
 methods succeeds an error is thrown.
 }
+\examples{
+gen_patch_affine(mtcars, mtcars, col1 = "wt", col2 = "qsec")
+
+}
 \seealso{
 \code{\link{optim}}
 }

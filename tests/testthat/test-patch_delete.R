@@ -70,3 +70,12 @@ test_that("patch function application works", {
   target <- patch_delete(cols)
   expect_error(target(df), regexp = "is_compatible_columns.*not TRUE")
 })
+
+test_that("the sample_patch_delete function works", {
+
+  df <- mtcars
+  result <- sample_patch_delete(df)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "delete")
+  expect_equal(ncol(result(df)), ncol(df) - 1)
+})

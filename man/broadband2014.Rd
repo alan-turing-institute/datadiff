@@ -12,6 +12,6 @@
 broadband2014
 }
 \description{
-UK home broadband performance for 2014 published by Ofcom.
+UK home broadband performance data for 2014 published by Ofcom.
 }
 \keyword{datasets}

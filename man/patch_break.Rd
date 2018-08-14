@@ -20,8 +20,18 @@ S3 class \code{patch_break} which extends the \code{patch} and
 \code{function} classes to represent a transformation of a tabular dataset
 by an abrubt break in one or more columns.
 
+The broken columns will take their names from the given \code{data}. If
+\code{colnames(data)} is \code{NULL}, the broken columns will take their
+names from the corresponding columns in the data frame to which the break
+patch is applied (i.e. all original column names will be preserved after the
+break).
+
 Break patches are unique in that the mismatch between a broken column and
 any other column is always taken to be zero.
+}
+\examples{
+patch_break(1L, data = mtcars[1])
+
 }
 \seealso{
 \code{\link{is_valid_columns}} \code{\link{is_compatible_columns}}

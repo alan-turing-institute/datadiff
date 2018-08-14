@@ -21,6 +21,10 @@
 #' @param allow_new_categories
 #' A logical flag. If \code{FALSE}, the number of distinct categories in the
 #' specified columns must be equal.
+#' @param limit_int_categories
+#' An integer specifying the limit on the number of categories above which
+#' integer data shall no longer be considered categorical.
+#'
 #' @param ...
 #' Additional arguments are ignored.
 #'
@@ -29,8 +33,13 @@
 #' @seealso \code{\link{patch_recode}}
 #'
 #' @export
+#'
+#' @examples
+#' gen_patch_recode(esoph, esoph, col1 = "alcgp", col2 = "tobgp")
+#'
 gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1,
-                             allow_new_categories = TRUE, ...) {
+                             allow_new_categories = TRUE,
+                             limit_int_categories = 2^5, ...) {
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
@@ -42,6 +51,10 @@ gen_patch_recode <- function(df1, df2, mismatch = tv, col1, col2 = col1,
 
   if (is.double(v1) || is.double(v2))
     stop("Encodings require categorical data")
+  if (is.integer(v1) && length(unique(v1)) > limit_int_categories)
+    stop("Encodings require categorical data: max integer categories exceeded")
+  if (is.integer(v2) && length(unique(v2)) > limit_int_categories)
+    stop("Encodings require categorical data: max integer categories exceeded")
 
   f1 <- as.factor(v1)
   f2 <- as.factor(v2)

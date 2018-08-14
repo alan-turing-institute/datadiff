@@ -27,6 +27,10 @@
 #' @seealso \code{\link{gen_patch_affine}}
 #'
 #' @export
+#'
+#' @examples
+#' gen_patch_shift(mtcars, mtcars, col1 = "wt", col2 = "qsec")
+#'
 gen_patch_shift <- function(df1, df2, mismatch = ks, col1, col2 = col1) {
 
   stopifnot(is_compatible_columns(col1, df1) && length(col1) == 1)

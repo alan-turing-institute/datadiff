@@ -17,3 +17,4 @@ and \code{y} have different numbers of columns. Defaults to 1.}
 \description{
 Compute the mismatch between two data frames
 }
+\keyword{internal}

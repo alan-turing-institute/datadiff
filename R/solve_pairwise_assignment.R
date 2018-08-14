@@ -22,6 +22,17 @@
 #'
 #' @export
 #'
+#' @examples
+#' m <- matrix(rexp(36), nrow = 6, ncol = 6)
+#' solve_pairwise_assignment(m)
+#'
+#' # The matrix m need not be square:
+#' m <- matrix(rexp(48), nrow = 6, ncol = 8)
+#' solve_pairwise_assignment(m)
+#'
+#' m <- matrix(rexp(48), nrow = 8, ncol = 6)
+#' solve_pairwise_assignment(m)
+#'
 solve_pairwise_assignment <- function(m, verbose = FALSE) {
 
   # The reasoning behind the augmentation of m with zeros in the case of a

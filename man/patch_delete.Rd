@@ -18,13 +18,13 @@ S3 class \code{patch_delete} which extends the \code{patch} and
 by deletion of one or more columns.
 }
 \examples{
-colnames(mtcars)
+head(mtcars)
 p <- patch_delete(c(2L, 5L))
 p <- patch_delete(c("mpg", "gear"))
 
 # The following are equivalent:
-colnames(apply_patch(mtcars, p))
-colnames(p(mtcars))
+head(apply_patch(mtcars, p))
+head(p(mtcars))
 
 # Attempting to apply a patch to an incompatible data frame throws an error.
 \dontrun{

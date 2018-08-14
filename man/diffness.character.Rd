@@ -21,3 +21,4 @@ Character vectors are treated as unordered categorical data.
 \details{
 The mismatch between vectors of different types is always 1.
 }
+\keyword{internal}

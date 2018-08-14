@@ -26,17 +26,17 @@ function which determines how column name conflicts are handled. As of
 \code{dplyr} v0.7, this is done with a call to \code{tibble::repair_names}.
 }
 \examples{
-colnames(mtcars)
-p <- patch_insert("gear", mtcars[2:4])
-p <- patch_insert(0L, mtcars[2:4])
+head(mtcars)
+p <- patch_insert("gear", data = mtcars[2:4])
+p <- patch_insert(0L, data = mtcars[2:4])
 
 # The following are equivalent:
-colnames(apply_patch(mtcars, p))
-colnames(p(mtcars))
+head(apply_patch(mtcars, p))
+head(p(mtcars))
 
 # Attempting to apply a patch to an incompatible data frame throws an error.
 \dontrun{
-p <- patch_insert(22L, mtcars[2:4])
+p <- patch_insert(22L, data = mtcars[2:4])
 p(mtcars)
 }
 }

@@ -1,23 +1,26 @@
 Package: datadiff
+Title: Diff utility for tabular datasets
 Type: Package
-Title: Datadiff is diff for data
-Version: 0.1.0
+Version: 0.2.0
+Description: A tool for comparison and reconciliation of tabular datasets.
+License: MIT + file LICENSE
+Depends: R (>= 2.10)
+Imports: utils, stats, stringr, methods, tibble, dplyr, purrr, clue, lpSolve, progress, logging
+Suggests: testthat,
+    knitr,
+    rmarkdown
+LazyData: true
+Encoding: UTF-8
+RoxygenNote: 6.1.0
+NeedsCompilation: no
 Authors@R: c(
     person("Timothy", "Hobson", email = "thobson@turing.ac.uk", role = c("aut", "cre")),
     person("James", "Geddes", email = "jgeddes@turing.ac.uk", role = c("ctb")),
     person("The Alan Turing Institute", role = "cph")
     )
-Maintainer: Timothy Hobson <thobson@turing.ac.uk>
-Description: Tools for comparing datasets.
-License: MIT + file LICENSE
-Encoding: UTF-8
-LazyData: true
-Depends: R (>= 2.10)
-Suggests: testthat
-Imports: stats, stringr, methods, dplyr, purrr, clue, lpSolve
-RoxygenNote: 6.0.1
-NeedsCompilation: no
-Packaged: 2017-04-24 11:17:59 UTC; jgeddes
 Author: Timothy Hobson [aut, cre],
   James Geddes [ctb],
   The Alan Turing Institute [cph]
+Maintainer: Timothy Hobson <thobson@turing.ac.uk>
+Packaged: 2017-04-24 11:17:59 UTC; jgeddes
+VignetteBuilder: knitr

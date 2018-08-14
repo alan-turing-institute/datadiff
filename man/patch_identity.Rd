@@ -14,6 +14,6 @@ S3 class \code{patch_identity} which extends the \code{patch} and
 \code{function} classes to represent the identity transformation.
 }
 \examples{
-p <- patch_identity()
+patch_identity()
 
 }

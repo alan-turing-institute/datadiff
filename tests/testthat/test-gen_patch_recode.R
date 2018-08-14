@@ -163,4 +163,26 @@ test_that("the gen_patch_recode function works", {
   expected <- c("1" = "d", "2" = "a", "3" = "b")
   expect_equal(get_patch_params(result)[["encoding"]], expected)
 
+  # Test the limit_int_categories argument.
+  set.seed(.Machine$integer.max)
+  limit_int_categories <- 20
+  df1 <- data.frame("v1" = sample.int(20, size=1000, replace=TRUE))
+  df2 <- data.frame("v2" = sample(letters[1:20], size=1000, replace=TRUE),
+                    stringsAsFactors = FALSE)
+
+  result <- gen_patch_recode(df1, col1 = 1L, df2 = df2,
+                             allow_new_categories = TRUE,
+                             limit_int_categories = limit_int_categories)
+
+  set.seed(.Machine$integer.max)
+  limit_int_categories <- 20
+  df1 <- data.frame("v1" = sample.int(21, size=1000, replace=TRUE))
+  df2 <- data.frame("v2" = sample(letters[1:20], size=1000, replace=TRUE),
+                    stringsAsFactors = FALSE)
+
+  expect_error(gen_patch_recode(df1, col1 = 1L, df2 = df2,
+                             allow_new_categories = TRUE,
+                             limit_int_categories = limit_int_categories),
+               regexp = "max integer categories exceeded")
+
 })

@@ -24,6 +24,10 @@ A \code{patch_break} object.
 \description{
 Generates a \code{patch_break} object.
 }
+\examples{
+gen_patch_break(mtcars, mtcars, col1 = "wt")
+
+}
 \seealso{
 \code{\link{patch_break}}
 }

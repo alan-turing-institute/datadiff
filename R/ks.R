@@ -8,6 +8,11 @@
 #' @return A number between 0 and 1 inclusive.
 #'
 #' @export
+#'
+#' @examples
+#' ks(rnorm(10), rnorm(20))
+#' ks(as.ordered(1:10), as.ordered(20:1))
+#'
 ks <- function(v1, v2) UseMethod("ks")
 
 #' K-S statistic for two ecdf's
@@ -19,6 +24,8 @@ ks <- function(v1, v2) UseMethod("ks")
 #' A pair of ecdf objects.
 #'
 #' @return A number between 0 and 1 inclusive.
+#'
+#' @keywords internal
 ks_ecdf <- function(e1, e2) {
   knots <- union(knots(e1), knots(e2))
   max(abs(c(e1(knots) - e2(knots))))
@@ -38,6 +45,7 @@ ks_ecdf <- function(e1, e2) {
 #'
 #' @seealso \code{\link{ecdf}}
 #'
+#' @keywords internal
 #' @export
 ks.numeric <- function(v1, v2) {
 
@@ -61,6 +69,7 @@ ks.numeric <- function(v1, v2) {
 #'
 #' @seealso \code{\link{ecdf}}
 #'
+#' @keywords internal
 #' @export
 ks.ordered <- function(v1, v2) {
 

@@ -28,6 +28,10 @@
 #' @seealso \code{\link{gen_patch_affine}} \code{\link{mad}}
 #'
 #' @export
+#'
+#' @examples
+#' gen_patch_scale(mtcars, mtcars, col1 = "wt", col2 = "qsec")
+#'
 gen_patch_scale <- function(df1, df2, mismatch = ks, col1, col2 = col1, ...) {
 
   # Note that the optimal scale factor is never unique, and uniqueness may be

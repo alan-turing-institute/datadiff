@@ -36,7 +36,7 @@ head(p(mtcars))
 # Attempting to apply a patch to an incompatible data frame throws an error.
 \dontrun{
 # Column 1 does not contain binary data.
-p <- patch_recode(1L, c("0" = FALSE, "1" = TRUE))
+p <- patch_recode(1L, encoding = c("0" = FALSE, "1" = TRUE))
 p(mtcars)
 }
 

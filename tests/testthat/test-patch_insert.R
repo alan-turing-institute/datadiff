@@ -111,3 +111,44 @@ test_that("patch function application works", {
   target <- patch_insert("c", data = data)
   expect_error(target(df), regexp = "is_compatible_columns.*not TRUE")
 })
+
+test_that("the sample_patch_insert function works", {
+
+  df <- mtcars
+  colname <- "INSERTED"
+  result <- sample_patch_insert(df, colname = colname)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "insert")
+  expect_equal(ncol(result(df)), ncol(df) + 1)
+  expect_true(setequal(colnames(result(df)), c(colnames(df), colname)))
+
+  # Test inserting a second column.
+  df <- result(df)
+  result <- sample_patch_insert(df, colname = colname)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "insert")
+  expect_equal(ncol(result(df)), ncol(df) + 1)
+  # This time the column name has the suffix "1".
+  expect_true(setequal(colnames(result(df)), c(colnames(df), paste0(colname, "1"))))
+
+  # Test with parameters passed to rdist.
+  df <- mtcars
+  set.seed(147)
+  result <- sample_patch_insert(df, mean = 10, sd = 4)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "insert")
+  expect_equal(mean(get_patch_params(result)[["data"]][[colname]]), 10,
+               tolerance = 0.16)
+
+  # Test with a discrete distribution for the data.
+  rdist <- function(n, ...) { sample(letters[1:3], size = n, ...) }
+  expect_error(sample_patch_insert(df, rdist = rdist),
+               regexp = "cannot take a sample larger than the population")
+
+  result <- sample_patch_insert(df, rdist = rdist, replace = TRUE)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "insert")
+  expect_true(setequal(unique(get_patch_params(result)[["data"]][[colname]]),
+                       letters[1:3]))
+
+})

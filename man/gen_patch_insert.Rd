@@ -34,6 +34,10 @@ inserts a new column into that data frame (containing only \code{NA} values)
 whose name matches that of \code{col2} in \code{df2}, prefixed by the string
 given in the \code{prefix} argument.
 }
+\examples{
+gen_patch_insert(mtcars, mtcars, col2 = "wt")
+
+}
 \seealso{
 \code{\link{patch_insert}}
 }

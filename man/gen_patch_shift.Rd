@@ -33,6 +33,10 @@ Uses the \code{\link{optim}} function to optimise the \code{shift}
 parameter for the given mismatch method. If the numerical optimisation fails
 to converge an error is thrown.
 }
+\examples{
+gen_patch_shift(mtcars, mtcars, col1 = "wt", col2 = "qsec")
+
+}
 \seealso{
 \code{\link{gen_patch_affine}}
 }

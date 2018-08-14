@@ -23,17 +23,17 @@
 #' @seealso \code{\link{is_valid_columns}} \code{\link{is_compatible_columns}}
 #'
 #' @examples
-#' colnames(mtcars)
-#' p <- patch_insert("gear", mtcars[2:4])
-#' p <- patch_insert(0L, mtcars[2:4])
+#' head(mtcars)
+#' p <- patch_insert("gear", data = mtcars[2:4])
+#' p <- patch_insert(0L, data = mtcars[2:4])
 #'
 #' # The following are equivalent:
-#' colnames(apply_patch(mtcars, p))
-#' colnames(p(mtcars))
+#' head(apply_patch(mtcars, p))
+#' head(p(mtcars))
 #'
 #' # Attempting to apply a patch to an incompatible data frame throws an error.
 #' \dontrun{
-#' p <- patch_insert(22L, mtcars[2:4])
+#' p <- patch_insert(22L, data = mtcars[2:4])
 #' p(mtcars)
 #' }
 patch_insert <- function(insertion_point, data) {
@@ -68,4 +68,59 @@ patch_insert <- function(insertion_point, data) {
 
   class(obj) <- c("patch_insert", "patch", "function")
   obj
+}
+
+#' Randomly sample from a distribution of insert patches
+#'
+#' @param df
+#' A data frame
+#' @param rdist
+#' A function for randomly generating the data in the inserted column. Must
+#' contain an argument \code{n} for the number of samples. Defaults to the
+#' standard Normal distribution function \code{rnorm}.
+#' @param colname
+#' The inserted column name. Defaults to "INSERTED". If a column with that name
+#' already exists, the column will be named "INSERTEDx" where \code{x} is an
+#' integer which increments each time a column with the duplicated name is
+#' inserted.
+#' @param exclude_cols
+#' An integer vector of column indices to be excluded from the set of possible
+#' target columns for the inserted column in the returned patch.
+#' @param seed
+#' A random seed.
+#' @param ...
+#' Additional arguments passed to the \code{rdist} function.
+#'
+#' @export
+#'
+#' @examples
+#' p <- sample_patch_insert(mtcars, mean = 10, sd = 4)
+#' head(p(mtcars))
+#'
+#' # Draw the column data from a given distribution:
+#' p <- sample_patch_insert(mtcars, rdist = rexp, rate = 2)
+#' head(p(mtcars))
+#'
+#' # Draw the column data from a discrete distribution:
+#' rdist <- function(n, ...) { sample(letters[1:3], size = n, ...) }
+#' p <- sample_patch_insert(mtcars, rdist = rdist, replace = TRUE)
+#' head(p(mtcars))
+#'
+sample_patch_insert <- function(df, rdist = stats::rnorm,
+                                colname = "INSERTED", exclude_cols = integer(0),
+                                seed, ...) {
+
+  if (!missing(seed))
+    set.seed(seed)
+
+  candidate_insertion_points <- setdiff(0:ncol(df), exclude_cols - 1L)
+
+  if (length(candidate_insertion_points) == 0)
+    stop("All candidate insertion points are excluded.")
+
+  # old: insertion_point <- sample(0:ncol(df), size = 1)
+  insertion_point <- sample(candidate_insertion_points, size = 1)
+  data <- data.frame(rdist(n = nrow(df), ...))
+  colnames(data) <- colname
+  patch_insert(insertion_point, data = data)
 }

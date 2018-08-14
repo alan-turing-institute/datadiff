@@ -12,6 +12,14 @@
 #' datasets.
 #'
 #' @export
+#'
+#' @examples
+#' diffness(purrr::rbernoulli(10), purrr::rbernoulli(10))
+#' diffness(1:10, 10:1)
+#' diffness(1:10, 20:1)
+#' diffness(stats::rnorm(10), stats::rnorm(10, sd = 2))
+#' diffness(letters[1:10], letters[20:1])
+#' diffness(mtcars, mtcars[1:10, ])
 diffness <- function(x, y, ...) UseMethod("diffness")
 
 #' Compute the mismatch between two data frames
@@ -24,6 +32,7 @@ diffness <- function(x, y, ...) UseMethod("diffness")
 #' @param ...
 #' Additional arguments passed to other \code{diffness} methods.
 #'
+#' @keywords internal
 #' @export
 diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 
@@ -60,6 +69,7 @@ diffness.data.frame <- function(x, y, col_diff = 1, ...) {
 #' @param ...
 #' Additional arguments are ignored.
 #'
+#' @keywords internal
 #' @export
 diffness.double <- function(x, y, diff = ks, ...) {
   stopifnot(is.vector(y) || is.factor(y))
@@ -90,6 +100,7 @@ diffness.double <- function(x, y, diff = ks, ...) {
 #' @param ...
 #' Additional arguments are ignored.
 #'
+#' @keywords internal
 #' @export
 diffness.integer <- function(x, y, diff = ks, ...) {
   stopifnot(is.vector(y) || is.factor(y))
@@ -116,6 +127,7 @@ diffness.integer <- function(x, y, diff = ks, ...) {
 #' @param ...
 #' Additional arguments are ignored.
 #'
+#' @keywords internal
 #' @export
 diffness.ordered <- function(x, y, diff = ks, ...) {
   stopifnot(is.factor(y))
@@ -142,6 +154,7 @@ diffness.ordered <- function(x, y, diff = ks, ...) {
 #' @param ...
 #' Additional arguments are ignored.
 #'
+#' @keywords internal
 #' @export
 diffness.factor <- function(x, y, diff = tv, ...) {
   if (is.double(y))
@@ -168,6 +181,7 @@ diffness.factor <- function(x, y, diff = tv, ...) {
 #' @param ...
 #' Additional arguments are ignored.
 #'
+#' @keywords internal
 #' @export
 diffness.character <- function(x, y, diff = tv, ...) {
   stopifnot(is.vector(y) || is.factor(y))
@@ -195,6 +209,7 @@ diffness.character <- function(x, y, diff = tv, ...) {
 #' @param ...
 #' Additional arguments are ignored.
 #'
+#' @keywords internal
 #' @export
 diffness.logical <- function(x, y, diff = tv, ...) {
   stopifnot(is.vector(y) || is.factor(y))

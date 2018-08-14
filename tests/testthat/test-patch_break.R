@@ -7,25 +7,15 @@ test_that("the patch_break constructor and get_patch_params function work", {
   data <- data.frame(1, 2)
   target <- patch_break(cols, data)
 
-  expect_true(is_patch(target, allow_composed = TRUE))
-  expect_false(is_patch(target, allow_composed = FALSE))
+  expect_equal(patch_type(target), expected = "break")
+  expect_true(is_patch(target, allow_composed = FALSE))
 
   cols <- c(4L)
   data <- data.frame(1)
   target <- patch_break(cols, data)
 
-  expect_true(is_patch(target, allow_composed = TRUE))
-  expect_false(is_patch(target, allow_composed = FALSE))
-
-  expect_equal(length(decompose_patch(target)), expected = 2)
-  expect_true(is(decompose_patch(target)[[1]], "patch_insert"))
-  expect_true(is(decompose_patch(target)[[2]], "patch_delete"))
-
-  expect_equal(get_patch_params(decompose_patch(target)[[1]]),
-               list("insertion_point" = 4L, "data" = data))
-  expect_equal(get_patch_params(decompose_patch(target)[[2]]),
-               list("cols" = cols))
-
+  expect_equal(patch_type(target), expected = "break")
+  expect_true(is_patch(target, allow_composed = FALSE))
 })
 
 test_that("patch function application works", {
@@ -46,6 +36,39 @@ test_that("patch function application works", {
   expect_equal(result[[1]], df[[1]])
   expect_equal(result[[2]], data[[1]])
 
+  # Test when the data column is given the same name as the original column.
+  # This checks a bug observed where an erroneous suffix "1" was added to the
+  # column name.
+  cols <- 2L
+  data <- data.frame(letters[12:1])
+  colnames(data) <- colnames(df)[cols]
+  target <- patch_break(cols, data)
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_equal(ncol(result), ncol(df))
+  expect_equal(colnames(result), expected = c("col1", "col2", "col3"))
+  expect_equal(result[[1]], df[[1]])
+  expect_equal(result[[2]], data[[1]])
+  expect_equal(result[[3]], df[[3]])
+
+  # Test when colnames(data) is NULL.
+  cols <- 2L
+  data <- data.frame(letters[12:1])
+  colnames(data) <- NULL
+  target <- patch_break(cols, data)
+
+  # Note that the original column names are preserved even in the broken column.
+  result <- target(df)
+
+  expect_true(is.data.frame(result))
+  expect_equal(ncol(result), ncol(df))
+  expect_equal(colnames(result), expected = c("col1", "col2", "col3"))
+  expect_equal(result[[1]], df[[1]])
+  expect_equal(result[[2]], data[[1]])
+  expect_equal(result[[3]], df[[3]])
+
+  # Another test.
   cols <- 1L
   data <- data.frame("letters" = letters[1:12])
   target <- patch_break(cols, data)
@@ -130,5 +153,54 @@ test_that("patch function application works", {
   target <- patch_break(cols, data)
   # cols argument must be compatible with the data frame.
   expect_error(target(df), "is_compatible_columns")
+
+})
+
+test_that("the sample_patch_break function works", {
+
+  df <- mtcars
+  colname <- "BROKEN"
+
+  result <- sample_patch_break(df, colname = colname)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "break")
+  expect_equal(ncol(result(df)), ncol(df))
+  expect_true(colname %in% colnames(result(df)))
+
+  # Test breaking a second column.
+  df <- result(df)
+  result <- sample_patch_break(df, colname = colname)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "break")
+  expect_equal(ncol(result(df)), ncol(df))
+  expect_equal(sum(colnames(result(df)) == colname), expected = 2)
+
+  # Test with no colname argument (i.e. preserve all colnames).
+  df <- mtcars
+  result <- sample_patch_break(df)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "break")
+  expect_equal(ncol(result(df)), ncol(df))
+  expect_true(setequal(colnames(result(df)), c(colnames(df))))
+
+  # Test with parameters passed to rdist.
+  df <- mtcars
+  set.seed(147)
+  result <- sample_patch_break(df, mean = 10, sd = 4, colname = colname)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "break")
+  expect_equal(mean(get_patch_params(result)[["data"]][[colname]]), 10,
+               tolerance = 0.16)
+
+  # Test with a discrete distribution for the data.
+  rdist <- function(n, ...) { sample(letters[1:3], size = n, ...) }
+  expect_error(sample_patch_break(df, rdist = rdist),
+               regexp = "cannot take a sample larger than the population")
+
+  result <- sample_patch_break(df, rdist = rdist, colname = colname, replace = TRUE)
+  expect_true(is_patch(result))
+  expect_equal(patch_type(result), "break")
+  expect_true(setequal(unique(get_patch_params(result)[["data"]][[colname]]),
+                       letters[1:3]))
 
 })

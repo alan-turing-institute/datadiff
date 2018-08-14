@@ -28,12 +28,18 @@
 #' @seealso \code{\link{patch_insert}}
 #'
 #' @export
+#'
+#' @examples
+#' gen_patch_insert(mtcars, mtcars, col2 = "wt")
+#'
 gen_patch_insert <- function(df1, df2, col1 = as.integer(col2 - 1),
                             col2, prefix = "INSERT.", ...) {
 
   # Do _not_ require that is_compatible_columns(col1, df1). Do this only when
   # the insert patch is applied, to allow for the possibility that other
   # insertions/changes to df1 are made between patch generation and application.
+  if (is.character(col2))
+    col1 <- which(colnames(df2) == col2)
   stopifnot(length(col1) == 1)
   stopifnot(is_compatible_columns(col2, df2) && length(col2) == 1)
 

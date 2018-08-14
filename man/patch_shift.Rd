@@ -20,16 +20,16 @@ S3 class \code{patch_shift} which extends the \code{patch} and
 by shifting (adding a constant to) numerical data in one or more columns.
 }
 \examples{
-purrr::map_dbl(mtcars, mean)
-p <- patch_shift(c(1L, 3L), 2)
+head(mtcars)
+p <- patch_shift(c(1L, 3L), shift = 2)
 
 # The following are equivalent:
-purrr::map_dbl(apply_patch(mtcars, p), mean)
-purrr::map_dbl(p(mtcars), mean)
+head(apply_patch(mtcars, p))
+head(p(mtcars))
 
 # Attempting to apply a patch to an incompatible data frame throws an error.
 \dontrun{
-p <- patch_shift(c(1L, 22L), 2)
+p <- patch_shift(c(1L, 22L), shift = 2)
 p(mtcars)
 }
 }

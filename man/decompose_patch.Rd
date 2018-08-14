@@ -19,3 +19,11 @@ returns its constituent elementary \code{patch} objects in a list in the
 order in which they are applied in the composition. Compositions of
 compositions are handled via tree recursion.
 }
+\examples{
+patch <- compose_patch(patch_permute(8:1), patch_shift(2L, shift = 10))
+decompose_patch(patch)
+
+}
+\seealso{
+\code{\link{compose_patch}}
+}
