@@ -39,6 +39,7 @@
 #' A random seed. By default an integer seed is chosen at random.
 #' @param data_reader
 #' A function which reads the data, given the arguments in \code{data_id}.
+#' Defaults to the \code{\link{get}} function.
 #'
 #' @return A \code{synthetic_experiment} object.
 #'
@@ -71,7 +72,7 @@ configure_synthetic_experiment <- function(data_id,
                                            N = 20,
                                            split = 0.5,
                                            seed = sample.int(.Machine$integer.max, size = 1),
-                                           data_reader = get()) {
+                                           data_reader = get) {
 
   stopifnot(length(split) == 1)
 
