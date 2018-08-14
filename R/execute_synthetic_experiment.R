@@ -7,8 +7,7 @@
 #' @param config
 #' A \code{synthetic_experiment} object specifying the experiment configuration.
 #' @param logfile
-#' The full path to a logfile. Defaults to \code{log/datadiff.log} under the
-#' package installation directory.
+#' (Optional) The full path to a logfile.
 #'
 #' @return An executed \code{synthetic_experiment} object.
 #'
@@ -23,10 +22,10 @@
 #' config <- configure_synthetic_experiment(mtcars, corruption = corruption, N = 2)
 #' execute_synthetic_experiment(config)
 #' }
-execute_synthetic_experiment <- function(config,
-                                         logfile = system.file("log/datadiff.log", package = "datadiff")) {
+execute_synthetic_experiment <- function(config, logfile = NULL) {
 
-  logging::addHandler(logging::writeToFile, file=logfile, level='DEBUG')
+  if (!is.null(logfile))
+    logging::addHandler(logging::writeToFile, file=logfile, level='DEBUG')
 
   stopifnot(is_synthetic_experiment(config))
 
@@ -36,7 +35,8 @@ execute_synthetic_experiment <- function(config,
 
   config$strip_data()
 
-  logging::loginfo("Synthetic experiment with N = %d, corruption: %s",
+  if (!is.null(logfile))
+    logging::loginfo("Synthetic experiment with N = %d, corruption: %s",
                    config$N, paste(patch_type(corruption), collapse = ", "))
 
   # Use the random seed (from the config) for reproducibility.

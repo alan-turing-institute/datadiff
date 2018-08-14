@@ -31,8 +31,7 @@
 #' A logical flag. If \code{TRUE} (the default) a progress bar will be
 #' displayed in the console.
 #' @param logfile
-#' The full path to a logfile. Defaults to \code{log/datadiff.log} under the
-#' package installation directory.
+#' (Optional) The full path to a logfile.
 #'
 #' @return A list of lists of exectuted \code{synthetic_experiment} objects. The
 #' outer list corresponds to the set of datasets specified in the \code{data_ids}
@@ -61,12 +60,13 @@ multi_batch_experiment <- function(data_ids,
                                    data_reader = get,
                                    execute = TRUE,
                                    pb = TRUE,
-                                   logfile = system.file("log/datadiff.log", package = "datadiff")) {
+                                   logfile = NULL) {
 
-  logging::addHandler(logging::writeToFile, file=logfile)
-
-  logging::loginfo("Multi batch experiment with %d dataset%s, N = %d, M = %d, hyperseed = %d",
-                   length(data_ids), ifelse(length(data_ids) == 1, yes = "", no = "s"), N, M, hyperseed)
+  if (!is.null(logfile)) {
+    logging::addHandler(logging::writeToFile, file=logfile)
+    logging::loginfo("Multi batch experiment with %d dataset%s, N = %d, M = %d, hyperseed = %d",
+                     length(data_ids), ifelse(length(data_ids) == 1, yes = "", no = "s"), N, M, hyperseed)
+  }
 
   set.seed(hyperseed)
 
@@ -103,7 +103,8 @@ multi_batch_experiment <- function(data_ids,
   })
   names(ret) <- data_ids
 
-  logging::loginfo("**** End of multi batch experiment ****")
+  if (!is.null(logfile))
+    logging::loginfo("**** End of multi batch experiment ****")
   ret
 }
 

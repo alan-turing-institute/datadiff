@@ -33,8 +33,7 @@
 #' console in the event of a failure to execute any particular synthetic
 #' experiment in the batch. Defaults to \code{FALSE}.
 #' @param logfile
-#' The full path to a logfile. Defaults to \code{log/datadiff.log} under the
-#' package installation directory.
+#' (Optional) The full path to a logfile.
 #'
 #' @return A list of lists of exectuted \code{synthetic_experiment} objects. The
 #' outer list corresponds to the set of datasets specified in the \code{data_ids}
@@ -64,12 +63,13 @@ batch_experiment <- function(data_ids,
                              execute = TRUE,
                              pb = TRUE,
                              quiet = TRUE,
-                             logfile = system.file("log/datadiff.log", package = "datadiff")) {
+                             logfile = NULL) {
 
-  logging::addHandler(logging::writeToFile, file=logfile)
-
-  logging::loginfo("Batch experiment with %d dataset%s, N = %d, seed = %d",
-                   length(data_ids), ifelse(length(data_ids) == 1, yes = "", no = "s"), N, seed)
+  if (!is.null(logfile)) {
+    logging::addHandler(logging::writeToFile, file=logfile)
+    logging::loginfo("Batch experiment with %d dataset%s, N = %d, seed = %d",
+                     length(data_ids), ifelse(length(data_ids) == 1, yes = "", no = "s"), N, seed)
+  }
 
   stopifnot(length(split) == 1)
   if (is.data.frame(data_ids))
@@ -109,7 +109,7 @@ batch_experiment <- function(data_ids,
     if (!execute)
       return(configs)
 
-    if (is.character(data_id))
+    if (is.character(data_id) && !is.null(logfile))
       logging::loginfo("Dataset: %s", data_id)
 
     purrr::map(configs, .f = function(config) {
@@ -130,7 +130,8 @@ batch_experiment <- function(data_ids,
           # The type must be extracted from the patch sampler functions (via
           # config$corruption), rather than using config$get_corruption(), since
           # the error may be due to failure in generating the corruption.
-          logging::logerror("Synthetic experiment failed:\n%s", err)
+          if (!is.null(logfile))
+            logging::logerror("Synthetic experiment failed:\n%s", err)
 
           # Add the error to the config (environment).
           err_msg <- function() { err$message }
@@ -150,6 +151,8 @@ batch_experiment <- function(data_ids,
   if (is.character(data_ids))
     names(ret) <- purrr::map_chr(data_ids,
                                  purrr::partial(paste, collapse = "_"))
-  logging::loginfo("---- End of batch experiment ----")
+  if (!is.null(logfile))
+    logging::loginfo("---- End of batch experiment ----")
+
   ret
 }
