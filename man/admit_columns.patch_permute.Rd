@@ -4,8 +4,7 @@
 \alias{admit_columns.patch_permute}
 \title{Permute patch implementation of \code{admit_columns}}
 \usage{
-\method{admit_columns}{patch_permute}(patch, cols,
-  cols_param_name = "perm")
+\method{admit_columns}{patch_permute}(patch, cols, cols_param_name = "perm")
 }
 \arguments{
 \item{patch}{An elementary patch object.}

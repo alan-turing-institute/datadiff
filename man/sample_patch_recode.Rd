@@ -5,8 +5,8 @@
 \title{Randomly sample from a distribution of recode patches}
 \usage{
 sample_patch_recode(df, codes = NULL, condition = function(x) {    
-  !(is.double(x) || length(unique(x)) > 2^5) },
-  exclude_cols = integer(0), seed, ...)
+  !(is.double(x) || length(unique(x)) > 2^5) }, exclude_cols = integer(0),
+  seed, ...)
 }
 \arguments{
 \item{df}{A data frame}

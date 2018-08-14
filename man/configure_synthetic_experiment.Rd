@@ -4,10 +4,9 @@
 \alias{configure_synthetic_experiment}
 \title{Configure a synthetic experiment}
 \usage{
-configure_synthetic_experiment(data_id,
-  corruption = sample_patch_identity, datadiff = ddiff, N = 20,
-  split = 0.5, seed = sample.int(.Machine$integer.max, size = 1),
-  data_reader = get())
+configure_synthetic_experiment(data_id, corruption = sample_patch_identity,
+  datadiff = ddiff, N = 20, split = 0.5,
+  seed = sample.int(.Machine$integer.max, size = 1), data_reader = get)
 }
 \arguments{
 \item{data_id}{A data frame or a character vector identifying a data frame. In the latter
@@ -28,7 +27,8 @@ patch sampler (i.e. no corruption).}
 
 \item{seed}{A random seed. By default an integer seed is chosen at random.}
 
-\item{data_reader}{A function which reads the data, given the arguments in \code{data_id}.}
+\item{data_reader}{A function which reads the data, given the arguments in \code{data_id}.
+Defaults to the \code{\link{get}} function.}
 }
 \value{
 A \code{synthetic_experiment} object.

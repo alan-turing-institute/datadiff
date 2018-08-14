@@ -3,15 +3,15 @@
 \docType{data}
 \name{heartdisease}
 \alias{heartdisease}
-\title{data from the UCI Machine Learning Repository}
+\title{Heart Disease data set}
 \format{A data frame with 303 rows and 14 variables.}
 \source{
-\url{http://archive.ics.uci.edu/ml}
+\url{http://archive.ics.uci.edu/ml/datasets/Heart+Disease}
 }
 \usage{
 heartdisease
 }
 \description{
-UK home broadband performance data for 2015 published by Ofcom.
+Heart Disease data set from the UCI Machine Learning Repository.
 }
 \keyword{datasets}

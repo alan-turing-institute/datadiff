@@ -4,14 +4,12 @@
 \alias{execute_synthetic_experiment}
 \title{Execute a synthetic experiment}
 \usage{
-execute_synthetic_experiment(config,
-  logfile = system.file("log/datadiff.log", package = "datadiff"))
+execute_synthetic_experiment(config, logfile = NULL)
 }
 \arguments{
 \item{config}{A \code{synthetic_experiment} object specifying the experiment configuration.}
 
-\item{logfile}{The full path to a logfile. Defaults to \code{log/datadiff.log} under the
-package installation directory.}
+\item{logfile}{(Optional) The full path to a logfile.}
 }
 \value{
 An executed \code{synthetic_experiment} object.

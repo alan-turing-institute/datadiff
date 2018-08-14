@@ -5,9 +5,8 @@
 \title{Configure & execute a batch of synthetic experiments}
 \usage{
 multi_batch_experiment(data_ids, corruptions, datadiff = ddiff, N = 10,
-  M = 10, split = 0.5, hyperseed = sample.int(.Machine$integer.max,
-  size = 1), data_reader = get, execute = TRUE, pb = TRUE,
-  logfile = system.file("log/datadiff.log", package = "datadiff"))
+  M = 10, split = 0.5, hyperseed = sample.int(.Machine$integer.max, size =
+  1), data_reader = get, execute = TRUE, pb = TRUE, logfile = NULL)
 }
 \arguments{
 \item{data_ids}{A collection of data frame identifiers. Each one must be a valid
@@ -36,8 +35,7 @@ configurations will be returned without performing the experiments.}
 \item{pb}{A logical flag. If \code{TRUE} (the default) a progress bar will be
 displayed in the console.}
 
-\item{logfile}{The full path to a logfile. Defaults to \code{log/datadiff.log} under the
-package installation directory.}
+\item{logfile}{(Optional) The full path to a logfile.}
 }
 \value{
 A list of lists of exectuted \code{synthetic_experiment} objects. The

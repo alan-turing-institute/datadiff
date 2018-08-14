@@ -7,7 +7,7 @@
 batch_experiment(data_ids, corruptions, datadiff = ddiff, N = 20,
   split = 0.5, seed = sample.int(.Machine$integer.max, size = 1),
   data_reader = get, execute = TRUE, pb = TRUE, quiet = TRUE,
-  logfile = system.file("log/datadiff.log", package = "datadiff"))
+  logfile = NULL)
 }
 \arguments{
 \item{data_ids}{A collection of data frame identifiers. Each one must be a valid
@@ -38,8 +38,7 @@ displayed in the console.}
 console in the event of a failure to execute any particular synthetic
 experiment in the batch. Defaults to \code{FALSE}.}
 
-\item{logfile}{The full path to a logfile. Defaults to \code{log/datadiff.log} under the
-package installation directory.}
+\item{logfile}{(Optional) The full path to a logfile.}
 }
 \value{
 A list of lists of exectuted \code{synthetic_experiment} objects. The
