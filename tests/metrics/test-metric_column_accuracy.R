@@ -3,6 +3,11 @@ context("metric_column_accuracy function")
 
 test_that("the metric_column_accuracy function works", {
 
+  datadiff <- purrr::partial(ddiff,
+                             patch_generators = list(gen_patch_affine, gen_patch_recode),
+                             patch_penalties = c(1, 1),
+                             permute_penalty = 0.1)
+
   # Test with a dummy dataset.
   generate_normal_df <- function(n) {
     v1 <- rnorm(n)
@@ -21,7 +26,6 @@ test_that("the metric_column_accuracy function works", {
 
   # Test the case in which the corruption contains no relevant patch type.
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L))
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -33,7 +37,6 @@ test_that("the metric_column_accuracy function works", {
   # Now test with a relevant patch type.
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      purrr::partial(sample_patch_scale, mean = 10))
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -53,7 +56,7 @@ test_that("the metric_column_accuracy function works", {
   expect_equal(patch_type(output$get_corruption()), expected = c("permute", "scale"))
   corruption_scale <- decompose_patch(output$get_corruption())[[2]]
   expect_equal(patch_type(corruption_scale), expected = "scale")
-  expect_equal(get_patch_params(corruption_scale)[["cols"]], expected = c("v2" = 5))
+  expect_equal(get_patch_params(corruption_scale)[["cols"]], expected = 5)
 
   corruption_scale_factor <- get_patch_params(corruption_scale)[["scale_factor"]]
   expect_equal(corruption_scale_factor, expected = 10.59272, tolerance = 10^(-6))
@@ -105,7 +108,6 @@ test_that("the metric_column_accuracy function works", {
   seed <- 22
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      sample_patch_insert)
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -157,10 +159,14 @@ test_that("the metric_column_accuracy function works", {
   ####
   #### Now test with an insert patch type: insert, shift then permute.
   ####
+  datadiff <- purrr::partial(ddiff,
+                             patch_generators = list(gen_patch_affine, gen_patch_recode),
+                             patch_penalties = c(12, 12),
+                             permute_penalty = 12)
+
   corruption <- list(sample_patch_insert,
                      purrr::partial(sample_patch_shift, mean=10),
                      purrr::partial(sample_patch_permute, n = 2L))
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -174,7 +180,7 @@ test_that("the metric_column_accuracy function works", {
   expect_equal(get_patch_params(corruption_insert)[["insertion_point"]], 1L)
 
   # The ddiff algorithm proposes only an insert.
-  expect_true(all(purrr::map_lgl(output$results, .f = function(x) {
+  expect_true(all(purrr::map_lgl(output$get_results(), .f = function(x) {
     identical(patch_type(x), c("insert"))
   })))
 
@@ -211,128 +217,6 @@ test_that("the metric_column_accuracy function works", {
 
   expect_equal(metric_column_accuracy(output, column_param = c("abc", "xzy")),
                expected = NA)
-
-  ####
-  #### Test with multiple patches of the same type applied to different columns
-  #### and applied to the same column (fails with error "not columnwise unique"
-  #### in the latter case).
-  ####
-  N <- 4
-  corruption <- list(purrr::partial(sample_patch_scale, mean = 100),
-                     purrr::partial(sample_patch_permute, n = 2L),
-                     purrr::partial(sample_patch_scale, mean = 10))
-
-  seed <- 12121212
-  config <- configure_synthetic_experiment(data, corruption = corruption,
-                                           datadiff = datadiff, N = N,
-                                           split = split, seed = seed)
-
-  # With this seed, the corruption happens to apply both scale transformations
-  # to the same column (v1). In that case, the corruption is not column-wise
-  # unique.
-  expect_false(is_columnwise_unique(config$get_corruption(), type = "scale"))
-  output <- execute_synthetic_experiment(config)
-  expect_error(metric_column_accuracy(output), regexp = "is_columnwise_unique")
-
-  # Now test with a different seed.
-  seed <- 703412341
-  config <- configure_synthetic_experiment(data, corruption = corruption,
-                                           datadiff = datadiff, N = N,
-                                           split = split, seed = seed)
-
-  # This time, the corruption is column-wise unique (so we can compute the
-  # column accuracy metric using our simple implementation).
-  expect_true(is_columnwise_unique(config$get_corruption(), type = "scale"))
-  output <- execute_synthetic_experiment(config)
-
-  # The corruption contains a scaling of columns v3 by 9.465 and v4 by 100.513.
-
-  # Check that the scaling by the corruption is as expected:
-  expected_v3 <- 9.465
-  actual_v3 <- mean(output$get_corruption()(data)[["v3"]])/mean(data[["v3"]])
-  expected_v4 <- 100.513
-  actual_v4 <- mean(output$get_corruption()(data)[["v4"]])/mean(data[["v4"]])
-
-  expect_equal(actual_v3, expected_v3, tolerance = 10^(-3))
-  expect_equal(actual_v4, expected_v4, tolerance = 10^(-3))
-
-  # Other columns aren't scaled:
-  sink <- sapply(paste0("v", setdiff(1:5, y = 3:4)), FUN = function(h) {
-    expect_equal(mean(output$get_corruption()(data)[[h]])/mean(data[[h]]), 1)
-  })
-
-  # The first result is *not* column-accurate.
-  # Column v3 is not scaled:
-  actual <- mean(output$get_results()[[1]](data)[["v3"]])/mean(data[["v3"]])
-  expect_equal(actual, expected = 1)
-
-  # The second result is *not* column-accurate.
-  # Column v3 is not scaled:
-  actual <- mean(output$get_results()[[2]](data)[["v3"]])/mean(data[["v3"]])
-  expect_equal(actual, expected = 1)
-
-  # The third result is column-accurate.
-  # i.e. column v3 is scaled (correctly) by 9.123 and shifted by -2.683.
-  actual <- mean(output$get_results()[[3]](data)[["v3"]] + 2.683)/mean(data[["v3"]])
-  expect_equal(actual, 9.123, tolerance = 10^(-3))
-  # and column v4 is scaled (correctly) by 106.668 and shifted by -11.885.
-  actual <- mean(output$get_results()[[3]](data)[["v4"]] + 11.885)/mean(data[["v4"]])
-  expect_equal(actual, 106.668, tolerance = 10^(-3))
-
-  # Other columns aren't scaled:
-  sink <- sapply(paste0("v", setdiff(1:5, y = 3:4)), FUN = function(h) {
-    expect_equal(mean(output$get_results()[[3]](data)[[h]])/mean(data[[h]]), 1)
-  })
-
-  # The fourth result is column-accurate.
-  # i.e. column v3 is scaled by 7.775 and shifted by -1.926.
-  actual <- mean(output$get_results()[[4]](data)[["v3"]] + 1.926)/mean(data[["v3"]])
-  expect_equal(actual, 7.775, tolerance = 10^(-2))
-  # and column v4 is scaled by 114.145 and shifted by -53.517.
-  actual <- mean(output$get_results()[[4]](data)[["v4"]] + 53.517)/mean(data[["v4"]])
-  expect_equal(actual, 114.145, tolerance = 10^(-3))
-
-  # Other columns aren't scaled:
-  sink <- sapply(paste0("v", setdiff(1:5, y = 3:4)), FUN = function(h) {
-    expect_equal(mean(output$get_results()[[4]](data)[[h]])/mean(data[[h]]), 1)
-  })
-
-  # Finally, test the metric_column_accuracy result.
-  # Here half of the results are column-accurate.
-  expect_equal(metric_column_accuracy(output), expected = c("scale" = 1/2))
-
-  # Test the 'partial' argument. In this case the result increases from 1/2 to
-  # 3/4 because:
-  # - result1 gets 1/2 partial credit
-  # - result2 gets 1/2 partial credit
-  # - result3 gets 1 (full) credit
-  # - result4 gets 1 (full) credit
-  # So the average partial credit is 3/4 (while the average without partial
-  # credit is 2/4).
-  expect_equal(metric_column_accuracy(output, partial = TRUE),
-               expected = c("scale" = 3/4))
-
-
-  #### Bugfix 27/09/2017:
-  # Test the case of failed patch type recall. In this case metric_column_accuracy
-  # should return NA (*not* 0).
-  seed <- 22112211
-  N <- 2
-  split <- 0.5
-
-  # Test the case in which the corruption contains no relevant patch type.
-  corruption <- list(purrr::partial(sample_patch_shift, relative_shift = 0.1))
-  datadiff <- ddiff
-
-  config <- configure_synthetic_experiment(data, corruption = corruption,
-                                           datadiff = datadiff, N = N,
-                                           split = split, seed = seed)
-  output <- execute_synthetic_experiment(config)
-
-  expect_equal(patch_type(output$get_corruption()), expected = "shift")
-  expect_equal(metric_column_accuracy(output),
-               expected = c("shift" = as.double(NA)))
-
 
 })
 

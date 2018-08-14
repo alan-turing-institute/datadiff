@@ -59,7 +59,7 @@ test_that("the false_positive_rate function works", {
   expect_equal(false_positive_rate(experiment), expected = NA)
 
   #### Test with the UCI abalone dataset with N = 10.
-  data <- read_data("abalone", source = "uci")
+  data <- "abalone"
   N <- 10
   seed <- .Machine$integer.max
 

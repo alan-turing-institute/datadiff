@@ -6,9 +6,7 @@ test_that("the joint_iterative_calibration function works", {
   ####
   #### Test with the UCI datasets.
   ####
-  data_ids <- c("abalone", "iris", "car")
-  # data_ids <- setdiff(datasets("uci"), "00240")
-  data_reader <- read_data
+  data_ids <- c("abalone", "iris", "heartdisease")
   datadiff <- ddiff
   patch_generators <- list(gen_patch_rescale, gen_patch_recode)
   patch_penalties <- c(0.33, 0.33)
@@ -37,7 +35,6 @@ test_that("the joint_iterative_calibration function works", {
                                   M = M,
                                   split = split,
                                   hyperseed = hyperseed,
-                                  data_reader = data_reader,
                                   target_fpr = target_fpr,
                                   acceptance_margin = acceptance_margin,
                                   increment_factor = increment_factor,
@@ -51,12 +48,10 @@ test_that("the joint_iterative_calibration function works", {
   expect_true(is.numeric(result))
   expect_equal(names(result), c("rescale", "recode", "permute"))
 
-
   # ####
   # #### Test with the broadband 2013 dataset.
   # ####
-  # data_ids <- "broadband"
-  # data_reader <- purrr::partial(read_data, source = "data.gov.uk", year = 2013)
+  # data_ids <- "broadband2013"
   # datadiff <- ddiff
   # patch_generators <- list(gen_patch_rescale, gen_patch_recode)
   # # permute_penalty <- 2
@@ -93,7 +88,6 @@ test_that("the joint_iterative_calibration function works", {
   #                                       M = M,
   #                                       split = split,
   #                                       hyperseed = hyperseed,
-  #                                       data_reader = data_reader,
   #                                       target_fpr = target_fpr,
   #                                       acceptance_margin = acceptance_margin,
   #                                       increment_factor = increment_factor,

@@ -3,6 +3,11 @@ context("metric_type_precision function")
 
 test_that("the metric_type_precision function works", {
 
+  datadiff <- purrr::partial(ddiff,
+                             patch_generators = list(gen_patch_affine, gen_patch_recode),
+                             patch_penalties = c(1, 1),
+                             permute_penalty = 0.1)
+
   # Test with a dummy dataset.
   generate_normal_df <- function(n) {
     v1 <- rnorm(n)
@@ -20,7 +25,6 @@ test_that("the metric_type_precision function works", {
   split <- 0.5
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      purrr::partial(sample_patch_scale, mean = 10))
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -88,7 +92,7 @@ test_that("the metric_type_precision function works", {
 
   # One of the results contain a permutation patch. So does the corruption.
   perm_result <- 1
-  attr(perm_result, which = count_attr) <- 1
+  attr(perm_result, which = count_attr) <- 4
 
   expected <- list(
     "scale" = scale_result,

@@ -3,6 +3,11 @@ context("metric_parameter_RMSE function")
 
 test_that("the metric_parameter_RMSE function works", {
 
+  datadiff <- purrr::partial(ddiff,
+                             patch_generators = list(gen_patch_affine, gen_patch_recode),
+                             patch_penalties = c(1, 1),
+                             permute_penalty = 0.1)
+
   # Test with a dummy dataset.
   generate_normal_df <- function(n) {
     v1 <- rnorm(n)
@@ -20,8 +25,6 @@ test_that("the metric_parameter_RMSE function works", {
   split <- 0.5
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      purrr::partial(sample_patch_scale, mean = 10))
-  datadiff <- purrr::partial(ddiff, patch_generators =
-                               list(gen_patch_affine, gen_patch_recode))
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -78,17 +81,14 @@ test_that("the metric_parameter_RMSE function works", {
   expect_equal(names(result), expected = "scale")
   expect_equal(names(result[["scale"]]), expected = "scale_factor")
 
-  # Eight terms enter the sum of square errors: four corresponding to the
-  # scaling applied to column v1, and four corresponding to the
-  # scaling applied to column v4 (since this scaling is correctly identified
-  # in only two of the four results).
-  expect_equal(attr(result[["scale"]], which = "count"), expected = 8L)
-  expected <- sqrt(((10.22 - 11.399)^2 + (10.22 - 9.036)^2 +
-                      (10.22 - 9.938)^2 + (10.22 - 11.041)^2 +
-                      (100.513 - 96.475)^2 + (100.513 - 107.933)^2 +
-                      (100.513 - 106.668)^2 + (100.513 - 114.145)^2)/8)
+  # Three terms enter the sum of square errors, corresponding to the scaling
+  # applied to column v4 (since this scaling is correctly identified
+  # in only three of the four results).
+  expect_equal(attr(result[["scale"]], which = "count"), expected = 3L)
+  expected <- sqrt(((100.513 - 96.475)^2 +
+                      (100.513 - 107.993)^2 + (100.513 - 114.145)^2)/3)
   expect_equal(result[["scale"]][["scale_factor"]],
-               expected = expected, tolerance = 0.001)
+               expected = expected, tolerance = 0.01)
 
   ####
   #### Test with multiple patches of different types.
@@ -125,13 +125,13 @@ test_that("the metric_parameter_RMSE function works", {
                expected = expected, tolerance = 0.001)
 
   # Eight terms enter the sum of square errors for the shift corruption.
-  expect_equal(attr(result[["shift"]], which = "count"), expected = 8L)
-  expected <- sqrt(((10.804 - 10.758)^2 + (10.804 - 10.869)^2 +
+  expect_equal(attr(result[["shift"]], which = "count"), expected = 7L)
+  expected <- sqrt(((10.804 - 10.758)^2 +
                       (10.804 - 10.672)^2 + (10.804 - 10.8)^2 +
                       (-41.388 - (-41))^2 + (-41.388 - (-41.296))^2 +
-                      (-41.388 - (-41.93))^2 + (-41.388 - -(41.476))^2)/8)
+                      (-41.388 - (-41.93))^2 + (-41.388 - -(41.476))^2)/7)
   expect_equal(result[["shift"]][["shift"]],
-               expected = expected, tolerance = 0.001)
+               expected = expected, tolerance = 0.01)
 
 
   ####
@@ -154,8 +154,6 @@ test_that("the metric_parameter_RMSE function works", {
   N <- 2
   split <- 0.5
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L))
-  datadiff <- purrr::partial(ddiff, patch_generators =
-                               list(gen_patch_affine, gen_patch_recode))
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -167,8 +165,6 @@ test_that("the metric_parameter_RMSE function works", {
 
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      sample_patch_recode)
-  datadiff <- purrr::partial(ddiff, patch_generators =
-                               list(gen_patch_affine, gen_patch_recode))
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,

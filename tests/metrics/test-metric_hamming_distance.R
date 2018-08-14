@@ -3,6 +3,11 @@ context("metric_hamming_distance function")
 
 test_that("the metric_hamming_distance function works", {
 
+  datadiff <- purrr::partial(ddiff,
+                             patch_generators = list(gen_patch_affine, gen_patch_recode),
+                             patch_penalties = c(1, 1),
+                             permute_penalty = 0.1)
+
   # Test with a dummy dataset.
   generate_normal_df <- function(n) {
     v1 <- rnorm(n)
@@ -20,7 +25,6 @@ test_that("the metric_hamming_distance function works", {
   split <- 0.5
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      purrr::partial(sample_patch_scale, mean = 10))
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -32,7 +36,7 @@ test_that("the metric_hamming_distance function works", {
                expected = c("permute", "scale"))
 
   # The ddiff algorithm proposes an affine (shift + scale) and a permutation.
-  expect_true(all(purrr::map_lgl(experiment$results, .f = function(x) {
+  expect_true(all(purrr::map_lgl(experiment$get_results(), .f = function(x) {
     identical(patch_type(x), c("scale", "shift", "permute"))
   })))
 
@@ -91,32 +95,32 @@ test_that("the metric_hamming_distance function works", {
   corruption_perm <- decompose_patch(experiment$get_corruption())[[2]]
   expect_equal(patch_type(corruption_perm), expected = "permute")
   expect_equal(order(get_patch_params(corruption_perm)[["perm"]]),
-               expected = c(1L, 4L, 3L, 2L, 5L))
+               expected = c(1L, 3L, 2L, 4L, 5L))
 
   # The four results all contain permutations.
 
-  # The Hamming distance to the permutation in result 1 is 3.
+  # The Hamming distance to the permutation in result 1 is 2.
   result1_perm <- decompose_patch(experiment$get_results()[[1]])[[5]]
   expect_equal(order(get_patch_params(result1_perm)[["perm"]]),
-               expected = c(1L, 2L, 4L, 3L, 5L))
+               expected = c(2L, 1L, 3L, 4L, 5L))
 
-  # The Hamming distance to the permutation in result 2 is 0.
-  result2_perm <- decompose_patch(experiment$get_results()[[2]])[[3]]
+  # The Hamming distance to the permutation in result 2 is 2.
+  result2_perm <- decompose_patch(experiment$get_results()[[2]])[[5]]
   expect_equal(order(get_patch_params(result2_perm)[["perm"]]),
-               expected = c(1L, 4L, 3L, 2L, 5L))
+               expected = c(2L, 1L, 3L, 4L, 5L))
 
-  # The Hamming distance to the permutation in result 3 is 0.
+  # The Hamming distance to the permutation in result 3 is 4.
   result3_perm <- decompose_patch(experiment$get_results()[[3]])[[5]]
   expect_equal(order(get_patch_params(result3_perm)[["perm"]]),
-               expected = c(1L, 4L, 3L, 2L, 5L))
+               expected = c(2L, 3L, 4L, 1L, 5L))
 
-  # The Hamming distance to the permutation in result 4 is 0.
+  # The Hamming distance to the permutation in result 4 is 3.
   result4_perm <- decompose_patch(experiment$get_results()[[4]])[[5]]
   expect_equal(order(get_patch_params(result4_perm)[["perm"]]),
-               expected = c(1L, 4L, 3L, 2L, 5L))
+               expected = c(2L, 3L, 1L, 4L, 5L))
 
-  # The average Hamming distance is (3 + 0 + 0 + 0)/4 = 3/4.
-  expected <- c("permute" = 3/4)
+  # The average Hamming distance is (2 + 2 + 4 + 3)/4 = 10/4.
+  expected <- c("permute" = 11/4)
   attr(expected, which = "count") <- 4
   expect_equal(metric_hamming_distance(experiment), expected = expected)
 })

@@ -47,20 +47,18 @@ test_that("the execute_synthetic_experiment function works", {
 
   # Test with three UCI datasets.
   seed <- 147
-  data_ids <- c("abalone", "iris", "car")
+  data_ids <- c("abalone", "iris", "heartdisease")
   datadiff <- purrr::partial(ddiff, permute_penalty = 0)
   split <- 0.5
   N <- 2
 
   sample_patch_permute2 <- purrr::partial(sample_patch_permute, n = 2L)
-  # OLD: sample_patch_scale2 <- purrr::partial(sample_patch_scale, mean = 2)
   rdist_scale2 <- purrr::partial(stats::rnorm, mean = 2)
   sample_patch_rescale2 <- purrr::partial(sample_patch_rescale,
                                          rdist_scale = rdist_scale2)
 
   corruptions <- list(sample_patch_identity,
                       sample_patch_permute2,
-                      #sample_patch_scale2,
                       sample_patch_rescale2,
                       sample_patch_recode,
                       sample_patch_insert,

@@ -115,34 +115,14 @@ test_that("the execute_synthetic_experiment function works", {
   expect_equal(result$get_results()[[1]], r1)
   expect_equal(result$get_results()[[2]], r2)
 
-  #### OPTIMISATION 05/12/2017
-
-  ####
-  #### Test with the UCI "adult" dataset.
-  ####
-  seed <- 147
-  data_id <- c("source" = "UCI", "dataset" = "adult")
-  datadiff <- purrr::partial(ddiff,
-                             patch_generators = list(gen_patch_affine, gen_patch_recode),
-                             permute_penalty = 0)
-  split <- 0.5
-
-  N <- 2
-  corruption <- list(sample_patch_identity)
-
-  config <- configure_synthetic_experiment(data_id, corruption = corruption,
-                                           datadiff = datadiff, N = N,
-                                           split = split, seed = seed)
-  result <- execute_synthetic_experiment(config)
-  expect_equal(length(result$results), expected = N)
-
   ####
   #### Test with the UCI abalone dataset.
   ####
   seed <- 147
-  data_id <- c("source" = "UCI", "dataset" = "abalone")
+  data_id <- "abalone"
   datadiff <- purrr::partial(ddiff,
                              patch_generators = list(gen_patch_affine, gen_patch_recode),
+                             patch_penalties = c(5/2, 5/2),
                              permute_penalty = 0)
   split <- 0.5
 
@@ -211,7 +191,6 @@ test_that("the execute_synthetic_experiment function works", {
 
   #### Test with a sample delete-and-then-permute patch.
 
-  # Bugfix 26/07/2017:
   # When the corruption is a composed patch the get_corruption function must
   # take into account the patches that have already been applied.
   N <- 2
@@ -223,14 +202,11 @@ test_that("the execute_synthetic_experiment function works", {
   result <- execute_synthetic_experiment(config)
   expect_equal(length(result$results), expected = N)
 
-  # TODO: test _all_ sample patch types on abalone (incl. break, insert, delete).
-
-
   ####
   #### Test with the data.gov.uk broadband dataset.
   ####
   seed <- 14715
-  data_id <- c(source = "data.gov.uk", dataset = "broadband", year = 2013)
+  data_id <- "broadband2013"
   datadiff <- purrr::partial(ddiff,
                              patch_generators = list(gen_patch_affine, gen_patch_recode),
                              permute_penalty = 0)

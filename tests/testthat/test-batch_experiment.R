@@ -26,10 +26,7 @@ test_that("the batch_experiment function works", {
                       list(sample_patch_permute2, sample_patch_insert)
   )
 
-  data_reader <- function(dataset) { get(dataset) }
-
   result <- batch_experiment(data_ids, corruptions = corruptions, N = N,
-                             data_reader = data_reader,
                              seed = seed, execute = execute)
 
   expect_true(is.list(result))

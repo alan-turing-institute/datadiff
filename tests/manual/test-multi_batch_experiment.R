@@ -3,9 +3,7 @@ context("multi_batch_experiment function")
 
 test_that("the multi_batch_experiment function works", {
 
-  data_ids <- c("iris", "car", "abalone")
-  data_reader <- purrr::partial(read_data, source = "uci")
-
+  data_ids <- c("abalone", "iris", "heartdisease")
   corruptions <- list(sample_patch_identity,
                       sample_patch_rescale,
                       sample_patch_delete)

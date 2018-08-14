@@ -3,6 +3,11 @@ context("metric_parameter_accuracy function")
 
 test_that("the metric_parameter_accuracy function works", {
 
+  datadiff <- purrr::partial(ddiff,
+                             patch_generators = list(gen_patch_affine, gen_patch_recode),
+                             patch_penalties = c(1, 1),
+                             permute_penalty = 0.1)
+
   # Test with a dummy dataset.
   generate_df <- function(n) {
     v1 <- rnorm(n)
@@ -21,7 +26,6 @@ test_that("the metric_parameter_accuracy function works", {
   N <- 2
   split <- 0.5
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L))
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -34,7 +38,6 @@ test_that("the metric_parameter_accuracy function works", {
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      sample_patch_recode,
                      sample_patch_recode)
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -70,19 +73,6 @@ test_that("the metric_parameter_accuracy function works", {
                      purrr::partial(sample_patch_permute, n = 2L),
                      sample_patch_recode)
 
-  seed <- 12121212
-  config <- configure_synthetic_experiment(data, corruption = corruption,
-                                           datadiff = datadiff, N = N,
-                                           split = split, seed = seed)
-
-  # With this seed, the corruption happens to apply both recode transformations
-  # to the same column (v3). In that case, the corruption is not column-wise
-  # unique.
-  expect_false(is_columnwise_unique(config$get_corruption(), type = "recode"))
-  experiment <- execute_synthetic_experiment(config)
-  expect_error(metric_parameter_accuracy(experiment), regexp = "is_columnwise_unique")
-
-  # Now test with a different seed.
   seed <- 703412341
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
@@ -164,7 +154,6 @@ test_that("the metric_parameter_accuracy function works", {
   split <- 0.5
   corruption <- list(purrr::partial(sample_patch_permute, n = 2L),
                      purrr::partial(sample_patch_scale, mean = 10))
-  datadiff <- ddiff
 
   config <- configure_synthetic_experiment(data, corruption = corruption,
                                            datadiff = datadiff, N = N,
