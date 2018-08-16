@@ -19,9 +19,16 @@ In making comparisons, datadiff considers the following (composable) patch types
 ``` r
 # Install the most recent release from GitHub:
 # install.packages("devtools")
-devtools::install_github("datadiff", ref = "v0.2.0")
+devtools::install_github("alan-turing-institute/datadiff")
 ```
 
 ## Usage
 
-Diff two data frames with `ddiff(df1, df2)`. For more information and examples, see the package vignette: `vignette("datadiff")`.
+Diff two data frames with `ddiff(df1, df2)`.
+
+For more information and examples, see the package vignette:
+``` r
+# Build the vignette on package installation:
+devtools::install_github("alan-turing-institute/datadiff", build_vignettes = TRUE)
+vignette("datadiff")
+```
