@@ -16,6 +16,8 @@ In making comparisons, datadiff considers the following (composable) patch types
 
 ## Installation
 
+Datadiff is implemented in R and can be built from source or installed using the `devtools` package as follows.
+
 ``` r
 # Install the most recent release from GitHub:
 # install.packages("devtools")
