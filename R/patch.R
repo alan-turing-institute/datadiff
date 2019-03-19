@@ -24,7 +24,7 @@
 #'
 is_patch <- function(obj, allow_composed = TRUE) {
 
-  # no good, since composed patches are patch objects if made with compose_patch
+  # No good, since composed patches are patch objects if made with compose_patch:
   # if (methods::is(obj, "patch"))
   #   return(TRUE)
   # if (!allow_composed)
@@ -36,32 +36,55 @@ is_patch <- function(obj, allow_composed = TRUE) {
     return(FALSE)
 
   # Note that the other two possible cases are trickier:
-  # 1. is patch class & !allow composed
+  # 1. !is patch class & allow composed
+  #     - patches composed using purrr::compose rather than compose_patch are
+  #       not patch objects by class, but must be considered composed patches.
+  # 2. is patch class & !allow composed
   #     - patches composed using compose_patch are patch objects by class, but
   #       must return FALSE if allow composed is FALSE. The hard part is
   #       distinguishing between composed and elementary in this case.
-  # 2. !is patch class & allow composed
-  #     - patches composed using purrr::compose rather than compose_patch are
-  #       not patch objects by class, but must be considered composed patches.
   # To determine these cases we must look at the obj environment.
 
   if (!is.function(obj))
     return(FALSE)
-  env <- environment(obj)
 
-  # If the obj environment contains a list named "fs", all elements of which
-  # are themselves (possibly composed) patches, then the obj is deemed to be a
-  # composed patch.
+  composed_fns <- .get_composed_fns(obj)
+
+  # If all functions found in the obj environment (including lists of functions,
+  # but *not* including the function named "composed" which is defined in
+  # purrr::compose) are themselves (possibly composed) patches, then the obj is
+  # deemed to be a composed patch.
   if (!methods::is(obj, "patch") && allow_composed) {
-    if (!("fs" %in% names(env)))
-      return(FALSE)
-    return(all(purrr::map_lgl(get("fs", envir=env), .f=is_patch, allow_composed=TRUE)))
+    are_patches <- purrr::map_lgl(composed_fns, .f=is_patch, allow_composed=TRUE)
+    return(length(are_patches) != 0 && all(are_patches))
   }
 
   # The only case left is that in which obj is a patch class object but
-  # allow_composed is FALSE. The environment of every composed patch contains an
-  # object named "fs", so we just look for the absence of such an object.
-  !("fs" %in% names(env))
+  # allow_composed is FALSE, so we just check there is no composition.
+  length(composed_fns) == 0
+}
+
+# Retrieve composed functions from an environment
+#
+# Returns a list of the functions (which may themselves be composed) in
+# \code{obj} that were composed using purrr::compose, in the order in which
+# they are applied in the composition, or an empty list if \code{obj} is *not*
+# a composed function.
+#
+.get_composed_fns <- function(obj) {
+
+  env <- environment(obj)
+
+  # Older versions of purrr store composed functions in a list named "fs"
+  if (exists("fs", envir = env))
+    return(get("fs", envir = env))
+
+  # Newer versions of purrr store composed functions as a "first_fn" and
+  # a list named "fns"
+  if(!(exists("first_fn", envir = env) && exists("fns", envir = env)))
+    return(list())
+
+  c(list(get("first_fn", envir = env)), get("fns", envir = env))
 }
 
 #' Test for an identity patch object
@@ -157,7 +180,7 @@ decompose_patch <- function(patch) {
   stopifnot(is_patch(patch, allow_composed = TRUE))
   if (is_patch(patch, allow_composed = FALSE))
     return(list(patch))
-  unlist(purrr::map(rev(get("fs", envir = environment(patch))), decompose_patch))
+  unlist(purrr::map(.get_composed_fns(patch), decompose_patch))
 }
 
 #' Simplify a composed patch by discarding any superfluous identity patches
