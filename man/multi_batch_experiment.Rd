@@ -5,8 +5,9 @@
 \title{Configure & execute a batch of synthetic experiments}
 \usage{
 multi_batch_experiment(data_ids, corruptions, datadiff = ddiff, N = 10,
-  M = 10, split = 0.5, hyperseed = sample.int(.Machine$integer.max, size =
-  1), data_reader = get, execute = TRUE, pb = TRUE, logfile = NULL)
+  M = 10, split = 0.5, hyperseed = sample.int(.Machine$integer.max,
+  size = 1), data_reader = get, execute = TRUE, pb = TRUE,
+  logfile = NULL)
 }
 \arguments{
 \item{data_ids}{A collection of data frame identifiers. Each one must be a valid

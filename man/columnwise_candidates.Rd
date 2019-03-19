@@ -4,9 +4,10 @@
 \alias{columnwise_candidates}
 \title{Generate candidate patches by columnwise comparison}
 \usage{
-columnwise_candidates(df1, df2, mismatch, patch_generators, patch_penalties,
-  break_penalty, penalty_scaling, mismatch_attr = "mismatch",
-  penalty_attr = "penalty", scale_break_penalty = FALSE, verbose = FALSE)
+columnwise_candidates(df1, df2, mismatch, patch_generators,
+  patch_penalties, break_penalty, penalty_scaling,
+  mismatch_attr = "mismatch", penalty_attr = "penalty",
+  scale_break_penalty = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{df1, df2}{A pair of data frames.}
