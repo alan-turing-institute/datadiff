@@ -8,10 +8,11 @@ iterative_calibration(data_ids, datadiff = ddiff,
   patch_generators = list(gen_patch_rescale, gen_patch_recode),
   patch_penalties = c(0.4, 0.4), permute_penalty = 0.1,
   break_penalty = 0.95, N = 10, M = 10, split = 0.5,
-  hyperseed = sample.int(.Machine$integer.max, size = 1), data_reader = get,
-  target_fpr = 0.05, acceptance_margin = 0.1, increment_factor = 1.2,
-  decrement_factor = 0.8, lower_boundary = 10^(-6), upper_boundary = 1 -
-  lower_boundary, check_viability = TRUE, pb = TRUE, logfile = NULL)
+  hyperseed = sample.int(.Machine$integer.max, size = 1),
+  data_reader = get, target_fpr = 0.05, acceptance_margin = 0.1,
+  increment_factor = 1.2, decrement_factor = 0.8,
+  lower_boundary = 10^(-6), upper_boundary = 1 - lower_boundary,
+  check_viability = TRUE, pb = TRUE, logfile = NULL)
 }
 \arguments{
 \item{data_ids}{A character vector of data frame identifiers. Each one must be a valid

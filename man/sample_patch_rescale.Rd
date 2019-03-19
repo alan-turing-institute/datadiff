@@ -4,8 +4,8 @@
 \alias{sample_patch_rescale}
 \title{Randomly sample from a distribution of rescale patches}
 \usage{
-sample_patch_rescale(df, rdist_shift = purrr::partial(stats::rnorm, mean =
-  mean_shift), mean_shift = 0, relative_shift = NULL,
+sample_patch_rescale(df, rdist_shift = purrr::partial(stats::rnorm, mean
+  = mean_shift), mean_shift = 0, relative_shift = NULL,
   rdist_scale = purrr::partial(stats::rnorm, mean = mean_scale),
   mean_scale = 1, exclude_cols = integer(0), seed)
 }

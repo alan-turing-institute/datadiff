@@ -4,8 +4,8 @@
 \alias{metric_column_accuracy}
 \title{Column accuracy evaluation metric}
 \usage{
-metric_column_accuracy(experiment, partial = FALSE, column_param = c("cols",
-  "insertion_point"))
+metric_column_accuracy(experiment, partial = FALSE,
+  column_param = c("cols", "insertion_point"))
 }
 \arguments{
 \item{experiment}{An executed synthetic experiment object.}

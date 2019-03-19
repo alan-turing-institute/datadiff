@@ -5,8 +5,8 @@
 \title{Randomly sample from a distribution of break patches}
 \usage{
 sample_patch_break(df, rdist = stats::rnorm, colname = NULL,
-  condition = function(x) {     TRUE }, exclude_cols = integer(0), seed,
-  ...)
+  condition = function(x) {     TRUE }, exclude_cols = integer(0),
+  seed, ...)
 }
 \arguments{
 \item{df}{A data frame}
