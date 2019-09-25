@@ -62,6 +62,7 @@
 #'
 columnwise_candidates <- function(df1, df2,
                                   mismatch,
+                                  constraints,
                                   patch_generators,
                                   patch_penalties,
                                   break_penalty,
@@ -77,11 +78,32 @@ columnwise_candidates <- function(df1, df2,
   # Construct a nested list of candidate patches with attributes for the
   # residual mismatch and the associated penalty.
   purrr::map(1:ncol(df1), .f = function(i) {
+    # If there is notransform constraint for column df[i], we will skip all patches
+    has_notransform <- 1 == length(purrr::keep(constraints, function(x) {
+      is_constraint_notransform(x, names(df1)[i]) }))
+    # If there is match constraint for this column with another, we return 'never' patch 9999
+    has_match_col1 <- 1 == length(purrr::keep(constraints, function(x) {
+      is_constraint_match_col1(x, names(df1)[i]) }))
+
     purrr::map(1:ncol(df2), .f = function(j) {
+      # If there is match constraint for this column with another, we return 'never' patch with 9999
+      has_match_col2 <- 1 == length(purrr::keep(constraints, function(x) {
+        is_constraint_match_col2(x, names(df2)[j]) }))
+
+      # If there is nomatch constraint, we return 'never' patch
+      has_nomatch <- 1 == length(purrr::keep(constraints, function(x) {
+        is_constraint_nomatch(x, names(df1)[i], names(df2)[j]) }))
+      if (has_nomatch || (has_match_col1 && !has_match_col2) || (has_match_col2 && !has_match_col1)) {
+        p <- patch_never()
+        attr(p, mismatch_attr) <- 0
+        attr(p, penalty_attr) <- 9999
+        return(p)
+      }
 
       # Generate the column(pair)wise pre-candidate patch for to each generator,
       # then compute & attach the (numeric)  mismatch & penalty.
-      patches <- purrr::map(1:length(patch_generators), .f = function(k) {
+      if (has_notransform) patches <- list()
+      else patches <- purrr::map(1:length(patch_generators), .f = function(k) {
         gen <- patch_generators[[k]]
 
         p <- tryCatch(

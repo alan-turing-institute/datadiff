@@ -4,7 +4,7 @@
 \alias{ddiff}
 \title{Diff two data frames}
 \usage{
-ddiff(df1, df2, mismatch = diffness,
+ddiff(df1, df2, mismatch = diffness, constraints = list(),
   patch_generators = list(gen_patch_rescale, gen_patch_recode),
   patch_penalties = c(12, 12), permute_penalty = 12,
   break_penalty = 0.95,
