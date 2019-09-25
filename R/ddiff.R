@@ -112,6 +112,7 @@
 #'
 ddiff <- function(df1, df2,
                   mismatch = diffness,
+                  constraints = list(),
                   patch_generators = list(gen_patch_rescale, gen_patch_recode),
                   patch_penalties = c(12, 12),
                   permute_penalty = 12,
@@ -142,6 +143,7 @@ ddiff <- function(df1, df2,
   # Construct a nested list of candidate patches between column pairs.
   mismatch_attr <- "mismatch"; penalty_attr <- "penalty"
   cw_candidates <- columnwise_candidates(df1, df2 = df2,
+                                         constraints = constraints,
                                          mismatch = mismatch,
                                          patch_generators = patch_generators,
                                          patch_penalties = patch_penalties,
@@ -248,6 +250,7 @@ ddiff <- function(df1, df2,
   if (attach_costs_matrices) {
     attr(p, mismatch_attr) <- m_mismatch
     attr(p, penalty_attr) <- m_penalty
+    attr(p, "xxx") <- cw_candidates
   }
   p
 }

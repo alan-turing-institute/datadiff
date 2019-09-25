@@ -7,7 +7,7 @@ library(tibble)
 ## ---- eval=FALSE---------------------------------------------------------
 #  # Install the most recent release from GitHub:
 #  # install.packages("devtools")
-#  devtools::install_github("datadiff", ref = "v0.2.0")
+#  devtools::install_github("datadiff", ref = "v0.2.2")
 
 ## ------------------------------------------------------------------------
 head(as.tibble(broadband2013))
