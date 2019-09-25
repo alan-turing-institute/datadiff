@@ -91,12 +91,53 @@ bb15nice <- subset(bb15, select=c("URBAN2","Nation","DL24hrmean","UL24hrmean","L
 
 p <- ddiff(bb14, bb15nice, verbose=TRUE)
 
+write.csv(bb15nice,"c:/temp/bb15nice.csv",row.names=FALSE)
+write.csv(bb14,"c:/temp/bb14.csv",row.names=FALSE)
+# clean=c:/temp/bb15nice.csv,dirty=c:/temp/bb14.csv
 nsc = names(bb15nice)
+nsd = names(bb14)
 nsp = names(p(bb14))
+pp <- decompose_patch(p)
+
+
+for(i in 1:length(pp)) {
+  typ <- patch_type(pp[[i]])
+  if (typ == "recode" || typ == "rescale" || typ == "scale" || typ == "shift") {
+    col <- nsd[[get_patch_params(pp[[i]])$cols]]
+    cat(paste0("Don't transform '", col, "'\n"))
+    cat(paste0("/-", col, "'\n"))
+  }
+}
+
 for(i in 1:length(names(bb15nice))) {
   cat(paste0("Don't match '", nsp[[i]], "' and '", nsc[[i]], "'\n"))
   cat(paste0("/~", nsp[[i]], "-", nsc[[i]], "\n"))
 }
 
+for(i in 1:length(names(bb14))) {
+  for(j in 1:length(names(bb15nice))) {
+    cat(paste0("Match '", nsd[[i]], "' and '", nsc[[j]], "'\n"))
+    cat(paste0("/.", nsd[[i]], "-", nsc[[j]], "\n"))
+  }
+}
 
 
+
+query <- "/.nat.weights-Web24hr/~Web.page..ms.24.hour-Web24hr/-LLU"
+
+clist <- purrr::keep(strsplit(query,"/")[[1]], function(x) { x != "" })
+constraints <- purrr::map(clist, function(c) {
+  kind <- substr(c, 1, 1)
+  args <- strsplit(substring(c, 2), "-")[[1]]
+  if (kind == ".") {
+    constraint_match(args[1], args[2])
+  } else if (kind == "~") {
+    constraint_nomatch(args[1], args[2])
+  } else if (kind == "-") {
+    constraint_notransform(args[1])
+  } else stop("Unexpected constraint kind.")
+})
+
+
+
+strsplit("x y"," ")[[1]][1]
