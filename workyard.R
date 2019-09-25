@@ -15,6 +15,17 @@ purrr::map(1:ncol(df1), .f = function(i) {
 
 bb15 <- subset(broadband2015, select=c("URBAN2","Nation","DL24hrmean","UL24hrmean","Latency24hr","Web24hr"))
 
+read.csv("C:\\Tomas\\Public\\wrattler\\wrattler-workyard\\broadband\\broadband2013.csv")
+
+inputs = strsplit("a=aa.csv,b=bb.csv", ",")
+files <- purrr::map(inputs[[1]], function(x) {
+  kvp <- strsplit(x, "=")
+  list(key=kvp[[1]][1], value=kvp[[1]][2]) })
+getInput <- function(i) {
+  purrr::keep(files, function(x) { x$key == i })[[1]]$value
+}
+getInput("b")
+
 constraints1 = list(
   #constraint_match("Nat.weights", "nat.weights"),
   constraint_nomatch("LLU", "Nation"),
@@ -70,3 +81,22 @@ soln <- solve_pairwise_assignment(m_mismatch + m_penalty, verbose = TRUE)
 options(max.print = 100)
 devtools::load_all()
 roxygen2::roxygenise()
+
+
+
+
+bb15 <- read.csv("C:\\Tomas\\Public\\wrattler\\wrattler-workyard\\broadband\\broadband2015.csv")
+bb14 <- read.csv("C:\\Tomas\\Public\\wrattler\\wrattler-workyard\\broadband\\broadband2014.csv")
+bb15nice <- subset(bb15, select=c("URBAN2","Nation","DL24hrmean","UL24hrmean","Latency24hr","Web24hr"))
+
+p <- ddiff(bb14, bb15nice, verbose=TRUE)
+
+nsc = names(bb15nice)
+nsp = names(p(bb14))
+for(i in 1:length(names(bb15nice))) {
+  cat(paste0("Don't match '", nsp[[i]], "' and '", nsc[[i]], "'\n"))
+  cat(paste0("/~", nsp[[i]], "-", nsc[[i]], "\n"))
+}
+
+
+
