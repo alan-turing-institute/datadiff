@@ -11,14 +11,14 @@ constraint_match <- function(col1, col2) {
 #'
 #' @export
 is_constraint_match_col1 <- function(c, col1) {
-  is(c, "constraint_match") && c$col1 == col1
+  methods::is(c, "constraint_match") && c$col1 == col1
 }
 
 #' Is constraint match with col2
 #'
 #' @export
 is_constraint_match_col2 <- function(c, col2) {
-  is(c, "constraint_match") && c$col2 == col2
+  methods::is(c, "constraint_match") && c$col2 == col2
 }
 
 #' Constraint nomatch
@@ -34,7 +34,7 @@ constraint_nomatch <- function(col1, col2) {
 #'
 #' @export
 is_constraint_nomatch <- function(c, col1, col2) {
-  is(c, "constraint_nomatch") && c$col1 == col1 && c$col2 == col2
+  methods::is(c, "constraint_nomatch") && c$col1 == col1 && c$col2 == col2
 }
 
 #' Constraint notransform
@@ -50,7 +50,7 @@ constraint_notransform <- function(col) {
 #'
 #' @export
 is_constraint_notransform <- function(c, col) {
-  is(c, "constraint_notransform") && c$col == col
+  methods::is(c, "constraint_notransform") && c$col == col
 }
 
 #' Never patch
